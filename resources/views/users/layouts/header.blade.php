@@ -208,7 +208,7 @@
                             <p class="card-text" style="align-items: justify">Accédez à votre espace professionnel pour gérer vos clients, consulter les demandes de souscription.</p>
                         </div>
                         <div class="card-footer text-center border-0 bg-white">
-                            <a href="https://yakoafricassur.com/espace-agent/connexion.php" class="btn-prime btn-prime-two text-center">Espace Agent</a>
+                            <a href="https://portail-agent.yakoafricassur.com" class="btn-prime btn-prime-two text-center">Espace Agent</a>
                         </div>
                     </div>
                 </div>

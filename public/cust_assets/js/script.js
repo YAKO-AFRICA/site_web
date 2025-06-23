@@ -1,26 +1,4 @@
-// document.addEventListener('DOMContentLoaded', function() {
-//     const loginInput = document.getElementById('login');
-//     const btnModifier = document.getElementById('btn-modifier');
-//     const btnMettreAJour = document.getElementById('btn-mettre-a-jour');
 
-//     // Événement pour le bouton "Modifier"
-//     btnModifier.addEventListener('click', function() {
-//         const login = loginInput.value;
-//         document.getElementById('modifier-login').value = login; // Passer le login
-//         console.log("Modifier le client avec le login :", login); // Juste pour déboguer
-//         // Vous pouvez ajouter ici la logique pour traiter le clic sur le bouton "Modifier"
-//     });
-
-//     // Événement pour le bouton "Mettre à jour"
-//     btnMettreAJour.addEventListener('click', function() {
-//         // const login = loginInput.value;
-//         sessionStorage.setItem('login', loginInput.value);
-//        let login = sessionStorage.getItem('login');
-//         document.getElementById('update-login').value = login; // Passer le login
-//         console.log("Mettre à jour le client avec le login :", login); // Juste pour déboguer
-//         // Vous pouvez ajouter ici la logique pour traiter le clic sur le bouton "Mettre à jour"
-//     });
-// });
 document.addEventListener('DOMContentLoaded', function() {
     const loginInput = document.getElementById('login');
     const btnModifier = document.getElementById('btn-modifier');
@@ -117,38 +95,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Fonction pour valider les champs de téléphone
-    // function validateTelFields() {
-    //     const telValue = telPaiementField.value.trim();
-    //     const confirmTelValue = confirmTelPaiementField.value.trim();
-
-    //     let isValid = true;
-
-    //     // Vérifier que les deux champs ne sont pas vides
-    //     if (!telValue || !confirmTelValue) {
-    //         isValid = false;
-    //     }
-
-    //     // Vérifier que les deux valeurs correspondent
-    //     if (telValue !== confirmTelValue) {
-    //         isValid = false;
-    //         telPaiementField.classList.add('is-invalid');
-    //         confirmTelPaiementField.classList.add('is-invalid');
-    //     } else {
-    //         telPaiementField.classList.remove('is-invalid');
-    //         confirmTelPaiementField.classList.remove('is-invalid');
-    //     }
-
-    //     // Vérifier le format du numéro (exemple : 10 chiffres)
-    //     const phoneRegex = /^[0-9]{10}$/; // Modifier selon le format attendu
-    //     if (!phoneRegex.test(telValue)) {
-    //         isValid = false;
-    //         telPaiementField.classList.add('is-invalid');
-    //     } else {
-    //         telPaiementField.classList.remove('is-invalid');
-    //     }
-
-    //     return isValid;
-    // }
 
     // Fonction pour valider les champs de password et confirmer password
     function validatePassword() {
@@ -230,63 +176,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return isValid;
     }
-
-    // Fonction pour valider les champs de téléphone
-    // function validateTelFields() {
-    //     const telValue = telPaiementField.value.trim();
-    //     const confirmTelValue = confirmTelPaiementField.value.trim();
-
-    //     let isValid = true;
-
-    //     // Vérifier que les deux champs ne sont pas vides
-    //     if (!telValue || !confirmTelValue) {
-    //         isValid = false;
-    //     }
-
-    //     // Vérifier que les deux valeurs correspondent
-    //     if (telValue !== confirmTelValue) {
-    //         isValid = false;
-    //         telPaiementField.classList.add('is-invalid');
-    //         confirmTelPaiementField.classList.add('is-invalid');
-    //     } else {
-    //         telPaiementField.classList.remove('is-invalid');
-    //         confirmTelPaiementField.classList.remove('is-invalid');
-    //     }
-
-    //     // Vérifier le format du numéro (exemple : 10 chiffres)
-    //     const phoneRegex = /^[0-9]{10}$/; // Modifier selon le format attendu
-    //     if (!phoneRegex.test(telValue)) {
-    //         isValid = false;
-    //         telPaiementField.classList.add('is-invalid');
-    //     } else {
-    //         telPaiementField.classList.remove('is-invalid');
-    //     }
-
-    //     return isValid;
-    // }
-
-    // Fonction pour valider les champs de password et confirmer password
-    // function validatePassword() {
-    //     const passwordValue = passwordInput.value.trim();
-    //     const confirmPasswordValue = confirmPasswordInput.value.trim();
-    //     let isValid = true;
-
-    //     if (!passwordValue || !confirmPasswordValue) {
-    //         isValid = false;
-    //         passwordInput.classList.add('is-invalid');
-    //         confirmPasswordInput.classList.add('is-invalid');
-    //         alert("Veuillez remplir les champs de password et confirmer password.");
-    //     }
-
-    //     if (passwordValue !== confirmPasswordValue) {
-    //         isValid = false;
-    //         passwordInput.classList.add('is-invalid');
-    //         confirmPasswordInput.classList.add('is-invalid');
-    //         alert("Les mots de passe ne correspondent pas.");
-    //     }
-
-    //     return isValid;
-    // }
 
     // Gestionnaire pour les boutons "Next"
     
@@ -2546,28 +2435,703 @@ document.addEventListener('DOMContentLoaded', function () {
 // Debut upload doc
 
 // recupere les prestations
-document.addEventListener('DOMContentLoaded', function () {
-    const selectContrat = document.getElementById('idcontratPrest');
-    const tablePrestation = document.getElementById('example3'); // Table complète
-    const tablePrestationBody = tablePrestation.querySelector('tbody');
-    const getPrestationsUrl = "/api/getPrestations";
-    let dataTableInstance = null;
+// document.addEventListener('DOMContentLoaded', function () {
+//     const selectContrat = document.getElementById('idcontratPrest');
+//     const tablePrestation = document.getElementById('example3'); // Table complète
+//     const tablePrestationBody = tablePrestation.querySelector('tbody');
+//     const tablePrestationFooter = tablePrestation.querySelector('tfoot');
+//     const getPrestationsUrl = "/api/getPrestations";
+//     const getOldPrestationsUrl = "https://api.laloyalevie.com/oldweb/courrier-consultation-bis";
+//     let dataTableInstance = null;
     
 
+//     const formatDate = (dateString) => {
+//         if (!dateString) return '-';
+//         const date = new Date(dateString);
+//         return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+//     };
+
+//     const clearTable = () => {
+//         if (dataTableInstance) {
+//             dataTableInstance.destroy(); // Détruire DataTables
+//             dataTableInstance = null;
+//         }
+//         tablePrestationBody.innerHTML = ''; // Nettoyer le contenu du tableau
+//         tablePrestationFooter.innerHTML = ''; // Nettoyer le contenu du tableau
+//         const modalContainer = document.getElementById('modalContainer');
+//         if (modalContainer) modalContainer.remove(); // Supprimer les anciennes modales
+//     };
+
+//     const createModal = (prestation) => {
+//         const modalId = `exampleModal${prestation.code}`;
+//         return `
+//             <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}Label" aria-hidden="true">
+//                 <div class="modal-dialog">
+//                     <div class="modal-content">
+//                         <div class="modal-header">
+//                             <h5 class="modal-title" id="${modalId}Label">Détails de la prestation</h5>
+//                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+//                         </div>
+//                         <div class="modal-body">
+//                             <div class="card radius-10">
+//                                 <div class="card-header">
+//                                 </div>
+//                                 <div class="card-body bg-light-success rounded">
+//                                     <div class="align-items-center">
+//                                         <div class="flex-grow-1 ms-3 my-4" style="text-align: justify">
+//                                             ${prestation.msgClient || 'Aucune information disponible.'}
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                         <div class="modal-footer">
+//                             <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+//                         </div>
+//                     </div>
+//                 </div>
+//             </div>
+//         `;
+//     };
+
+//     selectContrat.addEventListener('change', function () {
+//         const idcontrat = selectContrat.value;
+//         const spinner = document.getElementById('spinner');
+//         if (spinner) {
+//             spinner.style.display = 'block';
+//         }
+
+//         if (idcontrat === 'Veuillez sélectionner un contrat') {
+//             clearTable();
+//             tablePrestationBody.innerHTML = `
+//                 <tr>
+//                     <td colspan="9" class="text-center">Veuillez sélectionner un contrat pour voir les prestations.</td>
+//                 </tr>`;
+//             return;
+//         }
+
+//         fetch(getPrestationsUrl, {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+//             },
+//             body: JSON.stringify({ idcontratPrest: idcontrat }),
+            
+//         })
+//             .then(response => {
+//                 if (!response.ok) {
+//                     throw new Error('Erreur lors de la récupération des données');
+//                 }
+//                 return response.json();
+//             })
+//             .then(data => {
+//                 clearTable(); // Toujours nettoyer la table avant de réinitialiser
+//                 if (data.status === 'success') {
+//                     const prestations = data.data;
+
+//                     if (prestations.length > 0) {
+//                         const modalContainer = document.createElement('div');
+//                         modalContainer.setAttribute('id', 'modalContainer');
+//                         document.body.appendChild(modalContainer);
+
+//                         tablePrestationBody.innerHTML = prestations.map(prestation => {
+//                             const modalHtml = createModal(prestation);
+//                             let editPrestationUrl = `/espace-client/prestation/${prestation.etape == 3 ? 'modifier-apres-rejet' : 'edit'}/${prestation.code}`;
+
+//                             modalContainer.innerHTML += modalHtml;
+
+//                             return `
+//                                 <tr>
+//                                     <td>${prestation.code || '-'}</td>
+//                                     <td>${prestation.idcontrat || '-'}</td>
+//                                     <td>${prestation.typeprestation || '-'}</td>
+//                                     <td>
+//                                         ${prestation.etape == 0 ? 
+//                                             '<div class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En attente de transmission</div>' :
+//                                         prestation.etape == 1 ? 
+//                                             '<div class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>transmis pour traitement</div>' :
+//                                         prestation.etape == 2 ? 
+//                                             '<div class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Demande acceptée</div>' :
+//                                         prestation.etape == 3 ? 
+//                                             '<div class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Demande rejetée</div>' :
+//                                             '-'}
+//                                     </td>
+//                                     <td>${formatDate(prestation.created_at) || '-'}</td>
+//                                     <td>
+//                                         <div class="d-flex order-actions">
+//                                             ${prestation.montantSouhaite != null && prestation.montantSouhaite != '' ? 
+//                                                 `<a href="/espace-client/details-prestation/${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>
+//                                                 <a href="${editPrestationUrl}" class="ms-3 border ${ prestation.etape != 0 && prestation.etape != 3 ? 'disabled-link' : '' }" 
+//                                                         data-bs-toggle="tooltip" data-bs-placement="top" 
+//                                                         title="${ prestation.etape != 0 && prestation.etape != 3 ? 'Impossible de modifier la demande une fois transmise' : '' }">
+//                                                          <i class='bx bxs-edit'></i>
+//                                                 </a>
+//                                                 <a href="javascript:;" class="deleteConfirmation border ms-3 ${ prestation.etape != 0 && prestation.etape != 3 ? 'disabled-link' : '' }" data-uuid="${prestation.code}"
+//                                                         data-type="confirmation_redirect" data-placement="top"
+//                                                         data-token="{{ csrf_token() }}" data-bs-toggle="tooltip" data-bs-placement="top" 
+//                                                         title="${ prestation.etape != 0 && prestation.etape != 3 ? 'Impossible de supprimer la demande une fois transmise' : '' }"
+//                                                         data-url="/espace-client/prestation/destroy/${prestation.code}"
+//                                                         data-title="Vous êtes sur le point de supprimer ${prestation.code}"
+//                                                         data-id="${prestation.code}" data-param="0"
+//                                                         data-route="/espace-client/prestation/destroy/${prestation.code}" ><i
+//                                                             class='bx bxs-trash' style="cursor: pointer"></i>
+//                                                     </a>
+//                                                 ` :
+//                                                 `<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>
+//                                                 <a href="${editPrestationUrl}" class="ms-3 border ${ prestation.etape != 0 ? 'disabled-link' : '' }" 
+//                                                         data-bs-toggle="tooltip" data-bs-placement="top" 
+//                                                         title="${ prestation.etape != 0 ? 'Impossible de modifier la demande une fois transmise' : '' }">
+//                                                          <i class='bx bxs-edit'></i>
+//                                                 </a>
+//                                                 <a href="javascript:;" class="deleteConfirmation border ms-3 ${ prestation.etape != 0 ? 'disabled-link' : '' }" data-uuid="${prestation.code}"
+//                                                         data-type="confirmation_redirect" data-placement="top"
+//                                                         data-token="{{ csrf_token() }}" data-bs-toggle="tooltip" data-bs-placement="top" 
+//                                                         title="${ prestation.etape != 0 ? 'Impossible de supprimer la demande une fois transmise' : '' }"
+//                                                         data-url="/espace-client/prestation/destroy/${prestation.code}"
+//                                                         data-title="Vous êtes sur le point de supprimer ${prestation.code}"
+//                                                         data-id="${prestation.code}" data-param="0"
+//                                                         data-route="/espace-client/prestation/destroy/${prestation.code}" ><i
+//                                                             class='bx bxs-trash' style="cursor: pointer"></i>
+//                                                     </a>
+//                                                 `
+//                                             }
+//                                         </div>
+//                                     </td>
+//                                 </tr>
+//                             `;
+//                         }).join('');
+
+//                         // Initialiser DataTables après l'ajout des lignes
+//                         dataTableInstance = $(tablePrestation).DataTable({
+//                             lengthChange: true,
+//                             language: {
+//                                 search: "Recherche :",
+//                                 lengthMenu: "Afficher _MENU_ lignes",
+//                                 zeroRecords: "Aucun enregistrement trouvé",
+//                                 info: "Affichage de _START_ à _END_ sur _TOTAL_ enregistrements",
+//                                 infoEmpty: "Aucun enregistrement disponible",
+//                                 infoFiltered: "(filtré à partir de _MAX_ enregistrements)",
+//                                 paginate: {
+//                                     first: "Premier",
+//                                     last: "Dernier",
+//                                     next: "Suivant",
+//                                     previous: "Précédent",
+//                                 },
+//                             },
+//                         });
+//                     } else {
+//                         tablePrestationBody.innerHTML = `
+//                             <tr>
+//                                 <td colspan="9" class="text-center">Aucune prestation trouvée pour ce contrat.</td>
+//                             </tr>`;
+//                     }
+//                 } else {
+//                     tablePrestationBody.innerHTML = `
+//                         <tr>
+//                             <td colspan="9" class="text-center text-danger">Une erreur est survenue : ${data.message}</td>
+//                         </tr>`;
+//                 }
+
+//                 if (spinner) {
+//                     spinner.style.display = 'none';
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error('Error:', error);
+//                 clearTable();
+//                 if (spinner) {
+//                     spinner.style.display = 'none';
+//                 }
+                
+//                 tablePrestationBody.innerHTML = `
+//                     <tr>
+//                         <td colspan="9" class="text-center text-danger">Une erreur est survenue lors de la récupération des données.</td>
+//                     </tr>`;
+//             });
+
+//         fetch(getOldPrestationsUrl, {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({ idContrat: idcontrat }),
+            
+//         })
+//             .then(response => {
+//                 if (!response.ok) {
+//                     throw new Error('Erreur lors de la récupération des données');
+//                 }
+//                 return response.json();
+//             })
+//             .then(data => {
+//                 clearTable(); // Toujours nettoyer la table avant de réinitialiser
+//                 if (data.error === false) {
+//                     const oldPrestations = data.mesCourrier;
+//                     // console.log(prestations);
+//                     if (oldPrestations.length > 0) {
+
+//                         tablePrestationFooter.innerHTML = oldPrestations.map(prestation => {
+//                             return `
+//                                 <tr>
+//                                     <td>${prestation.CodeCourrier || '-'}</td>
+//                                     <td>${prestation.IdProposition || '-'}</td>
+//                                     <td>${prestation.MonLibelle || '-'}</td>
+//                                     <td>
+//                                         ${prestation.Etat == 1 ? 
+//                                             '<div class="badge rounded-pill text-warning bg-light-warning p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En attente de traitement</div>' :
+//                                         prestation.Etat == 2 ? 
+//                                             '<div class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En cours de traitement</div>' :
+//                                         prestation.Etat == 3 ? 
+//                                             '<div class="badge rounded-pill p-2 text-uppercase px-3" style="color: #076633; border-color: #07663387;"><i class="bx bxs-circle me-1"></i>Approbation</div>' :
+//                                         prestation.Etat == 4 ? 
+//                                             '<div class="badge rounded-pill p-2 text-uppercase px-3" style="color: #F9B233; border-color: #F9B23387;"><i class="bx bxs-circle me-1"></i>Paiement en cours</div>' :
+//                                         prestation.Etat == 5 ? 
+//                                             '<div class="badge rounded-pill  p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Paiement effectué</div>' :
+//                                         prestation.Etat == 6 ? 
+//                                             '<div class="badge rounded-pill text-secondary bg-light-secondary p-2 text-uppercase px-3" style="color: #444444; border-color: #44444487;"><i class="bx bxs-circle me-1"></i>Archivé</div>' :
+//                                             '-'}
+//                                     </td>
+//                                     <td>${prestation.SaisieLe || '-'}</td>
+//                                     <td>
+//                                         <div class="d-flex order-actions">
+                                            
+//                                                 <a href="/espace-client/details-prestation/${prestation.CodeCourrier}" class="ms-2 border disabled-link"><i class='bx bxs-show'></i></a>
+//                                                 <a href="#" class="ms-3 border disabled-link" 
+//                                                         data-bs-toggle="tooltip" data-bs-placement="top" 
+//                                                         title="">
+//                                                          <i class='bx bxs-edit'></i>
+//                                                 </a>
+//                                                 <a href="javascript:;" class="deleteConfirmation border ms-3 disabled-link"
+//                                                         data-type="confirmation_redirect" data-placement="top"
+//                                                         data-token="{{ csrf_token() }}" data-bs-toggle="tooltip" data-bs-placement="top" 
+//                                                         title=""
+//                                                         data-url="/espace-client/prestation/destroy/${prestation.CodeCourrier}"
+//                                                         data-title="Vous êtes sur le point de supprimer ${prestation.CodeCourrier}"
+//                                                         data-id="${prestation.CodeCourrier}" data-param="0"
+//                                                         data-route="/espace-client/prestation/destroy/${prestation.CodeCourrier}" ><i
+//                                                             class='bx bxs-trash' style="cursor: pointer"></i>
+//                                                 </a>
+//                                         </div>
+//                                     </td>
+//                                 </tr>
+//                             `;
+//                         }).join('');
+
+//                         // // Initialiser DataTables après l'ajout des lignes
+//                         // dataTableInstance = $(tablePrestation).DataTable({
+//                         //     lengthChange: true,
+//                         //     language: {
+//                         //         search: "Recherche :",
+//                         //         lengthMenu: "Afficher _MENU_ lignes",
+//                         //         zeroRecords: "Aucun enregistrement trouvé",
+//                         //         info: "Affichage de _START_ à _END_ sur _TOTAL_ enregistrements",
+//                         //         infoEmpty: "Aucun enregistrement disponible",
+//                         //         infoFiltered: "(filtré à partir de _MAX_ enregistrements)",
+//                         //         paginate: {
+//                         //             first: "Premier",
+//                         //             last: "Dernier",
+//                         //             next: "Suivant",
+//                         //             previous: "Précédent",
+//                         //         },
+//                         //     },
+//                         // });
+//                     } else {
+//                         tablePrestationFooter.innerHTML = ``;
+//                     }
+//                 } else {
+                    
+//                     console.error('Error:', data.message);
+//                 }
+
+//                 if (spinner) {
+//                     spinner.style.display = 'none';
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error('Error:', error);
+//                 clearTable();
+//                 if (spinner) {
+//                     spinner.style.display = 'none';
+//                 }
+                
+//             });
+//     });
+// });
+
+// document.addEventListener('DOMContentLoaded', function () {
+//     // Éléments DOM
+//     const selectContrat = document.getElementById('idcontratPrest');
+//     const tablePrestation = document.getElementById('example3');
+//     const tablePrestationBody = tablePrestation.querySelector('tbody');
+//     const tablePrestationFooter = tablePrestation.querySelector('tfoot');
+//     const spinner = document.getElementById('spinner');
+    
+//     // URLs API
+//     const API = {
+//         getPrestations: "/api/getPrestations",
+//         getOldPrestations: "https://api.laloyalevie.com/oldweb/courrier-consultation-bis"
+//     };
+    
+//     let dataTableInstance = null;
+//     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+//     // Fonctions utilitaires
+//     const formatDate = (dateString) => {
+//         if (!dateString) return '-';
+//         try {
+//             const date = new Date(dateString);
+//             return date.toLocaleDateString('fr-FR', { 
+//                 day: '2-digit', 
+//                 month: '2-digit', 
+//                 year: 'numeric', 
+//                 hour: '2-digit', 
+//                 minute: '2-digit', 
+//                 second: '2-digit' 
+//             });
+//         } catch (e) {
+//             console.error("Erreur de formatage de date", e);
+//             return dateString;
+//         }
+//     };
+
+//     const clearTable = () => {
+//         if (dataTableInstance) {
+//             dataTableInstance.destroy();
+//             dataTableInstance = null;
+//         }
+//         tablePrestationBody.innerHTML = '';
+//         tablePrestationFooter.innerHTML = '';
+        
+//         const modalContainer = document.getElementById('modalContainer');
+//         if (modalContainer) modalContainer.remove();
+//     };
+
+//     const showSpinner = (show = true) => {
+//         if (spinner) spinner.style.display = show ? 'block' : 'none';
+//     };
+
+//     const showError = (message) => {
+//         tablePrestationBody.innerHTML = `
+//             <tr>
+//                 <td colspan="9" class="text-center text-danger">${message}</td>
+//             </tr>`;
+//     };
+
+//     const createModal = (prestation) => {
+//         const modalId = `exampleModal${prestation.code}`;
+//         return `
+//             <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}Label" aria-hidden="true">
+//                 <div class="modal-dialog">
+//                     <div class="modal-content">
+//                         <div class="modal-header">
+//                             <h5 class="modal-title" id="${modalId}Label">Détails de la prestation</h5>
+//                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+//                         </div>
+//                         <div class="modal-body">
+//                             <div class="card radius-10">
+//                                 <div class="card-body bg-light-success rounded">
+//                                     <div class="flex-grow-1 ms-3 my-4" style="text-align: justify">
+//                                         ${prestation.msgClient || 'Aucune information disponible.'}
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                         <div class="modal-footer">
+//                             <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+//                         </div>
+//                     </div>
+//                 </div>
+//             </div>
+//         `;
+//     };
+
+//     const getStatusBadge = (etape) => {
+//         // Convertir en nombre si ce n'est pas déjà le cas
+//         const etapeNum = typeof etape === 'string' ? parseInt(etape) : etape;
+        
+//         switch(etapeNum) {
+//             case 0: return '<div class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En attente de transmission</div>';
+//             case 1: return '<div class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Transmis pour traitement</div>';
+//             case 2: return '<div class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Demande acceptée</div>';
+//             case 3: return '<div class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Demande rejetée</div>';
+//             default: 
+//                 console.warn('Statut inconnu:', etape);
+//                 return '-';
+//         }
+//     };
+
+//     const getOldStatusBadge = (etat) => {
+//         // Convertir en nombre si ce n'est pas déjà le cas
+//         const etatNum = typeof etat === 'string' ? parseInt(etat) : etat;
+        
+//         switch(etatNum) {
+//             case 1: return '<div class="badge rounded-pill text-warning bg-light-warning p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En attente de traitement</div>';
+//             case 2: return '<div class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En cours de traitement</div>';
+//             case 3: return '<div class="badge rounded-pill p-2 text-uppercase px-3" style="color: #076633; border-color: #07663387;"><i class="bx bxs-circle me-1"></i>Approbation</div>';
+//             case 4: return '<div class="badge rounded-pill p-2 text-uppercase px-3" style="color: #F9B233; border-color: #F9B23387;"><i class="bx bxs-circle me-1"></i>Paiement en cours</div>';
+//             case 5: return '<div class="badge rounded-pill p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Paiement effectué</div>';
+//             case 6: return '<div class="badge rounded-pill text-secondary bg-light-secondary p-2 text-uppercase px-3" style="color: #444444; border-color: #44444487;"><i class="bx bxs-circle me-1"></i>Archivé</div>';
+//             default: 
+//                 console.warn('Ancien statut inconnu:', etat);
+//                 return '-';
+//         }
+//     };
+//     const renderPrestations = (prestations) => {
+//         if (!prestations || prestations.length === 0) {
+//             tablePrestationBody.innerHTML = `
+//                 <tr>
+//                     <td colspan="9" class="text-center">Aucune prestation recente trouvée pour ce contrat.</td>
+//                 </tr>`;
+//             return;
+//         }
+
+//         const modalContainer = document.createElement('div');
+//         modalContainer.setAttribute('id', 'modalContainer');
+//         document.body.appendChild(modalContainer);
+
+//         tablePrestationBody.innerHTML = prestations.map(prestation => {
+//             const modalHtml = createModal(prestation);
+//             const isEditable = prestation.etape === 0 || prestation.etape === 3;
+//             const editPrestationUrl = `/espace-client/prestation/${prestation.etape == 3 ? 'modifier-apres-rejet' : 'edit'}/${prestation.code}`;
+//             const hasMontant = prestation.montantSouhaite != null && prestation.montantSouhaite !== '';
+
+//             modalContainer.innerHTML += modalHtml;
+
+//             return `
+//                 <tr>
+//                     <td>${prestation.code || '-'}</td>
+//                     <td>${prestation.idcontrat || '-'}</td>
+//                     <td>${prestation.typeprestation || '-'}</td>
+//                     <td>${getStatusBadge(prestation.etape)}</td>
+//                     <td>${formatDate(prestation.created_at)}</td>
+//                     <td>
+//                         <div class="d-flex order-actions">
+//                             ${hasMontant 
+//                                 ? `<a href="/espace-client/details-prestation/${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>`
+//                                 : `<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>`
+//                             }
+//                             <a href="${editPrestationUrl}" class="ms-3 border ${isEditable ? '' : 'disabled-link'}" 
+//                                 data-bs-toggle="tooltip" data-bs-placement="top" 
+//                                 title="${isEditable ? '' : 'Impossible de modifier la demande une fois transmise'}">
+//                                 <i class='bx bxs-edit'></i>
+//                             </a>
+//                             <a href="javascript:;" class="deleteConfirmation border ms-3 ${isEditable ? '' : 'disabled-link'}" 
+//                                 data-uuid="${prestation.code}"
+//                                 data-type="confirmation_redirect" 
+//                                 data-placement="top"
+//                                 data-token="${csrfToken}" 
+//                                 data-bs-toggle="tooltip" 
+//                                 data-bs-placement="top" 
+//                                 title="${isEditable ? '' : 'Impossible de supprimer la demande une fois transmise'}"
+//                                 data-url="/espace-client/prestation/destroy/${prestation.code}"
+//                                 data-title="Vous êtes sur le point de supprimer ${prestation.code}"
+//                                 data-id="${prestation.code}" 
+//                                 data-param="0"
+//                                 data-route="/espace-client/prestation/destroy/${prestation.code}">
+//                                 <i class='bx bxs-trash' style="cursor: pointer"></i>
+//                             </a>
+//                         </div>
+//                     </td>
+//                 </tr>
+//             `;
+//         }).join('');
+
+//         // Initialiser DataTables
+//         dataTableInstance = $(tablePrestation).DataTable({
+//             lengthChange: true,
+//             language: {
+//                 search: "Recherche :",
+//                 lengthMenu: "Afficher _MENU_ lignes",
+//                 zeroRecords: "Aucun enregistrement trouvé",
+//                 info: "Affichage de _START_ à _END_ sur _TOTAL_ enregistrements",
+//                 infoEmpty: "Aucun enregistrement disponible",
+//                 infoFiltered: "(filtré à partir de _MAX_ enregistrements)",
+//                 paginate: {
+//                     first: "Premier",
+//                     last: "Dernier",
+//                     next: "Suivant",
+//                     previous: "Précédent",
+//                 },
+//             },
+//         });
+//     };
+
+//     const renderOldPrestations = (oldPrestations) => {
+//         if (!oldPrestations || oldPrestations.length === 0) {
+//             tablePrestationFooter.innerHTML = '';
+//             return;
+//         }
+
+//         tablePrestationFooter.innerHTML = oldPrestations.map(prestation => `
+//             <tr>
+//                 <td>${prestation.CodeCourrier || '-'}</td>
+//                 <td>${prestation.IdProposition || '-'}</td>
+//                 <td>${prestation.MonLibelle || '-'}</td>
+//                 <td>${getOldStatusBadge(prestation.Etat)}</td>
+//                 <td>${prestation.SaisieLe || '-'}</td>
+//                 <td>
+//                     <div class="d-flex order-actions">
+//                         <a href="/espace-client/details-prestation/${prestation.CodeCourrier}" class="ms-2 border disabled-link">
+//                             <i class='bx bxs-show'></i>
+//                         </a>
+//                         <a href="#" class="ms-3 border disabled-link">
+//                             <i class='bx bxs-edit'></i>
+//                         </a>
+//                         <a href="javascript:;" class="deleteConfirmation border ms-3 disabled-link"
+//                             data-type="confirmation_redirect" 
+//                             data-placement="top"
+//                             data-token="${csrfToken}" 
+//                             data-bs-toggle="tooltip" 
+//                             data-bs-placement="top" 
+//                             data-url="/espace-client/prestation/destroy/${prestation.CodeCourrier}"
+//                             data-title="Vous êtes sur le point de supprimer ${prestation.CodeCourrier}"
+//                             data-id="${prestation.CodeCourrier}" 
+//                             data-param="0"
+//                             data-route="/espace-client/prestation/destroy/${prestation.CodeCourrier}">
+//                             <i class='bx bxs-trash' style="cursor: pointer"></i>
+//                         </a>
+//                     </div>
+//                 </td>
+//             </tr>
+//         `).join('');
+//     };
+
+//     const fetchPrestations = async (idcontrat) => {
+//         try {
+//             showSpinner();
+//             clearTable();
+
+//             if (!idcontrat || idcontrat === 'Veuillez sélectionner un contrat') {
+//                 tablePrestationBody.innerHTML = `
+//                     <tr>
+//                         <td colspan="9" class="text-center">Veuillez sélectionner un contrat pour voir les prestations.</td>
+//                     </tr>`;
+//                 return;
+//             }
+
+//             // Requêtes en parallèle
+//             const [newPrestationsResponse, oldPrestationsResponse] = await Promise.all([
+//                 fetch(API.getPrestations, {
+//                     method: 'POST',
+//                     headers: {
+//                         'Content-Type': 'application/json',
+//                         'X-CSRF-TOKEN': csrfToken,
+//                     },
+//                     body: JSON.stringify({ idcontratPrest: idcontrat }),
+//                 }),
+//                 fetch(API.getOldPrestations, {
+//                     method: 'POST',
+//                     headers: {
+//                         'Content-Type': 'application/json',
+//                     },
+//                     body: JSON.stringify({ idContrat: idcontrat }),
+//                 })
+//             ]);
+
+//             // Traitement des nouvelles prestations
+//             if (newPrestationsResponse.ok) {
+//                 const newPrestationsData = await newPrestationsResponse.json();
+//                 if (newPrestationsData.status === 'success') {
+//                     renderPrestations(newPrestationsData.data);
+//                 } else {
+//                     showError(`Une erreur est survenue : ${newPrestationsData.message}`);
+//                 }
+//             } else {
+//                 throw new Error('Erreur lors de la récupération des nouvelles prestations');
+//             }
+
+//             // Traitement des anciennes prestations
+//             if (oldPrestationsResponse.ok) {
+//                 const oldPrestationsData = await oldPrestationsResponse.json();
+//                 if (oldPrestationsData.error === false) {
+//                     renderOldPrestations(oldPrestationsData.mesCourrier);
+//                 } else {
+//                     console.error('Erreur anciennes prestations:', oldPrestationsData.message);
+//                 }
+//             } else {
+//                 console.error('Erreur lors de la récupération des anciennes prestations');
+//             }
+//         } catch (error) {
+//             console.error('Error:', error);
+//             showError('Une erreur est survenue lors de la récupération des données.');
+//         } finally {
+//             showSpinner(false);
+//         }
+//     };
+
+//     // Événement de changement de contrat
+//     selectContrat.addEventListener('change', function () {
+//         fetchPrestations(this.value);
+//     });
+
+//     // Initialisation si un contrat est déjà sélectionné
+//     if (selectContrat.value) {
+//         fetchPrestations(selectContrat.value);
+//     }
+// });
+document.addEventListener('DOMContentLoaded', function () {
+    // Éléments DOM
+    const selectContrat = document.getElementById('idcontratPrest');
+    const tablePrestation = document.getElementById('example3');
+    const tablePrestationBody = tablePrestation.querySelector('tbody');
+    const spinner = document.getElementById('spinner');
+    
+    // URLs API
+    const API = {
+        getPrestations: "/api/getPrestations",
+        getOldPrestations: "https://api.laloyalevie.com/oldweb/courrier-consultation-bis"
+    };
+    
+    let dataTableInstance = null;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    // Fonctions utilitaires
     const formatDate = (dateString) => {
         if (!dateString) return '-';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+        } catch (e) {
+            console.error("Erreur de formatage de date", e);
+            return dateString;
+        }
     };
 
     const clearTable = () => {
         if (dataTableInstance) {
-            dataTableInstance.destroy(); // Détruire DataTables
+            dataTableInstance.destroy();
             dataTableInstance = null;
         }
-        tablePrestationBody.innerHTML = ''; // Nettoyer le contenu du tableau
+        tablePrestationBody.innerHTML = '';
+        
         const modalContainer = document.getElementById('modalContainer');
-        if (modalContainer) modalContainer.remove(); // Supprimer les anciennes modales
+        if (modalContainer) modalContainer.remove();
+    };
+
+    const showSpinner = (show = true) => {
+        if (spinner) spinner.style.display = show ? 'block' : 'none';
+    };
+
+    const showNoDataMessage = (message = "Aucune prestation trouvée pour ce contrat.") => {
+        tablePrestationBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center">${message}</td>
+            </tr>`;
+    };
+
+    const showError = (message) => {
+        tablePrestationBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-danger">${message}</td>
+            </tr>`;
     };
 
     const createModal = (prestation) => {
@@ -2582,13 +3146,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                         <div class="modal-body">
                             <div class="card radius-10">
-                                <div class="card-header">
-                                </div>
                                 <div class="card-body bg-light-success rounded">
-                                    <div class="align-items-center">
-                                        <div class="flex-grow-1 ms-3 my-4" style="text-align: justify">
-                                            ${prestation.msgClient || 'Aucune information disponible.'}
-                                        </div>
+                                    <div class="flex-grow-1 ms-3 my-4" style="text-align: justify">
+                                        ${prestation.msgClient || 'Aucune information disponible.'}
                                     </div>
                                 </div>
                             </div>
@@ -2602,166 +3162,511 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
     };
 
-    selectContrat.addEventListener('change', function () {
-        const idcontrat = selectContrat.value;
-        const spinner = document.getElementById('spinner');
-        if (spinner) {
-            spinner.style.display = 'block';
+    const getStatusBadge = (etape) => {
+        const etapeNum = typeof etape === 'string' ? parseInt(etape) : etape;
+        
+        switch(etapeNum) {
+            case 0: return '<div class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En attente de transmission</div>';
+            case 1: return '<div class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Transmis pour traitement</div>';
+            case 2: return '<div class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Demande acceptée</div>';
+            case 3: return '<div class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Demande rejetée</div>';
+            default: return '<div class="badge rounded-pill text-secondary bg-light-secondary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Statut inconnu</div>';
+        }
+    };
+
+    const getOldStatusBadge = (etat) => {
+        const etatNum = typeof etat === 'string' ? parseInt(etat) : etat;
+        
+        switch(etatNum) {
+            case 1: return '<div class="badge rounded-pill text-warning bg-light-warning p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En attente de traitement</div>';
+            case 2: return '<div class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En cours de traitement</div>';
+            case 3: return '<div class="badge rounded-pill p-2 text-uppercase px-3" style="color: #076633; background-color: #07663387;"><i class="bx bxs-circle me-1"></i>Approbation</div>';
+            case 4: return '<div class="badge rounded-pill p-2 text-uppercase px-3" style="color: #F9B233; background-color: #F9B23387;"><i class="bx bxs-circle me-1"></i>Paiement en cours</div>';
+            case 5: return '<div class="badge rounded-pill p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Paiement effectué</div>';
+            case 6: return '<div class="badge rounded-pill text-secondary bg-light-secondary p-2 text-uppercase px-3" style="color: #444444; background-color: #44444487;"><i class="bx bxs-circle me-1"></i>Archivé</div>';
+            default: return '<div class="badge rounded-pill text-secondary bg-light-secondary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Statut inconnu</div>';
+        }
+    };
+
+    const renderCombinedPrestations = (newPrestations, oldPrestations) => {
+        const modalContainer = document.getElementById('modalContainer') || document.createElement('div');
+        modalContainer.setAttribute('id', 'modalContainer');
+        document.body.appendChild(modalContainer);
+        modalContainer.innerHTML = '';
+
+        let allRows = [];
+        let hasData = false;
+
+        // Nouvelles prestations
+        if (newPrestations && newPrestations.length > 0) {
+            hasData = true;
+            newPrestations.forEach(prestation => {
+                const modalHtml = createModal(prestation);
+                modalContainer.innerHTML += modalHtml;
+
+                const isEditable = prestation.etape === 0 || prestation.etape === 3;
+                const editPrestationUrl = `/espace-client/prestation/${prestation.etape == 3 ? 'modifier-apres-rejet' : 'edit'}/${prestation.code}`;
+                const hasMontant = prestation.montantSouhaite != null && prestation.montantSouhaite !== '';
+
+                allRows.push(`
+                    <tr class="new-prestation">
+                        <td>${prestation.code || '-'}</td>
+                        <td>${prestation.idcontrat || '-'}</td>
+                        <td>${prestation.typeprestation || '-'}</td>
+                        <td>${getStatusBadge(prestation.etape)}</td>
+                        <td>${formatDate(prestation.created_at)}</td>
+                        <td>
+                            <div class="d-flex order-actions">
+                                ${hasMontant 
+                                    ? `<a href="/espace-client/details-prestation/${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>`
+                                    : `<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>`
+                                }
+                                <a href="${editPrestationUrl}" class="ms-3 border ${isEditable ? '' : 'disabled-link'}" 
+                                    title="${isEditable ? '' : 'Impossible de modifier la demande une fois transmise'}">
+                                    <i class='bx bxs-edit'></i>
+                                </a>
+                                <a href="javascript:;" class="deleteConfirmation border ms-3 ${isEditable ? '' : 'disabled-link'}" 
+                                    data-uuid="${prestation.code}"
+                                    data-url="/espace-client/prestation/destroy/${prestation.code}">
+                                    <i class='bx bxs-trash'></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            });
         }
 
-        if (idcontrat === 'Veuillez sélectionner un contrat') {
-            clearTable();
-            tablePrestationBody.innerHTML = `
-                <tr>
-                    <td colspan="9" class="text-center">Veuillez sélectionner un contrat pour voir les prestations.</td>
-                </tr>`;
+        // Anciennes prestations
+        if (oldPrestations && oldPrestations.length > 0) {
+            hasData = true;
+            oldPrestations.forEach(prestation => {
+                allRows.push(`
+                    <tr class="old-prestation">
+                        <td>${prestation.CodeCourrier || '-'}</td>
+                        <td>${prestation.IdProposition || '-'}</td>
+                        <td>${prestation.MonLibelle || '-'}</td>
+                        <td>${getOldStatusBadge(prestation.Etat)}</td>
+                        <td>${prestation.SaisieLe || '-'}</td>
+                        <td>
+                            <div class="d-flex order-actions">
+                                <a href="/espace-client/details-prestation/${prestation.CodeCourrier}" class="ms-2 border disabled-link">
+                                    <i class='bx bxs-show'></i>
+                                </a>
+                                <a href="javascript:void(0)" class="ms-3 border disabled-link">
+                                    <i class='bx bxs-edit'></i>
+                                </a>
+                                <a href="javascript:void(0)" class="border ms-3 disabled-link">
+                                    <i class='bx bxs-trash'></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        if (!hasData) {
+            showNoDataMessage();
             return;
         }
 
-        fetch(getPrestationsUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        tablePrestationBody.innerHTML = allRows.join('');
+
+        // Initialiser DataTables
+        dataTableInstance = $(tablePrestation).DataTable({
+            lengthChange: true,
+            language: {
+                search: "Recherche :",
+                lengthMenu: "Afficher _MENU_ lignes",
+                zeroRecords: "Aucun enregistrement trouvé",
+                info: "Affichage de _START_ à _END_ sur _TOTAL_ enregistrements",
+                infoEmpty: "Aucun enregistrement disponible",
+                infoFiltered: "(filtré à partir de _MAX_ enregistrements)",
+                paginate: {
+                    first: "Premier",
+                    last: "Dernier",
+                    next: "Suivant",
+                    previous: "Précédent",
+                },
             },
-            body: JSON.stringify({ idcontratPrest: idcontrat }),
-            
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur lors de la récupération des données');
+            createdRow: function(row, data, dataIndex) {
+                if ($(row).hasClass('old-prestation')) {
+                    $(row).css('background-color', 'rgba(0,0,0,0.02)');
                 }
-                return response.json();
-            })
-            .then(data => {
-                clearTable(); // Toujours nettoyer la table avant de réinitialiser
-                if (data.status === 'success') {
-                    const prestations = data.data;
+            }
+        });
+    };
 
-                    if (prestations.length > 0) {
-                        const modalContainer = document.createElement('div');
-                        modalContainer.setAttribute('id', 'modalContainer');
-                        document.body.appendChild(modalContainer);
+    // const fetchPrestations = async (idcontrat) => {
+    //     try {
+    //         showSpinner();
+    //         clearTable();
 
-                        tablePrestationBody.innerHTML = prestations.map(prestation => {
-                            const modalHtml = createModal(prestation);
-                            let editPrestationUrl = `/espace-client/prestation/${prestation.etape == 3 ? 'modifier-apres-rejet' : 'edit'}/${prestation.code}`;
+    //         if (!idcontrat || idcontrat === 'Veuillez sélectionner un contrat') {
+    //             showNoDataMessage("Veuillez sélectionner un contrat pour voir les prestations.");
+    //             return;
+    //         }
 
-                            modalContainer.innerHTML += modalHtml;
+    //         const [newPrestationsResponse, oldPrestationsResponse] = await Promise.all([
+    //             fetch(API.getPrestations, {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                     'X-CSRF-TOKEN': csrfToken,
+    //                 },
+    //                 body: JSON.stringify({ idcontratPrest: idcontrat }),
+    //             }),
+    //             fetch(API.getOldPrestations, {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //                 body: JSON.stringify({ idContrat: idcontrat }),
+    //             })
+    //         ]);
 
-                            return `
-                                <tr>
-                                    <td>${prestation.code || '-'}</td>
-                                    <td>${prestation.idcontrat || '-'}</td>
-                                    <td>${prestation.typeprestation || '-'}</td>
-                                    
-                                    <td>
-                                        ${prestation.etape == 0 ? 
-                                            '<div class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En attente de transmission</div>' :
-                                        prestation.etape == 1 ? 
-                                            '<div class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>transmis pour traitement</div>' :
-                                        prestation.etape == 2 ? 
-                                            '<div class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Demande acceptée</div>' :
-                                        prestation.etape == 3 ? 
-                                            '<div class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Demande rejetée</div>' :
-                                            '-'}
-                                    </td>
-                                    <td>${formatDate(prestation.created_at) || '-'}</td>
-                                    <td>
-                                        <div class="d-flex order-actions">
-                                            ${prestation.montantSouhaite != null && prestation.montantSouhaite != '' ? 
-                                                `<a href="/espace-client/details-prestation/${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>
-                                                <a href="${editPrestationUrl}" class="ms-3 border ${ prestation.etape != 0 && prestation.etape != 3 ? 'disabled-link' : '' }" 
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" 
-                                                        title="${ prestation.etape != 0 && prestation.etape != 3 ? 'Impossible de modifier la demande une fois transmise' : '' }">
-                                                         <i class='bx bxs-edit'></i>
-                                                </a>
-                                                <a href="javascript:;" class="deleteConfirmation border ms-3 ${ prestation.etape != 0 && prestation.etape != 3 ? 'disabled-link' : '' }" data-uuid="${prestation.code}"
-                                                        data-type="confirmation_redirect" data-placement="top"
-                                                        data-token="{{ csrf_token() }}" data-bs-toggle="tooltip" data-bs-placement="top" 
-                                                        title="${ prestation.etape != 0 && prestation.etape != 3 ? 'Impossible de supprimer la demande une fois transmise' : '' }"
-                                                        data-url="/espace-client/prestation/destroy/${prestation.code}"
-                                                        data-title="Vous êtes sur le point de supprimer ${prestation.code}"
-                                                        data-id="${prestation.code}" data-param="0"
-                                                        data-route="/espace-client/prestation/destroy/${prestation.code}" ><i
-                                                            class='bx bxs-trash' style="cursor: pointer"></i>
-                                                    </a>
-                                                ` :
-                                                `<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>
-                                                <a href="${editPrestationUrl}" class="ms-3 border ${ prestation.etape != 0 ? 'disabled-link' : '' }" 
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" 
-                                                        title="${ prestation.etape != 0 ? 'Impossible de modifier la demande une fois transmise' : '' }">
-                                                         <i class='bx bxs-edit'></i>
-                                                </a>
-                                                <a href="javascript:;" class="deleteConfirmation border ms-3 ${ prestation.etape != 0 ? 'disabled-link' : '' }" data-uuid="${prestation.code}"
-                                                        data-type="confirmation_redirect" data-placement="top"
-                                                        data-token="{{ csrf_token() }}" data-bs-toggle="tooltip" data-bs-placement="top" 
-                                                        title="${ prestation.etape != 0 ? 'Impossible de supprimer la demande une fois transmise' : '' }"
-                                                        data-url="/espace-client/prestation/destroy/${prestation.code}"
-                                                        data-title="Vous êtes sur le point de supprimer ${prestation.code}"
-                                                        data-id="${prestation.code}" data-param="0"
-                                                        data-route="/espace-client/prestation/destroy/${prestation.code}" ><i
-                                                            class='bx bxs-trash' style="cursor: pointer"></i>
-                                                    </a>
-                                                `
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
-                            `;
-                        }).join('');
+    //         // Vérification des réponses
+    //         if (!newPrestationsResponse.ok || !oldPrestationsResponse.ok) {
+    //             throw new Error('Erreur de réponse API');
+    //         }
 
-                        // Initialiser DataTables après l'ajout des lignes
-                        dataTableInstance = $(tablePrestation).DataTable({
-                            lengthChange: true,
-                            language: {
-                                search: "Recherche :",
-                                lengthMenu: "Afficher _MENU_ lignes",
-                                zeroRecords: "Aucun enregistrement trouvé",
-                                info: "Affichage de _START_ à _END_ sur _TOTAL_ enregistrements",
-                                infoEmpty: "Aucun enregistrement disponible",
-                                infoFiltered: "(filtré à partir de _MAX_ enregistrements)",
-                                paginate: {
-                                    first: "Premier",
-                                    last: "Dernier",
-                                    next: "Suivant",
-                                    previous: "Précédent",
-                                },
-                            },
-                        });
+    //         const newPrestationsData = await newPrestationsResponse.json();
+    //         const oldPrestationsData = await oldPrestationsResponse.json();
+
+    //         // Validation des données
+    //         const newPrestations = (newPrestationsData.status === 'success') ? (newPrestationsData.data || []) : [];
+    //         const oldPrestations = (oldPrestationsData.error === false) ? (oldPrestationsData.mesCourrier || []) : [];
+
+    //         renderCombinedPrestations(newPrestations, oldPrestations);
+
+    //     } catch (error) {
+    //         console.error('Erreur:', error);
+    //         // On affiche seulement les erreurs techniques, pas les cas où il n'y a pas de données
+    //         if (error instanceof TypeError || error instanceof SyntaxError || error.message === 'Erreur de réponse API') {
+    //             showError('Une erreur technique est survenue lors de la récupération des données.');
+    //         } else {
+    //             showNoDataMessage();
+    //         }
+    //     } finally {
+    //         showSpinner(false);
+    //     }
+    // };
+
+    // Événements
+     const fetchPrestations = async (idcontrat) => {
+        try {
+            showSpinner();
+            clearTable();
+
+            if (!idcontrat || idcontrat === 'Veuillez sélectionner un contrat') {
+                showNoDataMessage("Veuillez sélectionner un contrat pour voir les prestations.");
+                return;
+            }
+
+            let newPrestations = [];
+            let oldPrestations = [];
+            let hasCriticalError = false;
+
+            // Gestion de l'API principale (nouvelles prestations)
+            try {
+                const newPrestationsResponse = await fetch(API.getPrestations, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({ idcontratPrest: idcontrat }),
+                });
+
+                if (newPrestationsResponse.ok) {
+                    const newPrestationsData = await newPrestationsResponse.json();
+                    if (newPrestationsData.status === 'success') {
+                        newPrestations = newPrestationsData.data || [];
                     } else {
-                        tablePrestationBody.innerHTML = `
-                            <tr>
-                                <td colspan="9" class="text-center">Aucune prestation trouvée pour ce contrat.</td>
-                            </tr>`;
+                        console.error('Réponse API nouvelles prestations inattendue:', newPrestationsData);
+                        hasCriticalError = true;
                     }
                 } else {
-                    tablePrestationBody.innerHTML = `
-                        <tr>
-                            <td colspan="9" class="text-center text-danger">Une erreur est survenue : ${data.message}</td>
-                        </tr>`;
+                    console.error('Erreur API nouvelles prestations:', newPrestationsResponse.status);
+                    hasCriticalError = true;
                 }
+            } catch (e) {
+                console.error('Erreur API nouvelles prestations:', e);
+                hasCriticalError = true;
+            }
 
-                if (spinner) {
-                    spinner.style.display = 'none';
+            // Gestion de l'API ancienne (tolérante aux erreurs)
+            try {
+                const oldPrestationsResponse = await fetch(API.getOldPrestations, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ idContrat: idcontrat }),
+                });
+
+                if (oldPrestationsResponse.ok) {
+                    const oldPrestationsData = await oldPrestationsResponse.json();
+                    if (oldPrestationsData.error === false) {
+                        oldPrestations = oldPrestationsData.mesCourrier || [];
+                    } else {
+                        console.log('API ancienne prestations:', oldPrestationsData.message || 'Réponse inattendue (non critique)');
+                    }
+                } else {
+                    console.log(`API ancienne prestations: ${oldPrestationsResponse.status} (erreur non critique)`);
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                clearTable();
-                if (spinner) {
-                    spinner.style.display = 'none';
-                }
-                tablePrestationBody.innerHTML = `
-                    <tr>
-                        <td colspan="9" class="text-center text-danger">Une erreur est survenue lors de la récupération des données.</td>
-                    </tr>`;
-            });
+            } catch (e) {
+                console.log('Erreur non critique API ancienne prestations:', e.message);
+            }
+
+            // Décision d'affichage
+            if (hasCriticalError) {
+                showError('Une erreur technique est survenue lors de la récupération des données.');
+            } else if (newPrestations.length === 0 && oldPrestations.length === 0) {
+                showNoDataMessage("Aucune prestation trouvée pour ce contrat.");
+            } else {
+                renderCombinedPrestations(newPrestations, oldPrestations);
+            }
+
+        } catch (error) {
+            console.error('Erreur inattendue:', error);
+            showError('Une erreur inattendue est survenue.');
+        } finally {
+            showSpinner(false);
+        }
+    };
+    
+    selectContrat.addEventListener('change', function () {
+        fetchPrestations(this.value);
     });
+
+    // Initialisation
+    if (selectContrat.value) {
+        fetchPrestations(selectContrat.value);
+    }
 });
 
 
+// document.addEventListener('DOMContentLoaded', function () {
+//     const selectContrat = document.getElementById('idcontratPrest');
+//     const tablePrestation = document.getElementById('example3'); // Table complète
+//     const tablePrestationBody = tablePrestation.querySelector('tbody');
+//     const tablePrestationFooter = tablePrestation.querySelector('tfoot');
+//     const getPrestationsUrl = "/api/getPrestations";
+//     const getOldPrestationsUrl = "/api/getPrestations";
+//     let dataTableInstance = null;
+    
+
+//     const formatDate = (dateString) => {
+//         if (!dateString) return '-';
+//         const date = new Date(dateString);
+//         return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+//     };
+
+//     const clearTable = () => {
+//         if (dataTableInstance) {
+//             dataTableInstance.destroy(); // Détruire DataTables
+//             dataTableInstance = null;
+//         }
+//         tablePrestationBody.innerHTML = ''; // Nettoyer le contenu du tableau
+//         tablePrestationFooter.innerHTML = ''; // Nettoyer le contenu du tableau
+//         const modalContainer = document.getElementById('modalContainer');
+//         if (modalContainer) modalContainer.remove(); // Supprimer les anciennes modales
+//     };
+
+//     const createModal = (prestation) => {
+//         const modalId = `exampleModal${prestation.code}`;
+//         return `
+//             <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}Label" aria-hidden="true">
+//                 <div class="modal-dialog">
+//                     <div class="modal-content">
+//                         <div class="modal-header">
+//                             <h5 class="modal-title" id="${modalId}Label">Détails de la prestation</h5>
+//                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+//                         </div>
+//                         <div class="modal-body">
+//                             <div class="card radius-10">
+//                                 <div class="card-header">
+//                                 </div>
+//                                 <div class="card-body bg-light-success rounded">
+//                                     <div class="align-items-center">
+//                                         <div class="flex-grow-1 ms-3 my-4" style="text-align: justify">
+//                                             ${prestation.msgClient || 'Aucune information disponible.'}
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                         <div class="modal-footer">
+//                             <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+//                         </div>
+//                     </div>
+//                 </div>
+//             </div>
+//         `;
+//     };
+
+//     selectContrat.addEventListener('change', function () {
+//         const idcontrat = selectContrat.value;
+//         const spinner = document.getElementById('spinner');
+//         if (spinner) {
+//             spinner.style.display = 'block';
+//         }
+
+//         if (idcontrat === 'Veuillez sélectionner un contrat') {
+//             clearTable();
+//             tablePrestationBody.innerHTML = `
+//                 <tr>
+//                     <td colspan="9" class="text-center">Veuillez sélectionner un contrat pour voir les prestations.</td>
+//                 </tr>`;
+//             return;
+//         }
+
+//         fetch(getPrestationsUrl, {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+//             },
+//             body: JSON.stringify({ idcontratPrest: idcontrat }),
+            
+//         })
+//             .then(response => {
+//                 if (!response.ok) {
+//                     throw new Error('Erreur lors de la récupération des données');
+//                 }
+//                 return response.json();
+//             })
+//             .then(data => {
+//                 clearTable(); // Toujours nettoyer la table avant de réinitialiser
+//                 if (data.status === 'success') {
+//                     const prestations = data.data;
+
+//                     if (prestations.length > 0) {
+//                         const modalContainer = document.createElement('div');
+//                         modalContainer.setAttribute('id', 'modalContainer');
+//                         document.body.appendChild(modalContainer);
+
+//                         tablePrestationBody.innerHTML = prestations.map(prestation => {
+//                             const modalHtml = createModal(prestation);
+//                             let editPrestationUrl = `/espace-client/prestation/${prestation.etape == 3 ? 'modifier-apres-rejet' : 'edit'}/${prestation.code}`;
+
+//                             modalContainer.innerHTML += modalHtml;
+
+//                             return `
+//                                 <tr>
+//                                     <td>${prestation.code || '-'}</td>
+//                                     <td>${prestation.idcontrat || '-'}</td>
+//                                     <td>${prestation.typeprestation || '-'}</td>
+//                                     <td>
+//                                         ${prestation.etape == 0 ? 
+//                                             '<div class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En attente de transmission</div>' :
+//                                         prestation.etape == 1 ? 
+//                                             '<div class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>transmis pour traitement</div>' :
+//                                         prestation.etape == 2 ? 
+//                                             '<div class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Demande acceptée</div>' :
+//                                         prestation.etape == 3 ? 
+//                                             '<div class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Demande rejetée</div>' :
+//                                             '-'}
+//                                     </td>
+//                                     <td>${formatDate(prestation.created_at) || '-'}</td>
+//                                     <td>
+//                                         <div class="d-flex order-actions">
+//                                             ${prestation.montantSouhaite != null && prestation.montantSouhaite != '' ? 
+//                                                 `<a href="/espace-client/details-prestation/${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>
+//                                                 <a href="${editPrestationUrl}" class="ms-3 border ${ prestation.etape != 0 && prestation.etape != 3 ? 'disabled-link' : '' }" 
+//                                                         data-bs-toggle="tooltip" data-bs-placement="top" 
+//                                                         title="${ prestation.etape != 0 && prestation.etape != 3 ? 'Impossible de modifier la demande une fois transmise' : '' }">
+//                                                          <i class='bx bxs-edit'></i>
+//                                                 </a>
+//                                                 <a href="javascript:;" class="deleteConfirmation border ms-3 ${ prestation.etape != 0 && prestation.etape != 3 ? 'disabled-link' : '' }" data-uuid="${prestation.code}"
+//                                                         data-type="confirmation_redirect" data-placement="top"
+//                                                         data-token="{{ csrf_token() }}" data-bs-toggle="tooltip" data-bs-placement="top" 
+//                                                         title="${ prestation.etape != 0 && prestation.etape != 3 ? 'Impossible de supprimer la demande une fois transmise' : '' }"
+//                                                         data-url="/espace-client/prestation/destroy/${prestation.code}"
+//                                                         data-title="Vous êtes sur le point de supprimer ${prestation.code}"
+//                                                         data-id="${prestation.code}" data-param="0"
+//                                                         data-route="/espace-client/prestation/destroy/${prestation.code}" ><i
+//                                                             class='bx bxs-trash' style="cursor: pointer"></i>
+//                                                     </a>
+//                                                 ` :
+//                                                 `<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>
+//                                                 <a href="${editPrestationUrl}" class="ms-3 border ${ prestation.etape != 0 ? 'disabled-link' : '' }" 
+//                                                         data-bs-toggle="tooltip" data-bs-placement="top" 
+//                                                         title="${ prestation.etape != 0 ? 'Impossible de modifier la demande une fois transmise' : '' }">
+//                                                          <i class='bx bxs-edit'></i>
+//                                                 </a>
+//                                                 <a href="javascript:;" class="deleteConfirmation border ms-3 ${ prestation.etape != 0 ? 'disabled-link' : '' }" data-uuid="${prestation.code}"
+//                                                         data-type="confirmation_redirect" data-placement="top"
+//                                                         data-token="{{ csrf_token() }}" data-bs-toggle="tooltip" data-bs-placement="top" 
+//                                                         title="${ prestation.etape != 0 ? 'Impossible de supprimer la demande une fois transmise' : '' }"
+//                                                         data-url="/espace-client/prestation/destroy/${prestation.code}"
+//                                                         data-title="Vous êtes sur le point de supprimer ${prestation.code}"
+//                                                         data-id="${prestation.code}" data-param="0"
+//                                                         data-route="/espace-client/prestation/destroy/${prestation.code}" ><i
+//                                                             class='bx bxs-trash' style="cursor: pointer"></i>
+//                                                     </a>
+//                                                 `
+//                                             }
+//                                         </div>
+//                                     </td>
+//                                 </tr>
+//                             `;
+//                         }).join('');
+
+//                         // Initialiser DataTables après l'ajout des lignes
+//                         dataTableInstance = $(tablePrestation).DataTable({
+//                             lengthChange: true,
+//                             language: {
+//                                 search: "Recherche :",
+//                                 lengthMenu: "Afficher _MENU_ lignes",
+//                                 zeroRecords: "Aucun enregistrement trouvé",
+//                                 info: "Affichage de _START_ à _END_ sur _TOTAL_ enregistrements",
+//                                 infoEmpty: "Aucun enregistrement disponible",
+//                                 infoFiltered: "(filtré à partir de _MAX_ enregistrements)",
+//                                 paginate: {
+//                                     first: "Premier",
+//                                     last: "Dernier",
+//                                     next: "Suivant",
+//                                     previous: "Précédent",
+//                                 },
+//                             },
+//                         });
+//                     } else {
+//                         tablePrestationBody.innerHTML = `
+//                             <tr>
+//                                 <td colspan="9" class="text-center">Aucune prestation trouvée pour ce contrat.</td>
+//                             </tr>`;
+//                     }
+//                 } else {
+//                     tablePrestationBody.innerHTML = `
+//                         <tr>
+//                             <td colspan="9" class="text-center text-danger">Une erreur est survenue : ${data.message}</td>
+//                         </tr>`;
+//                 }
+
+//                 if (spinner) {
+//                     spinner.style.display = 'none';
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error('Error:', error);
+//                 clearTable();
+//                 if (spinner) {
+//                     spinner.style.display = 'none';
+//                 }
+//                 tablePrestationBody.innerHTML = `
+//                     <tr>
+//                         <td colspan="9" class="text-center text-danger">Une erreur est survenue lors de la récupération des données.</td>
+//                     </tr>`;
+//             });
+//     });
+// });
+
+
 // recupere les rdv
+
 document.addEventListener('DOMContentLoaded', function () {
     const selectContrat = document.getElementById('idcontratRdv');
     const tableRdv = document.getElementById('example3'); // Table complète
@@ -2937,59 +3842,6 @@ $('#AttestationPerte-file-upload').FancyFileUpload({
 });
 
 
-// Fin upload doc
-
-// Debut OTP input 
-// document.addEventListener('DOMContentLoaded', function() {
-//     const otpInputs = document.querySelectorAll('.otp-input');
-
-//     otpInputs.forEach((input, index) => {
-//         input.addEventListener('input', () => {
-//             if (input.value.length === 1 && index < otpInputs.length - 1) {
-//                 otpInputs[index + 1].focus();
-//             }
-//         });
-
-//         input.addEventListener('keydown', (e) => {
-//             if (e.key === 'Backspace' && index > 0 && input.value === '') {
-//                 otpInputs[index - 1].focus();
-//             }
-//         });
-//     });
-//     // document.querySelector('.resend-otp-link').addEventListener('click', function(event) {
-//     //     event.preventDefault(); // Empêche le comportement par défaut du lien
-//     //     alert('Un nouveau code OTP a été envoyé sur votre numéro de paiement.');
-//     //     // Ajoutez ici la logique pour envoyer une requête au serveur pour renvoyer l'OTP
-//     // });
-// });
-
-// Fin OTP input
-
-// Debut RIB input 
-
-// document.addEventListener('DOMContentLoaded', function () {
-//     const ribInputs = document.querySelectorAll('.rib-input');
-
-//     ribInputs.forEach((input, index) => {
-//         input.addEventListener('input', function () {
-//             // Filtrer uniquement les lettres et chiffres
-//             this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
-
-//             // Passer au champ suivant si un caractère est saisi
-//             if (this.value.length === 1 && index < ribInputs.length - 1) {
-//                 ribInputs[index + 1].focus();
-//             }
-
-//         });
-
-//         input.addEventListener('keydown', function (e) {
-//             // Gérer la suppression et revenir au champ précédent
-//             if (e.key === 'Backspace' && this.value === '' && index > 0) {
-//                 ribInputs[index - 1].focus();
-//             }
-//         });
-//     });
-// });
 document.addEventListener('DOMContentLoaded', function() {
     const otpInputs = document.querySelectorAll('.otp-input');
     const ribInputs = document.querySelectorAll('.rib-input');

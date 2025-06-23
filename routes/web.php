@@ -79,6 +79,7 @@ Route::middleware('guest:web', 'PreventBackHistory')->group(function(){
     Route::post('admin/mail/add',[SouscritionController::class,'store'])->name('admin.subscription.store');
 
     Route::post('admin/home/assistance/addCourrier',[AdminController::class, 'assistanceStore'])->name('admin.assistance.addCourrier');
+    Route::post('admin/home/assistance/deleteCourrier/{uuid}',[AdminController::class, 'assistanceDestroy'])->name('admin.assistance.deleteCourrier');
 
 
     Route::get('admin/product/test',[ProductController::class, 'test'])->name('admin.test');

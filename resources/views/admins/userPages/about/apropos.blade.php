@@ -34,7 +34,7 @@
         <i class="fa fa-pencil fs-6 pencil" style="float:right" aria-hidden="true"></i>
     
         
-        <div class="container theme-control-toggle-label theme-control-toggle-light modif" title="" for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Cette section est modifiable. Cliquer sur le stylo">
+        <div class="container theme-control-toggle-label theme-control-toggle-light modif" title="" for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title=" @can('Peut modifier notre Historique')  Cette section est modifiable. Cliquer sur le stylo @else Désolé, vous n'êtes pas autorisé à modifier cette section  @endcan">
             <div class="row justify-content-center"> 
                 <div class="col-lg-12">
                     @if($aboutHist->image)    
@@ -55,12 +55,14 @@
     </a>
     
 </section>
-@include('admins.userPages.about.updateAboutSectionHistModal',["uuid" => $aboutHist->uuid])
+@can('Peut modifier notre Historique') 
+    @include('admins.userPages.about.updateAboutSectionHistModal',["uuid" => $aboutHist->uuid])
+@endcan
 <!-- about-area-end -->
 <section class="about__area-four py-5 my-5 modif-pencil" id="mot_pca">
     <a href="" data-bs-toggle="modal" data-bs-target="#updateAboutMotPCA{{$aboutMotPCA->uuid}}" class="" > 
         <i class="fa fa-pencil fs-6 pencil" style="float:right" aria-hidden="true"></i>
-        <div class="container theme-control-toggle-label theme-control-toggle-light modif" title="" for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Cette section est modifiable. Cliquer sur le stylo">
+        <div class="container theme-control-toggle-label theme-control-toggle-light modif" title="" for="themeControlToggle" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title=" @can('Peut modifier notre Mot du PCA')  Cette section est modifiable. Cliquer sur le stylo @else Désolé, vous n'êtes pas autorisé à modifier cette section  @endcan">
             
             <div class="row justify-content-center">
                 <div class="col-lg-4 col-md-9 col-sm-10 mb-30">
@@ -95,7 +97,9 @@
         </div>
     </a>
 </section>
-@include('admins.userPages.about.updateAboutSectionMotPCAModal',["uuid" => $aboutMotPCA->uuid])
+@can('Peut modifier notre Mot du PCA')
+    @include('admins.userPages.about.updateAboutSectionMotPCAModal',["uuid" => $aboutMotPCA->uuid])
+@endcan
 <!-- team-area -->
 <section class="team-area py-5 pb-90" id="team">
     <div class="container">
@@ -119,9 +123,11 @@
             
             @include('admins.userPages.about.teams.updatePCAModal',["uuid" => $PCA->uuid])
         @endif
-        <a href="" data-bs-toggle="modal" data-bs-target="#addTeam" class="" > 
-            <i class="fa fa-pencil fs-6 pencil" style="float:right" aria-hidden="true"></i>
-        </a>
+        @can('Peut gérer les membre de notre équipe')
+            <a href="" data-bs-toggle="modal" data-bs-target="#addTeam" class="" > 
+                <i class="fa fa-pencil fs-6 pencil" style="float:right" aria-hidden="true"></i>
+            </a>
+        @endcan
         <!-- Button trigger modal -->
         @if(($DGs || $PCA || $teams || $teams2) && $DGA)
             <div class="team-item-wrap modif-pencil "> 
@@ -152,7 +158,10 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updatePCA{{$PCA->uuid}}">Modifier</button>
+                                <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+                                @can('Peut gérer les membre de notre équipe')
+                                    <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updatePCA{{$PCA->uuid}}">Modifier</button>
+                                @endcan
                             </div>
                         </div>
                         </div>
@@ -206,7 +215,10 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updateDG{{$DG->uuid}}">Modifier</button>
+                                <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+                                @can('Peut gérer les membre de notre équipe')
+                                    <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updateDG{{$DG->uuid}}">Modifier</button>
+                                @endcan
                             </div>
                         </div>
                         </div>
@@ -256,7 +268,10 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                            <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updateTeams{{$team->uuid}}">Modifier</button>
+                            <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+                            @can('Peut gérer les membre de notre équipe')
+                                <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updateTeams{{$team->uuid}}">Modifier</button>
+                            @endcan
                             </div>
                         </div>
                         </div>
@@ -307,7 +322,10 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                            <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updateTeam2{{$team2->uuid}}">Modifier</button>
+                                <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+                                @can('Peut gérer les membre de notre équipe')
+                                    <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updateTeam2{{$team2->uuid}}">Modifier</button>
+                                @endcan
                             </div>
                         </div>
                         </div>
@@ -358,7 +376,10 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updatePCA{{$PCA->uuid}}">Modifier</button>
+                            <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+                            @can('Peut gérer les membre de notre équipe')
+                                <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updatePCA{{$PCA->uuid}}">Modifier</button>
+                            @endcan
                         </div>
                     </div>
                     </div>
@@ -411,7 +432,10 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updateTeam1{{$team1->uuid}}">Modifier</button>
+                            <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+                            @can('Peut gérer les membre de notre équipe')
+                                <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updateTeam1{{$team1->uuid}}">Modifier</button>
+                            @endcan
                         </div>
                     </div>
                     </div>
@@ -463,7 +487,10 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                        <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updateTeam2{{$team2->uuid}}">Modifier</button>
+                            <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+                            @can('Peut gérer les membre de notre équipe')
+                                <button type="button" class="btn-prime" data-bs-toggle="modal" data-bs-target="#updateTeam2{{$team2->uuid}}">Modifier</button>
+                            @endcan
                         </div>
                     </div>
                     </div>

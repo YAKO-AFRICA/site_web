@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Console\View\Components\Task;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -516,5 +517,57 @@ class AdminController extends Controller
         }
 
         return response()->json($dataResponse);
+    }
+    public function assistanceDestroy($uuid)
+    {
+        DB::beginTransaction(); // Démarrer une transaction pour gérer les erreurs
+        try {
+            // 1. Récupérer le modèle avant suppression pour obtenir le nom du fichier
+            $modelCourrier = ModelCourrier::where('uuid', $uuid)->first();
+            if (!$modelCourrier) {
+                return response()->json([
+                    'type' => 'error',
+                    'urlback' => '',
+                    'message' => "Modèle introuvable !",
+                    'code' => 404,
+                ]);
+            }
+
+            // 2. Supprimer le fichier PDF associé s'il existe
+            $fileName = $modelCourrier->file;
+            $filePath = public_path('ModelCourriers/' . $fileName);
+
+            if ($fileName && file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            // 3. Supprimer l'entrée de la base de données
+            $modelCourrier->delete();
+
+            DB::commit(); // Valider la transaction
+
+            // $dataResponse = [
+            //     'type' => 'success',
+            //     'urlback' => "back",
+            //     'message' => "Supprimé avec succès !",
+            //     'code' => 200,
+            // ];
+            Log::info( 'Modèle supprimé avec succès !');
+        return redirect()->back()->with('success', 'Modèle supprimé avec succès !');
+        } catch (\Exception $e) {
+            DB::rollBack(); // Annuler la transaction en cas d'erreur
+
+            // $dataResponse = [
+            //     'type' => 'error',
+            //     'urlback' => '',
+            //     'message' => "Erreur lors de la suppression !",
+            //     'code' => 500,
+            // ];
+            Log::info( 'Erreur lors de la suppression du modèle :' .$e->getMessage());
+            return redirect()->back()->with('error', 'Erreur lors de la suppression !');
+        }
+
+        // return redirect()->back()->with('success', 'Modèle supprimé avec succès !');
+        // return response()->json($dataResponse);
     }
 }

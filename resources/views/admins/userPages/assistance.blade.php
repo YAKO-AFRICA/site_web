@@ -103,20 +103,7 @@
                   </h2>
                   <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
-                        {{-- <div class="row">
-                            <div class="col-md-6">
-                                <a href="{{ asset('assets/img/images/courrier/courrier1.pdf')}}" target="_blank">
-                                    <img src="{{ asset('assets/img/images/courrier/courrier1.jpg')}}" alt="courrier1" class="img-fluid">
-                                    <p>Courrier 1</p>
-                                </a>
-                            </div>
-                            <div class="col-md-6">
-                                <a href="{{ asset('assets/img/images/courrier/courrier2.pdf')}}" target="_blank">
-                                    <img src="{{ asset('assets/img/images/courrier/courrier2.jpg')}}" alt="courrier2" class="img-fluid">
-                                    <p>Courrier 2</p>
-                                </a>
-                            </div>
-                        </div> --}} 
+                        
                         <table class="table table-striped  table-hover">
                             <thead class="text-center">
                               <tr>
@@ -126,12 +113,34 @@
                               </tr>
                             </thead>
                             <tbody class="text-center">
+                                {{-- @dd($courriers) --}}
                                 @foreach($courriers as $courrier)
+                                
                                 <tr>
                                     <th scope="row"> {{$courrier->id ?? 'N/A'}} </th>
                                     <td>{{$courrier->label ?? 'N/A'}}</td>
                                     <td>
-                                        <a href="{{ asset('ModelCourriers/' . $courrier->file) }}" target="_blank"><i class="fa fa-download" aria-hidden="true"></i></a>
+                                        <a href="{{ asset('ModelCourriers/' . $courrier->file) }}" target="_blank" class="ms-3">
+                                            <i class="fa fa-download me-2" aria-hidden="true"></i>
+                                        </a>
+
+                                        {{-- <a href="javascript:void(0);" class="ms-3" 
+                                        onclick="event.preventDefault();
+                                  document.getElementById('deleteForm-{{ $courrier->uuid }}').submit();">
+                                            <i class="me-2 fa-solid fa-trash"></i>
+                                        </a> --}}
+                                        {{-- <a href="javascript:void(0);" class="ms-3" 
+                                        onclick="confirmDelete('{{ $courrier->uuid }}', '{{ $courrier->label }}')">
+                                            <i class="me-2 fa-solid fa-trash"></i>
+                                        </a> --}}
+
+                                        <!-- Formulaire caché -->
+                                        <form id="deleteForm-{{ $courrier->uuid }}" 
+                                            action="{{ route('admin.assistance.deleteCourrier', $courrier->uuid) }}" 
+                                            method="POST" class="d-none">
+                                            @csrf
+                                            
+                                        </form>
                                     </td>   
                                 </tr>
                             @endforeach
@@ -144,4 +153,23 @@
         </div>
     </div>
 </section>
+
+{{-- <script>
+function confirmDelete(uuid, label) {
+    Swal.fire({
+        title: 'Confirmer la suppression',
+        text: `Êtes-vous sûr de vouloir supprimer "${label}" ?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Oui, supprimer!',
+        cancelButtonText: 'Annuler'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById(`deleteForm-${uuid}`).submit();
+        }
+    });
+}
+</script> --}}
 @endsection

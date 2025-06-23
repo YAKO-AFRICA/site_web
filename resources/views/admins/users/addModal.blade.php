@@ -32,9 +32,15 @@
                                 <label for="role" class="form-label">Role</label>
                                 <select name="role_id" class="form-control" id="role" required>
                                     <option selected value="">Choisissez un role</option>
-                                    @foreach ($roles as $role)
-                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    @endforeach
+                                    @if(Auth::user()->name != 'Super admin')
+                                        @foreach ($roles->where('name', '!=', 'Super admin') as $role)
+                                            <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                        @endforeach
+                                    @else
+                                        @foreach ($roles as $role)
+                                            <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                        @endforeach
+                                    @endif
                                 </select>
                             </div>
                         </div>

@@ -38,7 +38,7 @@
             cursor: no-drop;
             pointer-events: none;
             /* Empêche toute interaction avec ces éléments */
-        }
+        } 
 
         /* Remplacer le curseur par l'emoji 🚫 lors du survol des champs readonly */
         input[readonly]:hover,
@@ -391,7 +391,7 @@
                             document.getElementById('submitBtu').classList.add('d-none');
                             document.getElementById('btn-inscrire').classList.remove('d-none');
                             document.getElementById('message').textContent =
-                                "Vous n'avez pas encore de compte Ynov, veuillez une une de creation de compte."; // Message ajouté
+                                "Vous n’avez pas encore de compte Ynov ? Créez votre compte en quelques clics et profitez de tous nos avantages !"; // Message ajouté
                         }
 
                     })

@@ -1,5 +1,14 @@
 @extends('admins.layouts.main')
 @section('content-admin')
+
+<style>
+  /* Liens désactivés */
+        .disabled-link {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+</style>
 <nav class="mb-3" aria-label="breadcrumb">
   <ol class="breadcrumb mb-0">
       <li class="breadcrumb-item"><a href="#!">Admin</a></li>
@@ -51,13 +60,13 @@
                 <td class="tags align-middle review pb-2 ps-3 text-center" style="min-width:225px;"> {{ $user->role->name ?? '' }}</td>
 
                 <td class="tags align-middle review pb-2 ps-3 text-center" style="min-width:225px;">
-                  {{ $user->created_at->format('d/m/Y H:i') ?? 'N/A' }}
+                    {{ $user->created_at->format('d/m/Y H:i') ?? 'N/A' }}
                 </td>
                 <td class="align-middle white-space-nowrap text-end pe-0 ps-4 btn-reveal-trigger text-center">
-                <a class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#update{{$user->uuid}}" href="#">
+                <a class="text-decoration-none {{ Auth::user()->name != 'Super admin' && $user->name == 'Super admin' ? 'disabled-link' : ''}}" data-bs-toggle="modal" data-bs-target="#update{{$user->uuid}}" href="#">
                       <span class="badge badge-tag me-2 mb-2 far fa-edit"></span>
                 </a>
-                <a class="ms-3 deleteConfirmation" data-uuid="{{$user->uuid}}"
+                <a class="ms-3 deleteConfirmation {{ Auth::user()->name != 'Super admin' && $user->name == 'Super admin' ? 'disabled-link' : ''}}" data-uuid="{{$user->uuid}}"
                     data-type="confirmation_redirect" data-placement="top"
                     data-token="{{ csrf_token() }}"
                     data-url="{{route('setting.users.destroy', $user->uuid)}}"

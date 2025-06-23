@@ -22,22 +22,38 @@
                     </div>
                     <div class="mb-3">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-12">
                                 <label for="email" class="form-label">Email</label>
                                 <input name="email" class="form-control" type="email" id="email"
-                                    autocomplete="off" required value="{{ $user->email }}" />
+                                    autocomplete="off" required value="{{ $user->email }}" readonly />
                             </div>
-                            <div class="col-md-6">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-12">
                                 <label for="role" class="form-label">Role</label>
                                 <select name="role_id" class="form-control" id="role" required>
-                                    
-                                    @foreach ($roles as $role)
+                                    <option  value="">Choisissez un role</option>
+                                    {{-- @foreach ($roles as $role)
                                         @if ($role->id == $user->role_id)
                                             <option selected value="{{ $role->id }}">{{ $role->name }}</option>
                                         @endif
-                                        <option selected value="">Choisissez un role</option>
                                         <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    @endforeach
+                                    @endforeach --}}
+                                    @if(Auth::user()->name != 'Super admin')
+                                        @foreach ($roles->where('name', '!=', 'Super admin') as $role)
+                                            <option value="{{ $role->id }}" {{ $role->id == $user->role_id ? 'selected' : '' }}>
+                                                {{ $role->name }}
+                                            </option>
+                                        @endforeach
+                                    @else
+                                        @foreach ($roles as $role)
+                                            <option value="{{ $role->id }}" {{ $role->id == $user->role_id ? 'selected' : '' }}>
+                                                {{ $role->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
                                 </select>
                             </div>
                         </div>

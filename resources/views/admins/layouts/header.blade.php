@@ -22,137 +22,152 @@
                 
               </div>
             </li>
-            <li class="nav-item">
-              <!-- label-->
-              <p class="navbar-vertical-label">Pages</p>
-              <hr class="navbar-vertical-line" /><!-- parent pages-->
-              <ul class="nav" id="nv-e-commerce">   
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.accueil') }}" title="Accueil">
-                            <div class="d-flex align-items-center">
-                                <span class="fa-solid fa-house"></span>
-                                <span class="nav-link-text">Accueil</span>
-                            </div>
-                        </a><!-- more inner pages-->
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.about') }}">
-                            <div class="d-flex align-items-center">
-                                <span class="fa-solid fa-address-card"></span>
-                                <span class="nav-link-text">Qui somme nous</span>
-                            </div>
-                        </a><!-- more inner pages-->
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.reseau') }}">
-                            <div class="d-flex align-items-center">
-                                <span class="fa-solid fa-network-wired"></span>
-                                <span class="nav-link-text">Reseau</span>
-                            </div>
-                        </a><!-- more inner pages-->
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.assistance') }}">
-                            <div class="d-flex align-items-center">
-                                <span class="fa-brands fa-product-hunt"></span>
-                                <span class="nav-link-text">Assistances</span>
-                            </div>
-                        </a><!-- more inner pages-->
-                    </li>
-                </ul> 
-            </li>
-            <li class="nav-item">
-              <!-- label-->
-              <p class="navbar-vertical-label">Gestion de Contenue</p>
-              <hr class="navbar-vertical-line" /><!-- parent pages-->
-              <ul class="nav" id="nv-e-commerce">   
-                  <li class="nav-item">
-                      <div class="nav-item-wrapper">
-                          <a class="nav-link dropdown-indicator label-1" href="#nv-home" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-home">
-                            <div class="d-flex align-items-center">
-                              <div class="dropdown-indicator-icon-wrapper">
-                                <span class="fas fa-caret-right dropdown-indicator-icon"></span>
+            @can('Voir les pages du site')
+              <li class="nav-item">
+                <!-- label-->
+                <p class="navbar-vertical-label">Pages</p>
+                <hr class="navbar-vertical-line" /><!-- parent pages-->
+                <ul class="nav" id="nv-e-commerce">   
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ route('admin.accueil') }}" title="Accueil">
+                              <div class="d-flex align-items-center">
+                                  <span class="fa-solid fa-house"></span>
+                                  <span class="nav-link-text">Accueil</span>
                               </div>
-                              <span class="nav-link-icon">
-                                <span data-feather="pie-chart"></span>
-                              </span><span class="nav-link-text">Produits</span>
-                              <span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
-                            </div>
-                          </a>
-                          <div class="parent-wrapper label-1">
-                            <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-home">
-                              <li class="collapsed-nav-item-title d-none">Produits</li>
-                              <li class="nav-item"><a class="nav-link" href="{{ route('admin.product_list') }}">
-                                  <div class="d-flex align-items-center"><span class="nav-link-text">Liste Produit</span></div>
-                                </a><!-- more inner pages-->
-                              </li>
-                              <li class="nav-item"><a class="nav-link" href="{{ route('admin.product_formul') }}">
-                                  <div class="d-flex align-items-center"><span class="nav-link-text">Formule Produit</span></div>
-                                </a><!-- more inner pages-->
-                              </li>
-                              <li class="nav-item"><a class="nav-link" href="{{ route('admin.reseau_distribution') }}">
-                                  <div class="d-flex align-items-center"><span class="nav-link-text">Reseau de distribution</span></div>
-                                </a><!-- more inner pages-->
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                  </li>
-                  <li class="nav-item">
-                      <div class="nav-item-wrapper">
-                          <a class="nav-link dropdown-indicator label-1" href="#nv-homeActualites" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-homeActualites">
-                            <div class="d-flex align-items-center">
-                              <div class="dropdown-indicator-icon-wrapper">
-                                <span class="fas fa-caret-right dropdown-indicator-icon"></span>
+                          </a><!-- more inner pages-->
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ route('admin.about') }}">
+                              <div class="d-flex align-items-center">
+                                  <span class="fa-solid fa-address-card"></span>
+                                  <span class="nav-link-text">Qui somme nous</span>
                               </div>
-                              <span class="nav-link-icon">
-                                <span data-feather="pie-chart"></span>
-                              </span><span class="nav-link-text">Actualites</span>
-                              <span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
-                            </div>
-                          </a>
-                          <div class="parent-wrapper label-1">
-                            <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-homeActualites">
-                              <li class="collapsed-nav-item-title d-none">Actualites</li>
-                              <li class="nav-item"><a class="nav-link" href="{{ route('admin.actuality') }}">
-                                  <div class="d-flex align-items-center"><span class="nav-link-text">Liste Actualités</span></div>
-                                </a><!-- more inner pages-->
-                              </li>
-                              <li class="nav-item"><a class="nav-link" href="{{ route('admin.actuality.comment_show') }}">
-                                  <div class="d-flex align-items-center"><span class="nav-link-text">Commentaire</span></div>
-                                </a><!-- more inner pages-->
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                  </li>
-                  <li class="nav-item">
-                      <div class="nav-item-wrapper">
-                          <a class="nav-link dropdown-indicator label-1" href="#nv-homeInterne" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-homeInterne">
-                            <div class="d-flex align-items-center">
-                              <div class="dropdown-indicator-icon-wrapper">
-                                <span class="fas fa-caret-right dropdown-indicator-icon"></span>
+                          </a><!-- more inner pages-->
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ route('admin.reseau') }}">
+                              <div class="d-flex align-items-center">
+                                  <span class="fa-solid fa-network-wired"></span>
+                                  <span class="nav-link-text">Reseau</span>
                               </div>
-                              <span class="nav-link-icon">
-                                <span data-feather="pie-chart"></span>
-                              </span><span class="nav-link-text">Reseau interne</span>
-                              <span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
-                            </div>
-                          </a>
-                          <div class="parent-wrapper label-1">
-                            <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-homeInterne">
-                              <li class="collapsed-nav-item-title d-none">Reseau interne</li>
-                              <li class="nav-item"><a class="nav-link" href="{{ route('admin.reseau_interne') }}">
-                                  <div class="d-flex align-items-center"><span class="nav-link-text">Liste</span></div>
-                                </a><!-- more inner pages-->
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                  </li>
-              </ul>
-            </li>
+                          </a><!-- more inner pages-->
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ route('admin.assistance') }}">
+                              <div class="d-flex align-items-center">
+                                  <span class="fa-brands fa-product-hunt"></span>
+                                  <span class="nav-link-text">Assistances</span>
+                              </div>
+                          </a><!-- more inner pages-->
+                      </li>
+                  </ul> 
+              </li>
+            @endcan
+            
+            @can('Voir gestion des contenues')
+              <li class="nav-item">
+                <!-- label-->
+                <p class="navbar-vertical-label">Gestion de Contenue</p>
+                <hr class="navbar-vertical-line" /><!-- parent pages-->
+                <ul class="nav" id="nv-e-commerce">
 
+                  @can('Peut gérer les produits')   
+                    <li class="nav-item">
+                        <div class="nav-item-wrapper">
+                            <a class="nav-link dropdown-indicator label-1" href="#nv-home" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-home">
+                              <div class="d-flex align-items-center">
+                                <div class="dropdown-indicator-icon-wrapper">
+                                  <span class="fas fa-caret-right dropdown-indicator-icon"></span>
+                                </div>
+                                <span class="nav-link-icon">
+                                  <span data-feather="pie-chart"></span>
+                                </span><span class="nav-link-text">Produits</span>
+                                <span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
+                              </div>
+                            </a>
+                            <div class="parent-wrapper label-1">
+                              <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-home">
+                                <li class="collapsed-nav-item-title d-none">Produits</li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('admin.product_list') }}">
+                                    <div class="d-flex align-items-center"><span class="nav-link-text">Liste Produit</span></div>
+                                  </a><!-- more inner pages-->
+                                </li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('admin.product_formul') }}">
+                                    <div class="d-flex align-items-center"><span class="nav-link-text">Formule Produit</span></div>
+                                  </a><!-- more inner pages-->
+                                </li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('admin.reseau_distribution') }}">
+                                    <div class="d-flex align-items-center"><span class="nav-link-text">Reseau de distribution</span></div>
+                                  </a><!-- more inner pages-->
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                    </li>
+                  @endcan
+
+                  @can('Peut gérer les actualités')
+                    <li class="nav-item">
+                        <div class="nav-item-wrapper">
+                            <a class="nav-link dropdown-indicator label-1" href="#nv-homeActualites" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-homeActualites">
+                              <div class="d-flex align-items-center">
+                                <div class="dropdown-indicator-icon-wrapper">
+                                  <span class="fas fa-caret-right dropdown-indicator-icon"></span>
+                                </div>
+                                <span class="nav-link-icon">
+                                  <span data-feather="pie-chart"></span>
+                                </span><span class="nav-link-text">Actualites</span>
+                                <span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
+                              </div>
+                            </a>
+                            <div class="parent-wrapper label-1">
+                              <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-homeActualites">
+                                <li class="collapsed-nav-item-title d-none">Actualites</li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('admin.actuality') }}">
+                                    <div class="d-flex align-items-center"><span class="nav-link-text">Liste Actualités</span></div>
+                                  </a><!-- more inner pages-->
+                                </li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('admin.actuality.comment_show') }}">
+                                    <div class="d-flex align-items-center"><span class="nav-link-text">Commentaire</span></div>
+                                  </a><!-- more inner pages-->
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                    </li>
+                  @endcan
+
+                  @can('Peut gérer les réseaux')
+                    <li class="nav-item">
+                        <div class="nav-item-wrapper">
+                            <a class="nav-link dropdown-indicator label-1" href="#nv-homeInterne" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-homeInterne">
+                              <div class="d-flex align-items-center">
+                                <div class="dropdown-indicator-icon-wrapper">
+                                  <span class="fas fa-caret-right dropdown-indicator-icon"></span>
+                                </div>
+                                <span class="nav-link-icon">
+                                  <span data-feather="pie-chart"></span>
+                                </span><span class="nav-link-text">Reseau interne</span>
+                                <span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
+                              </div>
+                            </a>
+                            <div class="parent-wrapper label-1">
+                              <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-homeInterne">
+                                <li class="collapsed-nav-item-title d-none">Reseau interne</li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('admin.reseau_interne') }}">
+                                    <div class="d-flex align-items-center"><span class="nav-link-text">Liste</span></div>
+                                  </a><!-- more inner pages-->
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                    </li>
+                  @endcan
+                </ul>
+              </li>
+            @endcan
+
+            @can('Voir gestion des intéractions')
             <li class="nav-item">
               <!-- label-->
               <p class="navbar-vertical-label">Gestion des interactions</p>
@@ -194,70 +209,73 @@
                               </li>
                               <li class="nav-item"><a class="nav-link" href="{{ route('admin.temoignage') }}">
                                 <div class="d-flex align-items-center"><span class="nav-link-text">Temoignages</span></div>
-                              </a><!-- more inner pages-->
-                            </li>
+                                </a><!-- more inner pages-->
+                              </li>
                             </ul>
                           </div>
                         </div>
                   </li>
               </ul>
             </li>
+            @endcan
             
-            <li class="nav-item">
-              <!-- label-->
-              <p class="navbar-vertical-label">Gestion des utilisateurs</p>
-              <hr class="navbar-vertical-line" /><!-- parent pages-->
-              <ul class="nav" id="nv-e-commerce">
-                    {{-- <li class="nav-item">
-                      <div class="nav-item-wrapper">
-                          <a class="nav-link dropdown-indicator label-1" href="#nv-homeAgents" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-homeAgents">
-                            <div class="d-flex align-items-center">
-                              <div class="dropdown-indicator-icon-wrapper">
-                                <span class="fas fa-caret-right dropdown-indicator-icon"></span>
+            @can('Voir gestion des utilisateurs')
+              <li class="nav-item">
+                <!-- label-->
+                <p class="navbar-vertical-label">Gestion des utilisateurs</p>
+                <hr class="navbar-vertical-line" /><!-- parent pages-->
+                <ul class="nav" id="nv-e-commerce">
+                      {{-- <li class="nav-item">
+                        <div class="nav-item-wrapper">
+                            <a class="nav-link dropdown-indicator label-1" href="#nv-homeAgents" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-homeAgents">
+                              <div class="d-flex align-items-center">
+                                <div class="dropdown-indicator-icon-wrapper">
+                                  <span class="fas fa-caret-right dropdown-indicator-icon"></span>
+                                </div>
+                                <span class="nav-link-icon">
+                                  <span data-feather="pie-chart"></span>
+                                </span><span class="nav-link-text">Type Prestation</span>
+                                <span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
                               </div>
-                              <span class="nav-link-icon">
-                                <span data-feather="pie-chart"></span>
-                              </span><span class="nav-link-text">Type Prestation</span>
-                              <span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
+                            </a>
+                            <div class="parent-wrapper label-1">
+                              <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-homeAgents">
+                                <li class="collapsed-nav-item-title d-none">Type Prestation</li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('customer.typePrestation') }}">
+                                    <div class="d-flex align-items-center"><span class="nav-link-text">Liste</span></div>
+                                  </a><!-- more inner pages-->
+                                </li>
+                              </ul>
                             </div>
-                          </a>
-                          <div class="parent-wrapper label-1">
-                            <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-homeAgents">
-                              <li class="collapsed-nav-item-title d-none">Type Prestation</li>
-                              <li class="nav-item"><a class="nav-link" href="{{ route('customer.typePrestation') }}">
-                                  <div class="d-flex align-items-center"><span class="nav-link-text">Liste</span></div>
-                                </a><!-- more inner pages-->
-                              </li>
-                            </ul>
                           </div>
-                        </div>
-                    </li> --}}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('setting.users') }}" title="Utilisateurs">
-                            <div class="d-flex align-items-center">
-                                <span class="fa-solid fa-house"></span>
-                                <span class="nav-link-text">utilisateurs</span>
-                            </div>
-                        </a><!-- more inner pages-->
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('setting.role') }}">
-                            <div class="d-flex align-items-center">
-                                <span class="fa-solid fa-address-card"></span>
-                                <span class="nav-link-text">Role</span>
-                            </div>
-                        </a><!-- more inner pages-->
-                    </li>
-                    {{-- <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.test') }}">
-                            <div class="d-flex align-items-center">
-                                <span class="fa-solid fa-address-card"></span>
-                                <span class="nav-link-text">test</span>
-                            </div>
-                        </a><!-- more inner pages-->
-                    </li> --}}
-              </ul> 
-            </li>
+                      </li> --}}
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ route('setting.users') }}" title="Utilisateurs">
+                              <div class="d-flex align-items-center">
+                                  <span class="fa-solid fa-house"></span>
+                                  <span class="nav-link-text">utilisateurs</span>
+                              </div>
+                          </a><!-- more inner pages-->
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ route('setting.role') }}">
+                              <div class="d-flex align-items-center">
+                                  <span class="fa-solid fa-address-card"></span>
+                                  <span class="nav-link-text">Role</span>
+                              </div>
+                          </a><!-- more inner pages-->
+                      </li>
+                      {{-- <li class="nav-item">
+                          <a class="nav-link" href="{{ route('admin.test') }}">
+                              <div class="d-flex align-items-center">
+                                  <span class="fa-solid fa-address-card"></span>
+                                  <span class="nav-link-text">test</span>
+                              </div>
+                          </a><!-- more inner pages-->
+                      </li> --}}
+                </ul> 
+              </li>
+            @endcan
           </ul>
         </div>
       </div>
