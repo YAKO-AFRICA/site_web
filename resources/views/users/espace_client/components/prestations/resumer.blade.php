@@ -26,19 +26,19 @@
                                                 <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5" id="moyenPmt">
                                                     {{-- si moyenPaiement = Virement_Bancaire met 'Virement Bancaire' si moyenPaiement = 'Mobile_Money' met Mobile Money --}}
                                                 </dd>
-                                            {{-- si moyenPaiement = Mobile_Money affiche --}}
-                                                    <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Opérateur :</dt>
-                                                    <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5" id="Opera">
-                                                        {{-- si Operateur = Orange_money met Orange Money
+                                                {{-- si moyenPaiement = Mobile_Money affiche --}}
+                                                <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Opérateur :</dt>
+                                                <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5" id="Opera">
+                                                    {{-- si Operateur = Orange_money met Orange Money
                                                         si Operateur = MTN_Money met MTN Money
                                                         si Operateur = Moov_Money met Moov Money --}}
-                                                    </dd>
-                                                    <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Numéro de paiement :</dt>
-                                                    <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5" id="TelPmt"></dd>
+                                                </dd>
+                                                <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Numéro de paiement :</dt>
+                                                <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5" id="TelPmt"></dd>
 
                                                 {{-- sinon si moyenPaiement = Virement_Bancaire affiche --}}
-                                                    <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">IBAN du compte :</dt>
-                                                    <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5" id="NIBAN"></dd>
+                                                <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">IBAN du compte :</dt>
+                                                <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5" id="NIBAN"></dd>
                                             </dl>
                                         </div>
                                 </div>

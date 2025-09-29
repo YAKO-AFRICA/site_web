@@ -13,7 +13,19 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
+    'sign_api' => env('SIGN_API'),
+    'otp_api' => env('OTP_API'),
+    'get_countries_api' => env('API_GET_COUNTRIES'),
+    
 
+    'api' => [
+        'encaissement_bis' => env('API_ENCAISSEMENT_BIS'),
+        'filiations' => env('API_FILIATIONS'),
+        'maladies' => env('API_MALADIES'),
+        'pompes_funebres_ville' => env('API_POMPES_FUNEBRES_VILLE'),
+        'pompes_funebres_list' => env('API_POMPES_FUNEBRES_LIST'),
+        'professions' => env('API_PROFESSIONS'),
+    ],
     'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),
         'secret' => env('MAILGUN_SECRET'),

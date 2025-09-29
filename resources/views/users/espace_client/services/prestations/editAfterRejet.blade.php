@@ -284,6 +284,7 @@
                                                         <dl class="row">
                                                             <small class="text-danger">Veuillez Cliquez sur le bouton <b>RETRANSMETTRE</b> pour retransmettre la prestation </small></small>
                                                         </dl>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>

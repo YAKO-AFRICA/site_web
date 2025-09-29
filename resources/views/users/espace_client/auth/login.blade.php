@@ -38,7 +38,7 @@
             cursor: no-drop;
             pointer-events: none;
             /* Empêche toute interaction avec ces éléments */
-        } 
+        }
 
         /* Remplacer le curseur par l'emoji 🚫 lors du survol des champs readonly */
         input[readonly]:hover,
@@ -194,6 +194,28 @@
                                                 </div>
                                             </div>
 										</form> --}}
+
+                                        <div class="table-responsive" style="margin: 20px 0; height: 200px; overflow-y: scroll;">
+                                            @if(session('import_results.details'))
+                                                <div class="mt-3">
+                                                    <h5>Détails de l'import :</h5>
+                                                    <ul>
+                                                        @foreach(session('import_results.details') as $type => $messages)
+                                                            @if(is_array($messages) && !empty($messages))
+                                                                <li><strong>{{ ucfirst($type) }}:</strong>
+                                                                    <ul>
+                                                                        @foreach($messages as $msg)
+                                                                            <li>{{ $msg }}</li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </li>
+                                                            @endif
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </div>
+
                                         <form action="{{ route('customer.import.cp') }}" method="post"
                                             enctype="multipart/form-data">
                                             @csrf
@@ -207,7 +229,7 @@
                                                 </div>
                                             </div>
                                         </form>
-                                        
+
 
                                     </div>
                                 </div>
@@ -273,6 +295,43 @@
                 }
             }
 
+            // Exécuter toutes les 60 secondes (1 minute)
+            setInterval(executeCronJob, 60000);
+        });
+    </script>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let isJobRunning = false;
+    
+            function executeCronJob() {
+                if (!isJobRunning) {
+                    isJobRunning = true;
+                    axios.post("{{ route('customer.auto.import.cp') }}", {}, {
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        })
+                        .then(response => {
+                            console.log(' ');
+                            console.log(response.data.message);
+                            window.location.reload();
+                            
+                        })
+                        .catch(error => {
+                            console.error("Erreur lors de l'exécution du cron :", error);
+                        })
+                        .finally(() => {
+                            isJobRunning = false;
+                        });
+                } else {
+                    console.log("La tâche cron est déjà en cours.");
+                }
+            }
+    
             // Exécuter toutes les 60 secondes (1 minute)
             setInterval(executeCronJob, 60000);
         });

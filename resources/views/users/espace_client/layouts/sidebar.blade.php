@@ -24,27 +24,19 @@
         </li>
         <li class="menu-label">Mes services</li>
         <li>
-            {{-- <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#enMaintenanceModal"> --}}
             <a href="{{route('customer.police')}}">
                 <div class="parent-icon"><i class="fadeIn animated bx bx-archive-out"></i>
                 </div>
-                <div class="menu-title">Mes Polices</div>
+                <div class="menu-title">Documents contractuels</div>
             </a>
         </li>
         <li>
-            <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <a href="{{ route('sinistre.index') }}">
                 <div class="parent-icon"><i class="fadeIn animated bx bx-archive-out"></i>
                 </div>
-                <div class="menu-title">Déclaration de sinistre</div>
+                <div class="menu-title">Pré-déclaration de sinistre</div>
             </a>
         </li>
-        {{-- <li>
-            <a href="#">
-                <div class="parent-icon"><i class='bx bx-cookie'></i>
-                </div>
-                <div class="menu-title">Déposer un courrier</div>
-            </a>
-        </li> --}}
         <li>
             <a href="{{route('customer.rdv')}}">
                 <div class="parent-icon"><i class="fadeIn animated bx bx-clipboard"></i>
@@ -52,13 +44,6 @@
                 <div class="menu-title">Prendre un RDV</div>
             </a>
         </li>
-        {{-- <li>
-            <a href="http://espace-client.test/etat-cotisation.php">
-                <div class="parent-icon"><i class="bx bx-dollar-circle fs-5"></i>
-                </div>
-                <div class="menu-title">Etat de cotisation</div>
-            </a>
-        </li> --}}
         <li>
             <a href="{{route('customer.etatCotisation')}}">
                 <div class="parent-icon"><i class="bx bx-dollar-circle fs-5"></i>
@@ -68,34 +53,18 @@
         </li>
         <li>
             <a href="https://yakoafricassur.com/e-services/paiement/paiement-prime.php">
-            {{-- <a href="http://espace-client.test/paiement-transit.php"> --}}
                 <div class="parent-icon"><i class="bx bx-dollar-circle fs-5"></i>
                 </div>
                 <div class="menu-title">Payer ma prime</div>
             </a>
         </li>
-        {{-- <li>
-            <a href="widgets.html">
-                <div class="parent-icon"><i class="fadeIn animated bx bx-archive-in"></i>
-                </div>
-                <div class="menu-title">Demander un prêt</div>
-            </a>
-        </li> --}}
         <li>
-            {{-- <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#enMaintenanceModal"> --}}
             <a href="{{ route('customer.prestation')}}">
                 <div class="parent-icon"><i class='bx bx-network-chart'></i>
                 </div>
-                <div class="menu-title">Demande de prestation</div>
+                <div class="menu-title">Prestations</div>
             </a>
         </li>
-        {{-- <li>
-            <a href="#">
-                <div class="parent-icon"><i class="fadeIn animated bx bx-grid"></i>
-                </div>
-                <div class="menu-title">Modèles de courrier</div>
-            </a>
-        </li> --}}
         <li class="menu-label">Extras</li>
         <li>
             <a href="{{ route('index')}}">
@@ -112,7 +81,7 @@
 <header class="top-header">
     <div class="topbar d-flex align-items-center">
         <nav class="navbar navbar-expand gap-3">
-            <div class="mobile-toggle-menu"><i class='bx bx-menu'></i>
+            <div class="mobile-toggle-menu"><i class='bx bx-menu text-white'></i>
             </div>
 
 
@@ -203,7 +172,7 @@
                         <div class="card-body bg-light-success rounded">
                             <div class="align-items-center">
                                 <div class="flex-grow-1 ms-3 my-4 text-dark" style="text-align: justify">
-                                    Voulez-vous vraiment faire une déclaration de sinistre ?
+                                    Voulez-vous vraiment faire une pré-déclaration de sinistre ?
                                 </div>
                             </div>
                         </div>
@@ -211,7 +180,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-prime" data-bs-dismiss="modal">Non</button>
-                    <a href="https://yakoafricassur.com/e-services/sinistre/declarationsinistre.php" class="btn-prime btn-prime-two">Oui</a>
+                    <a href="{{ route('sinistre.index') }}" class="btn-prime btn-prime-two">Oui</a>
+                    {{-- <a href="https://yakoafricassur.com/e-services/sinistre/declarationsinistre.php" class="btn-prime btn-prime-two">Oui</a> --}}
                     {{-- <a href="http://espace-client.test/_verifInfo.php" class="btn-prime btn-prime-two">Oui</a> --}}
                 </div>
             </div>

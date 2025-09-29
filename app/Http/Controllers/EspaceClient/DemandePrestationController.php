@@ -29,22 +29,9 @@ class DemandePrestationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function testSign()
-    {
-        // genere un token
-        $token = csrf_token();
-
-        $uuid = Str::uuid();
-        // $operation_type = 'Demande de Prestation';
-
-        $qrcode = base64_encode(QrCode::format('svg')->size(500)->color(7, 102, 51) // Couleur en RGB (7, 102, 51 correspond à #076633)
-        ->generate("http://192.168.11.6:8001/signature/" . $token));
-        return view('users.espace_client.test', compact('qrcode', 'uuid'));
-    }
     public function index()
     {
-        // $prestations = TblPrestation::where('etat', 'Actif')->with('docPrestation', 'otp', 'membre')->get();
-        // dd($prestations);
+
         return view('users.espace_client.services.prestations.index');
     }
 
@@ -71,7 +58,7 @@ class DemandePrestationController extends Controller
 
         try {
             $response = Http::withOptions(['timeout' => 60])
-                ->post('https://api.yakoafricassur.com/oldweb/encaissement-bis', [
+                ->post(config('services.api.encaissement_bis'), [
                     'idContrat' => $idcontrat,
                 ]);
 
@@ -120,6 +107,20 @@ class DemandePrestationController extends Controller
                     session(['contisationPourcentage' => $contisationPourcentage]);
                     session(['cumulCotisationTerme' => $cumulCotisationTerme]);
                     session(['TotalEncaissement' => $TotalEncaissement]);
+                    // afficher le dernier encaissement
+                    $dernierEncaissement = end($data['enc']['confirmer']);
+                    session(['dernierEncaissement' => $dernierEncaissement]);
+                    session(['payeur' => $data['payeur']]);
+
+                    session([
+                        'contratActeur' => $data['allActeur'] ?? [],
+                        'contratActeurAssure' => collect($data['allActeur'])->where('CodeRole', 'ASS') ?? [],
+                        'contratActeurPayeur' => collect($data['allActeur'])->where('CodeRole', 'PAY') ?? [],
+                        'contratActeurBeneficiaire' => collect($data['allActeur'])->where('CodeRole', 'BEN') ?? [],
+                    ]);
+                    
+                    
+                    // dd($data);
                     // dd($data, $prime, $TotalEncaissement, $contisationPourcentage, $cumulCotisationTerme, $Duree); 
                     if ($data['details'][0]['OnStdbyOff'] != "1") {
                         return response()->json([
@@ -205,7 +206,6 @@ class DemandePrestationController extends Controller
         $TotalEncaissement = session('TotalEncaissement', 0);
 
         $tok = Str::random(80);
-        // $tok = csrf_token();
         $token = [
             'token' => $tok,
             'operation_type' => "E-PRESTATION",
@@ -236,7 +236,31 @@ class DemandePrestationController extends Controller
             return redirect()->route('customer.prestation');
         }
         $contratDetails = session('contractDetails', null);
+        $dernierEncaissement = session('dernierEncaissement', null);
+        $payeur = session('payeur', null);
+
+        $acteurs = session('contratActeur');
+        $assurees = session('contratActeurAssure');
+        $acteurPayeur = session('contratActeurPayeur');
+        $beneficiaires = session('contratActeurBeneficiaire');
+
         $typePrestation = TblTypePrestation::where('id', $id)->first();
+        $tok = Str::random(80);
+        $token = [
+            'token' => $tok,
+            'operation_type' => "E-PRESTATION",
+            'key_uuid' => $tok
+        ];
+        $response = Http::withOptions(['timeout' => 60])
+            ->get(config('services.api.filiations'));
+        if ($response->successful()) {
+            $data = $response->json();
+            if (!empty($data)) {
+                $filiations = $data;
+            }
+        } else {
+            $filiations = [];
+        }
         $response = Http::withOptions(['timeout' => 60])
             ->post('https://api.laloyalevie.com/enov/op-type-operation-list', [
                 'type' => 'AVT',
@@ -244,8 +268,21 @@ class DemandePrestationController extends Controller
         if ($response->successful()) {
             $typeOperation = $response->json();
         }
-        session()->forget('contractDetails');
-        return view('users.espace_client.services.prestations.createAutre', compact('typePrestation', 'typeOperation', 'contratDetails'));
+        $this->clearPrestationSessions();
+        return view('users.espace_client.services.prestations.createAutre', compact('typePrestation', 'typeOperation', 'contratDetails', 'dernierEncaissement', 'token', 'tok', 'payeur','acteurs','assurees','acteurPayeur','beneficiaires','filiations'));
+    }
+
+    private function clearPrestationSessions()
+    {
+        session()->forget([
+            'contractDetails',
+            'contratActeur',
+            'contratActeurAssure',
+            'contratActeurPayeur',
+            'contratActeurBeneficiaire',
+            'dernierEncaissement',
+            'payeur',
+        ]);
     }
     // public function printFichePrestation()
     // {
@@ -253,15 +290,15 @@ class DemandePrestationController extends Controller
     //     // Génération de QR Code en base64
     //     // $qrcode = base64_encode(QrCode::format('svg')->size(500)->color(7, 102, 51) // Couleur en RGB (7, 102, 51 correspond à #076633)
     //     // ->generate("https://yakoafricassur.com/espace-client/login.php"));
-    // //     $logoPath = public_path('assets/img/images/favicon_yako.png'); // Place ton image dans le dossier public/images/
-    // // // Génération du QR Code avec une image au centre
-    // //     $qrcode = base64_encode(QrCode::format('svg') // Utilisation de PNG au lieu de SVG
-    // //     ->size(500)
-    // //     ->color(7, 102, 51) // Couleur #076633
-    // //     ->merge($logoPath, 0.3, true) // 0.3 = 30% de la taille du QR Code
-    // //     // ->errorCorrection('H') // Correction d'erreur pour assurer la lisibilité
-    // //     ->generate("https://testsite.yakoafricassur.com/espace-client/loginForm"));
-    // //     return view('users.espace_client.qrcode', compact('qrcode'));
+    //     //     $logoPath = public_path('assets/img/images/favicon_yako.png'); // Place ton image dans le dossier public/images/
+    //     // // Génération du QR Code avec une image au centre
+    //     //     $qrcode = base64_encode(QrCode::format('svg') // Utilisation de PNG au lieu de SVG
+    //     //     ->size(500)
+    //     //     ->color(7, 102, 51) // Couleur #076633
+    //     //     ->merge($logoPath, 0.3, true) // 0.3 = 30% de la taille du QR Code
+    //     //     // ->errorCorrection('H') // Correction d'erreur pour assurer la lisibilité
+    //     //     ->generate("https://testsite.yakoafricassur.com/espace-client/loginForm"));
+    //     //     return view('users.espace_client.qrcode', compact('qrcode'));
 
     //     // Générer le QR code au format SVG avec le lien
     //     $qrCodeSvg = QrCode::format('svg')
@@ -297,11 +334,12 @@ class DemandePrestationController extends Controller
     // }
 
 
+
     public function printFichePrestation()
     {
         // $prestation = TblPrestation::where('id', $id)->first();
         // Génération de QR Code en base64
-        // $qrcode = base64_encode(QrCode::format('svg')->size(80)->generate("http://yakoafrica_live.test/espace-client/prestation/getInfoPrestation/1"));
+        $qrcode = base64_encode(QrCode::format('svg')->size(80)->generate("http://yakoafrica_live.test/espace-client/prestation/getInfoPrestation/1"));
         // Générer le QR code au format SVG avec le lien
         // $qrCodeSvg = QrCode::format('png')
         //     ->size(500)
@@ -312,16 +350,20 @@ class DemandePrestationController extends Controller
 
         // $logoUrl = 'https://testsite.yakoafricassur.com/assets/img/logo/Logo_yako.png';
         // $pdf = Pdf::loadView('users.espace_client.services.fiches.qrcode', compact('qrCodeSvg', 'logoUrl'))
-        // // $pdf = Pdf::loadView('users.espace_client.services.fiches.prestationtest', compact('qrcode'))
-        //     ->setPaper('a5', 'portrait')
-        //     ->setOptions([
-        //         'isHtml5ParserEnabled' => true,
-        //         'isRemoteEnabled' => true, // Permet le chargement des ressources distantes si nécessaire
-        //         'margin-left' => 0,
-        //         'margin-right' => 0,
-        //         'margin-top' => 0,
-        //         'margin-bottom' => 0,
-        //     ]);
+        // $pdf = Pdf::loadView('users.espace_client.services.fiches.prestationouttest', compact('qrcode'))
+        // $pdf = Pdf::loadView('users.espace_client.services.fiches.courriertest')
+        $pdf = Pdf::loadView('users.espace_client.services.fiches.sinistretest', compact('qrcode'))
+            ->setPaper('a4', 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true, // Permet le chargement des ressources distantes si nécessaire
+                'margin-left' => 0,
+                'margin-right' => 0,
+                'margin-top' => 0,
+                'margin-bottom' => 0,
+            ]);
+
+
 
         // $fileName = 'qrcode.pdf';
         // // $fileName = 'Prestation.pdf';
@@ -334,63 +376,50 @@ class DemandePrestationController extends Controller
         // return view('users.espace_client.services.fiches.prestation');
 
         // Générer le QR Code en PNG et l'encoder en Base64
-        $qrCode = QrCode::format('svg')
-            ->size(450)
-            ->backgroundColor(7, 102, 51)
-            ->color(255, 255, 255)
-            ->margin(2)
-            ->generate('https://monespaceclient.yakoafricassur.com');
-        // ->generate('https://testsite.yakoafricassur.com/espace-client/loginForm');
+        // $qrCode = QrCode::format('svg')
+        //     ->size(450)
+        //     ->backgroundColor(7, 102, 51)
+        //     ->color(255, 255, 255)
+        //     ->margin(2)
+        //     ->generate('https://monespaceclient.yakoafricassur.com');
+        // // ->generate('https://testsite.yakoafricassur.com/espace-client/loginForm');
 
-        $qrCodeBase64 = base64_encode($qrCode);
+        // $qrCodeBase64 = base64_encode($qrCode);
 
-        // URL du logo
-        $logoUrl = 'https://testsite.yakoafricassur.com/assets/img/logo/Logo_yako.png';
+        // // URL du logo
+        // $logoUrl = 'https://testsite.yakoafricassur.com/assets/img/logo/Logo_yako.png';
 
-        // Charger la vue avec les données du QR Code
-        $pdf = Pdf::loadView('users.espace_client.services.fiches.qrcode', compact('qrCodeBase64', 'logoUrl'))
-            // ->setPaper('a5', '')
-            ->setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true, // Permet le chargement des ressources distantes si nécessaire
-                'margin-left' => 0,
-                'margin-right' => 0,
-                'margin-top' => 0,
-                'margin-bottom' => 0,
-            ]);
+        // // Charger la vue avec les données du QR Code
+        // $pdf = Pdf::loadView('users.espace_client.services.fiches.qrcode', compact('qrCodeBase64', 'logoUrl'))
+        //     // ->setPaper('a5', '')
+        //     ->setOptions([
+        //         'isHtml5ParserEnabled' => true,
+        //         'isRemoteEnabled' => true, // Permet le chargement des ressources distantes si nécessaire
+        //         'margin-left' => 0,
+        //         'margin-right' => 0,
+        //         'margin-top' => 0,
+        //         'margin-bottom' => 0,
+        //     ]);
 
         return $pdf->stream('qrcode.pdf');
     }
+
+
     public function getInfoPrestation(string $id)
     {
         $prestation = TblPrestation::where('id', $id)->first();
-        // dd($prestation);
         return view('users.espace_client.services.fiches.infoPrestByQrcode', compact('prestation'));
     }
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function generate () {
 
-    // 	# 2. On génère un QR code de taille 200 x 200 px
-    // 	$qrcode = QrCode::size(150)->generate("Je suis un QR Code");
-
-    // 	# 3. On envoie le QR code généré à la vue "simple-qrcode"
-    // 	return view("users.espace_client.services.fiches.qrcode", compact('qrcode'));
-    // }
 
 
     public function store(Request $request)
     {
-        // dd($request->all());
         DB::beginTransaction();
         try {
             $saisiepar = auth()->user()->idmembre;
             $otp = $request->otp_1 . $request->otp_2 . $request->otp_3 . $request->otp_4 . $request->otp_5 . $request->otp_6;
-            // $idOtp = Tblotp::select('id')->where('codeOTP', $otp)->first();
             $otpVerif = Tblotp::where('codeOTP', $otp)->first();
-
-            // if ($otpVerif) {
             $idOtp = $otpVerif->id ?? null;
             // Vérifier si une prestation similaire existe déjà
 
@@ -451,10 +480,10 @@ class DemandePrestationController extends Controller
                 ]);
             } else {
                 if ($PrestationRdv) {
-                    $PrestationRdv->etape = 0;
                     $PrestationRdv->code = RefgenerateCodePrest(TblPrestation::class, 'PREST-', 'code');
                     $PrestationRdv->idOtp = $idOtp;
                     $PrestationRdv->idcontrat = $request->idcontrat;
+                    $PrestationRdv->prestationlibelle = $request->typeprestation;
                     $PrestationRdv->typeprestation = $request->typeprestation;
                     $PrestationRdv->idclient = $request->idclient;
                     $PrestationRdv->nom = $request->nom;
@@ -478,6 +507,16 @@ class DemandePrestationController extends Controller
                     $PrestationRdv->IBAN = $IBAN;
                     $PrestationRdv->saisiepar = $saisiepar;
                     $PrestationRdv->save();
+
+                    // Vérification si la prestation a été créée
+                    if (!$PrestationRdv) {
+                        return response()->json([
+                            'type' => 'error',
+                            'urlback' => '',
+                            'message' => "Erreur lors de l'enregistrement de la prestation",
+                            'code' => 500,
+                        ]);
+                    }    
                 } else {
                     // Création de la prestation
                     $prestation = TblPrestation::create([
@@ -485,6 +524,7 @@ class DemandePrestationController extends Controller
                         'idOtp'             => $idOtp,
                         'idcontrat'         => $request->idcontrat,
                         'typeprestation'    => $request->typeprestation,
+                        'prestationlibelle' => $request->typeprestation,
                         'idclient'          => $request->idclient,
                         'nom'               => $request->nom,
                         'prenom'            => $request->prenom,
@@ -506,15 +546,21 @@ class DemandePrestationController extends Controller
                         'cleRIB'            => $cleRIB,
                         'IBAN'              => $IBAN,
                         'saisiepar'         => $saisiepar,
-                        'etape'             => 0,
                     ]);
-                }
-                // Vérification si la prestation a été créée
-                if (!$prestation) {
-                    throw new \Exception("Erreur lors de l'enregistrement de la prestation");
-                }
 
+                    // Vérification si la prestation a été créée
+                    if (!$prestation) {
+                        return response()->json([
+                            'type' => 'error',
+                            'urlback' => '',
+                            'message' => "Erreur lors de l'enregistrement de la prestation",
+                            'code' => 500,
+                        ]);
+                    }
+                }
                 
+
+
                 // Chemin externe pour stocker les fichiers
                 // $externalUploadDir = base_path('../uploads/prestations/');
                 $externalUploadDir = base_path(env('UPLOAD_PRESTATION_FILE'));
@@ -613,20 +659,30 @@ class DemandePrestationController extends Controller
                         TblDocPrestation::create($fileData);
                     }
                 }
+
                 $sign = TblSignature::where('key_uuid', $request->tokGenerate)->first();
                 $sign->update([
                     'reference_key' => $prestation->code
                 ]);
                 // DB::commit();
                 $prestationPdfUrl = ($prestation) ? $this->generatePrestationPdf($prestation) : $this->generatePrestationPdf($PrestationRdv);
-                return response()->json([
-                    'type' => 'success',
-                    'urlback' => route('customer.prestation.edit', $prestation->code ?? $PrestationRdv->code),
-                    // 'urlback' => route('customer.prestation.show', $prestation->code ?? $PrestationRdv->code),
-                    'url' => $prestationPdfUrl['file_url'],
-                    'message' => "Enregistré avec succès !",
-                    'code' => 200,
-                ]);
+                if ($prestationPdfUrl['success'] == true) {
+                    return response()->json([
+                        'type' => 'success',
+                        // 'urlback' => $prestationPdfUrl['file_url'],
+                        'urlback' => route('customer.prestation.edit', $prestation->code ?? $PrestationRdv->code),
+                        'url' => $prestationPdfUrl['file_url'],
+                        'message' => "Enregistré avec succès !",
+                        'code' => 200,
+                    ]);
+                } else {
+                    return response()->json([
+                        'type' => 'error',
+                        'urlback' => '',
+                        'message' => "Une erreur est survenue lors de la génération de la fiche de prestation!" . $prestationPdfUrl['message'],
+                        'code' => 500,
+                    ]);
+                }
             }
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -650,18 +706,41 @@ class DemandePrestationController extends Controller
             if (!is_dir($externalUploadDir)) {
                 mkdir($externalUploadDir, 0777, true);
             }
-            $imageUrl = "https://apisign.yakoafricassur.com/api/get-signature/".$prestation->code."/E-PRESTATION";
+            $imageUrl = env('SIGN_API') . "api/get-signature/" . $prestation->code . "/E-PRESTATION";
             if ($imageUrl != null || $imageUrl != '') {
                 $imageData = file_get_contents($imageUrl);
                 $base64Image = base64_encode($imageData);
-                $imageSrc = 'data:image/png;base64,'.$base64Image;
+                $imageSrc = 'data:image/png;base64,' . $base64Image;
             } else {
                 $imageSrc = '';
             }
-            
-            // Génération du QR code et du fichier PDF pour la prestation
+
+            $typePrestation = TblTypePrestation::where('libelle', $prestation->prestationlibelle)->first();
             $qrcode = base64_encode(QrCode::format('svg')->size(80)->generate(url('prestation/getInfoPrestation/' . $prestation->id)));
-            $pdf = Pdf::loadView('users.espace_client.services.fiches.prestation', compact('qrcode', 'prestation', 'imageSrc'))
+            if ($typePrestation->impact == 'Autre') {
+                $pdf = Pdf::loadView('users.espace_client.services.fiches.courrier', compact('prestation', 'imageSrc'))
+                    ->setPaper('a4', 'portrait')
+                    ->setOptions([
+                        'isHtml5ParserEnabled' => true,
+                        'isRemoteEnabled' => true, // Permet le chargement des ressources distantes si nécessaire
+                        'margin-left' => 0,
+                        'margin-right' => 0,
+                        'margin-top' => 0,
+                        'margin-bottom' => 0,
+                    ]);
+            } else if ($typePrestation->impact == 0) {
+                $pdf = Pdf::loadView('users.espace_client.services.fiches.prestation', compact('qrcode', 'prestation', 'imageSrc'))
+                    ->setPaper('a4', 'portrait')
+                    ->setOptions([
+                        'isHtml5ParserEnabled' => true,
+                        'isRemoteEnabled' => true,
+                        'margin-left' => 0,
+                        'margin-right' => 0,
+                        'margin-top' => 0,
+                        'margin-bottom' => 0,
+                    ]);
+            }else{
+                $pdf = Pdf::loadView('users.espace_client.services.fiches.prestationout', compact('qrcode', 'prestation', 'imageSrc'))
                 ->setPaper('a4', 'portrait')
                 ->setOptions([
                     'isHtml5ParserEnabled' => true,
@@ -671,7 +750,7 @@ class DemandePrestationController extends Controller
                     'margin-top' => 0,
                     'margin-bottom' => 0,
                 ]);
-
+            }
             // Dossier pour enregistrer l'état de la prestation
             $etatPrestationDir = $externalUploadDir . 'etatPrestations/';
             if (!is_dir($etatPrestationDir)) {
@@ -685,6 +764,7 @@ class DemandePrestationController extends Controller
             // Enregistrer le fichier dans la base de données
             TblDocPrestation::create([
                 'idPrestation' => $prestation->id,
+                'filename' => "Fiche de demande de prestation",
                 'libelle' => $fileName,
                 'path' => 'storage/prestations/etatPrestations/' . $fileName,
                 'type' => 'etatPrestation',
@@ -707,6 +787,7 @@ class DemandePrestationController extends Controller
             ];
         }
     }
+    
     public function storePrestAutre(Request $request)
     {
         DB::beginTransaction();
@@ -743,6 +824,7 @@ class DemandePrestationController extends Controller
                     'idOtp'             => $idOtp,
                     'idcontrat'         => $request->idcontrat,
                     'typeprestation'    => $request->typeprestation,
+                    'prestationlibelle' => $request->prestationlibelle,
                     'idclient'          => $request->idclient,
                     'nom'               => $request->nom,
                     'prenom'            => $request->prenom,
@@ -760,12 +842,15 @@ class DemandePrestationController extends Controller
                     'telPaiement'       => $TelPaiement,
                     'IBAN'              => $IBAN,
                     'saisiepar'         => $saisiepar,
-                    // 'villedeclaration' => $request->villedeclaration,
-                    // 'mailtraitement' => $request->mailtraitement,
                 ]);
                 // Vérification si la prestation a été créée
                 if (!$prestation) {
-                    throw new \Exception("Erreur lors de l'enregistrement de la prestation");
+                    return response()->json([
+                        'type' => 'error',
+                        'urlback' => '',
+                        'message' => "Une erreur est survenue lors de l'enregistrement de la prestation.",
+                        'code' => 500,
+                    ]);
                 }
 
                 // Chemin externe pour stocker les fichiers
@@ -779,17 +864,97 @@ class DemandePrestationController extends Controller
                     $contrat = $request->idcontrat;
                     $rectoFile = null;
                     $versoFile = null;
+                    $rectoFileBeneficiaire = null;
+                    $versoFileBeneficiaire = null;
+                    $rectoFilePayeurPrime = null;
+                    $versoFilePayeurPrime = null;
+                    $rectoFileAssure = null;
+                    $versoFileAssure = null;
+                    $rectoFileSouscripteur = null;
+                    $versoFileSouscripteur = null;
                     $prestationFiles = [];
 
-                    foreach ($request->file('libelle') as $index => $file) {
-                        $fileType = $request->type[$index];
+                    // foreach ($request->file('libelle') as $index => $file) {
+                    //     $fileType = $request->type[$index];
+                    //     $filename = $request->filename[$index];
 
+                    //     if ($fileType === 'CNIrecto') {
+                    //         $rectoFile = $file;
+                    //     } elseif ($fileType === 'CNIverso') {
+                    //         $versoFile = $file;
+                    //     } elseif ($fileType === 'CNIrectoBeneficiaire') {
+                    //         $rectoFileBeneficiaire = $file;
+                    //     } elseif ($fileType === 'CNIversoBeneficiaire') {
+                    //         $versoFileBeneficiaire = $file;
+                    //     } elseif ($fileType === 'CNIrectoPayeurPrime') {
+                    //         $rectoFilePayeurPrime = $file;
+                    //     } elseif ($fileType === 'CNIversoPayeurPrime') {
+                    //         $versoFilePayeurPrime = $file;
+                    //     } elseif ($fileType === 'CNIrectoAssure') {
+                    //         $rectoFileAssure = $file;
+                    //     } elseif ($fileType === 'CNIversoAssure') {
+                    //         $versoFileAssure = $file;
+                    //     } elseif ($fileType === 'CNIrectoSouscripteur') {
+                    //         $rectoFileSouscripteur = $file;
+                    //     } elseif ($fileType === 'CNIversoSouscripteur') {
+                    //         $versoFileSouscripteur = $file;
+                    //     }else{
+                    //         $libelle = Carbon::now()->format('Ymd_His') . '_' . $contrat . '_' . $fileType . '.' . $file->extension();
+                    //         $file->move($externalUploadDir . 'docsPrestation/', $libelle);
+                    //         $prestationFiles[] = [
+                    //             'idPrestation' => $prestation->id,
+                    //             'filename' => $filename,
+                    //             'libelle' => $libelle,
+                    //             'path' => 'storage/prestations/docsPrestation/' . $libelle,
+                    //             'type' => $fileType,
+                    //         ];
+                    //     }
+                        
+                    // }
+                    foreach ($request->file('libelle') as $index => $file) {
+                        // ⚠️ Si pas de fichier, on ignore (évite de récupérer type[] et filename[])
+                        if (!$file) {
+                            continue;
+                        }
+                    
+                        $fileType = $request->type[$index];
+                        $filename = $request->filename[$index];
+                    
                         if ($fileType === 'CNIrecto') {
                             $rectoFile = $file;
                         } elseif ($fileType === 'CNIverso') {
                             $versoFile = $file;
+                        } elseif ($fileType === 'CNIrectoBeneficiaire') {
+                            $rectoFileBeneficiaire = $file;
+                        } elseif ($fileType === 'CNIversoBeneficiaire') {
+                            $versoFileBeneficiaire = $file;
+                        } elseif ($fileType === 'CNIrectoPayeurPrime') {
+                            $rectoFilePayeurPrime = $file;
+                        } elseif ($fileType === 'CNIversoPayeurPrime') {
+                            $versoFilePayeurPrime = $file;
+                        } elseif ($fileType === 'CNIrectoAssure') {
+                            $rectoFileAssure = $file;
+                        } elseif ($fileType === 'CNIversoAssure') {
+                            $versoFileAssure = $file;
+                        } elseif ($fileType === 'CNIrectoSouscripteur') {
+                            $rectoFileSouscripteur = $file;
+                        } elseif ($fileType === 'CNIversoSouscripteur') {
+                            $versoFileSouscripteur = $file;
+                        } else {
+                            // Cas général
+                            $libelle = Carbon::now()->format('Ymd_His') . '_' . $contrat . '_' . $fileType . '.' . $file->extension();
+                            $file->move($externalUploadDir . 'docsPrestation/', $libelle);
+                    
+                            $prestationFiles[] = [
+                                'idPrestation' => $prestation->id,
+                                'filename'     => $filename,
+                                'libelle'      => $libelle,
+                                'path'         => 'storage/prestations/docsPrestation/' . $libelle,
+                                'type'         => $fileType,
+                            ];
                         }
                     }
+                    
                     // Si les fichiers recto et verso sont présents, fusionner en un fichier PDF
                     if ($rectoFile && $versoFile) {
                         $mergedFileName = Carbon::now()->format('Ymd_His') . '_CNI_' . $contrat . '.pdf';
@@ -812,6 +977,111 @@ class DemandePrestationController extends Controller
                         // Enregistrer dans la base de données
                         $prestationFiles[] = [
                             'idPrestation' => $prestation->id,
+                            'filename' => "CNI de la personne concernée",
+                            'libelle' => $mergedFileName,
+                            'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
+                            'type' => 'CNI',
+                        ];
+                    }elseif ($rectoFileBeneficiaire && $versoFileBeneficiaire) {
+                        $mergedFileName = Carbon::now()->format('Ymd_His') . '_CNI_Beneficiaire_' . $contrat . '.pdf';
+                        $mergedFilePath = $externalUploadDir . 'docsPrestation/' . $mergedFileName;
+
+                        // Charger les fichiers recto et verso
+                        $rectoContent = file_get_contents($rectoFileBeneficiaire->getPathname());
+                        $versoContent = file_get_contents($versoFileBeneficiaire->getPathname());
+
+                        // Créer une vue HTML pour le PDF
+                        $html = view('users.espace_client.services.fiches.cni', [
+                            'rectoContent' => base64_encode($rectoContent),
+                            'versoContent' => base64_encode($versoContent)
+                        ])->render();
+
+                        // Générer le PDF
+                        $pdf = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
+                        $pdf->save($mergedFilePath);
+
+                        // Enregistrer dans la base de données
+                        $prestationFiles[] = [
+                            'idPrestation' => $prestation->id,
+                            'filename' => "CNI du bénéficiaire",
+                            'libelle' => $mergedFileName,
+                            'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
+                            'type' => 'CNI',
+                        ];
+                    }elseif ($rectoFilePayeurPrime && $versoFilePayeurPrime) {
+                        $mergedFileName = Carbon::now()->format('Ymd_His') . '_CNI_PayeurPrime_' . $contrat . '.pdf';
+                        $mergedFilePath = $externalUploadDir . 'docsPrestation/' . $mergedFileName;
+
+                        // Charger les fichiers recto et verso
+                        $rectoContent = file_get_contents($rectoFilePayeurPrime->getPathname());
+                        $versoContent = file_get_contents($versoFilePayeurPrime->getPathname());
+
+                        // Créer une vue HTML pour le PDF
+                        $html = view('users.espace_client.services.fiches.cni', [
+                            'rectoContent' => base64_encode($rectoContent),
+                            'versoContent' => base64_encode($versoContent)
+                        ])->render();
+
+                        // Générer le PDF
+                        $pdf = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
+                        $pdf->save($mergedFilePath);
+
+                        // Enregistrer dans la base de données
+                        $prestationFiles[] = [
+                            'idPrestation' => $prestation->id,
+                            'filename' => "CNI du payeur prime",
+                            'libelle' => $mergedFileName,
+                            'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
+                            'type' => 'CNI',
+                        ];
+                    }elseif ($rectoFileAssure && $versoFileAssure) {
+                        $mergedFileName = Carbon::now()->format('Ymd_His') . '_CNI_Assure_' . $contrat . '.pdf';
+                        $mergedFilePath = $externalUploadDir . 'docsPrestation/' . $mergedFileName;
+
+                        // Charger les fichiers recto et verso
+                        $rectoContent = file_get_contents($rectoFileAssure->getPathname());
+                        $versoContent = file_get_contents($versoFileAssure->getPathname());
+
+                        // Créer une vue HTML pour le PDF
+                        $html = view('users.espace_client.services.fiches.cni', [
+                            'rectoContent' => base64_encode($rectoContent),
+                            'versoContent' => base64_encode($versoContent)
+                        ])->render();
+
+                        // Générer le PDF
+                        $pdf = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
+                        $pdf->save($mergedFilePath);
+
+                        // Enregistrer dans la base de données
+                        $prestationFiles[] = [
+                            'idPrestation' => $prestation->id,
+                            'filename' => "CNI de l'assuré",
+                            'libelle' => $mergedFileName,
+                            'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
+                            'type' => 'CNI',
+                        ];
+                    }elseif ($rectoFileSouscripteur && $versoFileSouscripteur) {
+                        $mergedFileName = Carbon::now()->format('Ymd_His') . '_CNI_Souscripteur_' . $contrat . '.pdf';
+                        $mergedFilePath = $externalUploadDir . 'docsPrestation/' . $mergedFileName;
+
+                        // Charger les fichiers recto et verso
+                        $rectoContent = file_get_contents($rectoFileSouscripteur->getPathname());
+                        $versoContent = file_get_contents($versoFileSouscripteur->getPathname());
+
+                        // Créer une vue HTML pour le PDF
+                        $html = view('users.espace_client.services.fiches.cni', [
+                            'rectoContent' => base64_encode($rectoContent),
+                            'versoContent' => base64_encode($versoContent)
+                        ])->render();
+
+                        // Générer le PDF
+                        $pdf = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
+                        $pdf->save($mergedFilePath);
+
+                        // Enregistrer dans la base de données
+                        $prestationFiles[] = [
+                            'idPrestation' => $prestation->id,
+                            'filename' => "CNI du souscripteur",
                             'libelle' => $mergedFileName,
                             'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
                             'type' => 'CNI',
@@ -824,12 +1094,28 @@ class DemandePrestationController extends Controller
                     }
                 }
 
-                DB::commit();
-                return response()->json([
-                    'type' => 'success',
-                    'urlback' => route('customer.selectPrestation'),
-                    'message' => "Enregistré avec succès!",
+                $sign = TblSignature::where('key_uuid', $request->tokGenerate)->first();
+                $sign->update([
+                    'reference_key' => $prestation->code
                 ]);
+                // DB::commit();
+                $prestationPdfUrl = $this->generatePrestationPdf($prestation);
+                DB::commit();
+                if ($prestationPdfUrl['success'] == false) {
+                    return response()->json([
+                        'type' => 'error',
+                        'urlback' => '',
+                        'message' => "Une erreur est survenue lors de la génération de la fiche de prestation! " . $prestationPdfUrl['message'],
+                        'code' => 500,
+                    ]);
+                }else{
+                    return response()->json([
+                        'type' => 'success',
+                        'urlback' => "",
+                        'url' => $prestationPdfUrl['file_url'],
+                        'message' => "Enregistré avec succès!",
+                    ]);
+                }
             }
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -866,9 +1152,9 @@ class DemandePrestationController extends Controller
                     session(['prestation' => $prestation]);
 
                     $response = Http::withOptions(['timeout' => 60])
-                        ->post('https://api.yakoafricassur.com/oldweb/encaissement-bis', [
+                        ->post(config('services.api.encaissement_bis'), [
                             'idContrat' => $prestation->idcontrat,
-                    ]);
+                        ]);
 
                     if ($response->successful()) {
                         $data = $response->json();
@@ -930,18 +1216,16 @@ class DemandePrestationController extends Controller
                                     'code' => 200,
                                 ];
                             }
-                        }else {
+                        } else {
                             DB::rollback();
                             return response()->json([
-                            'type' => 'error',
-                            'urlback' => '', // URL du PDF
-                            'message' => 'Aucun détail trouvé pour le contrat N°' . $prestation->idcontrat . '.',
-                            'code' => 400,
-                        ]);
+                                'type' => 'error',
+                                'urlback' => '', // URL du PDF
+                                'message' => 'Aucun détail trouvé pour le contrat N°' . $prestation->idcontrat . '.',
+                                'code' => 400,
+                            ]);
                         }
-
-                        
-                    }else {
+                    } else {
                         DB::rollback();
                         return response()->json([
                             'type' => 'error',
@@ -950,7 +1234,6 @@ class DemandePrestationController extends Controller
                             'code' => 400,
                         ]);
                     }
-
                 } elseif ($prestation && $prestation->etape == 0) {
                     DB::rollback();
                     $dataResponse = [
@@ -981,7 +1264,7 @@ class DemandePrestationController extends Controller
                 $dataResponse = [
                     'type' => 'error',
                     'urlback' => "",
-                    'message' => "Aucune demande en attente n'a été trouvée pour ce code " . $code ." !",
+                    'message' => "Aucune demande en attente n'a été trouvée pour ce code " . $code . " !",
                     'code' => 500,
                 ];
             }
@@ -1154,7 +1437,6 @@ class DemandePrestationController extends Controller
                 'cleRIB' => $cleRIB,
                 'telPaiement' => $TelPaiement,
                 'IBAN' => $IBAN,
-                'etape' => 0
             ]);
             if ($isUpdated) {
                 $prestationPdfUrl = $this->updatePrestationPdf($isUpdated);
@@ -1456,7 +1738,7 @@ class DemandePrestationController extends Controller
             if (!is_dir($externalUploadDir)) {
                 mkdir($externalUploadDir, 0777, true);
             }
-            $imageUrl = "https://apisign.yakoafricassur.com/api/get-signature/".$prestation->code."/E-PRESTATION";
+            $imageUrl = env('SIGN_API') . "api/get-signature/" . $prestation->code . "/E-PRESTATION";
             // if ($imageUrl != null || $imageUrl != '') {
             //     $imageData = file_get_contents($imageUrl);
             //     $base64Image = base64_encode($imageData);
@@ -1475,20 +1757,56 @@ class DemandePrestationController extends Controller
                     if (isset($data['error']) && $data['error'] === true) {
                         Log::info('Signature non trouvée pour la prestation N°: ' . $prestation->code);
                     } else {
-                    
-                        $imageData = $response->body(); 
+
+                        $imageData = $response->body();
                         $base64Image = base64_encode($imageData);
                         $imageSrc = 'data:image/png;base64,' . $base64Image;
                     }
                 } else {
-                    Log::error('Erreur HTTP lors de l\'appel de l\'API signature. Code de retour : ' , $response->json());
+                    Log::error('Erreur HTTP lors de l\'appel de l\'API signature. Code de retour : ', $response->json());
                 }
             } catch (\Exception $e) {
                 Log::error('Exception lors de la récupération de la signature : ' . $e->getMessage());
             }
             // Génération du QR code et du fichier PDF pour la prestation
+            // $qrcode = base64_encode(QrCode::format('svg')->size(80)->generate(url('prestation/getInfoPrestation/' . $prestation->id)));
+            // $pdf = Pdf::loadView('users.espace_client.services.fiches.prestation', compact('qrcode', 'prestation', 'imageSrc'))
+            //     ->setPaper('a4', 'portrait')
+            //     ->setOptions([
+            //         'isHtml5ParserEnabled' => true,
+            //         'isRemoteEnabled' => true,
+            //         'margin-left' => 0,
+            //         'margin-right' => 0,
+            //         'margin-top' => 0,
+            //         'margin-bottom' => 0,
+            //     ]);
+
+            $typePrestation = TblTypePrestation::where('libelle', $prestation->prestationlibelle)->first();
             $qrcode = base64_encode(QrCode::format('svg')->size(80)->generate(url('prestation/getInfoPrestation/' . $prestation->id)));
-            $pdf = Pdf::loadView('users.espace_client.services.fiches.prestation', compact('qrcode', 'prestation', 'imageSrc'))
+            if ($typePrestation->impact == 'Autre') {
+                $pdf = Pdf::loadView('users.espace_client.services.fiches.courrier', compact('prestation', 'imageSrc'))
+                    ->setPaper('a4', 'portrait')
+                    ->setOptions([
+                        'isHtml5ParserEnabled' => true,
+                        'isRemoteEnabled' => true, // Permet le chargement des ressources distantes si nécessaire
+                        'margin-left' => 0,
+                        'margin-right' => 0,
+                        'margin-top' => 0,
+                        'margin-bottom' => 0,
+                    ]);
+            } else if ($typePrestation->impact == 0) {
+                $pdf = Pdf::loadView('users.espace_client.services.fiches.prestation', compact('qrcode', 'prestation', 'imageSrc'))
+                    ->setPaper('a4', 'portrait')
+                    ->setOptions([
+                        'isHtml5ParserEnabled' => true,
+                        'isRemoteEnabled' => true,
+                        'margin-left' => 0,
+                        'margin-right' => 0,
+                        'margin-top' => 0,
+                        'margin-bottom' => 0,
+                    ]);
+            }else{
+                $pdf = Pdf::loadView('users.espace_client.services.fiches.prestationout', compact('qrcode', 'prestation', 'imageSrc'))
                 ->setPaper('a4', 'portrait')
                 ->setOptions([
                     'isHtml5ParserEnabled' => true,
@@ -1498,6 +1816,7 @@ class DemandePrestationController extends Controller
                     'margin-top' => 0,
                     'margin-bottom' => 0,
                 ]);
+            }
 
             // Dossier pour enregistrer l'état de la prestation
             $etatPrestationDir = $externalUploadDir . 'etatPrestations/';
@@ -1541,7 +1860,7 @@ class DemandePrestationController extends Controller
     public function typePrestation()
     {
         $typePrestations = TblTypePrestation::where('etat', 'Actif')->get();
-        return view('admins.pages.typePrestations.typePrestation', compact('typePrestations'));
+        return view('admins.pages.TypePrestations.typePrestation', compact('typePrestations'));
     }
 
     public function typePrestationAdd(Request $request)

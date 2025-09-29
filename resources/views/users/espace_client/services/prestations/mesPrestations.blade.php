@@ -73,7 +73,7 @@
                             <th>Code</th>
                             <th>#ID du contrat</th>
                             <th>Type</th>
-                            <th>Etape</th>
+                            <th>Statut</th>
                             <th>Date de demande</th>
                             <th>Actions</th>
                         </tr>

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AgentController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\VisitedController;
+use PhpOffice\PhpSpreadsheet\Shared\OLE\PPS\Root;
 use App\Http\Controllers\Admin\ActualityController;
 use App\Http\Controllers\Admin\AdminLoginController;
 use App\Http\Controllers\Admin\ReseauDistController;
@@ -19,11 +20,11 @@ use App\Http\Controllers\Admin\TemoignageController;
 use App\Http\Controllers\EspaceClient\RdvController;
 use App\Http\Controllers\Admin\FormuleProdController;
 use App\Http\Controllers\Admin\SouscritionController;
+use App\Http\Controllers\Sinistre\SinistreController;
 use App\Http\Controllers\Admin\ReseauInterneController;
 use App\Http\Controllers\EspaceClient\CustomerController;
 use App\Http\Controllers\EspaceClient\CustomerLoginController;
 use App\Http\Controllers\EspaceClient\DemandePrestationController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +76,7 @@ Route::middleware('guest:web', 'PreventBackHistory')->group(function(){
     Route::get('home/assistance',[IndexController::class, 'assistance'])->name('home.assistance');
 
     Route::post('/admin/mail/newsletter/store',[SouscritionController::class,'newsletterStore'])->name('admin.newsletterStore.store');
+    Route::get('/admin/mail/mail',[SouscritionController::class,'mail'])->name('admin.mail');
 
     Route::post('admin/mail/add',[SouscritionController::class,'store'])->name('admin.subscription.store');
 
@@ -213,7 +215,7 @@ Route::prefix('settings')->name('setting.')->group(function(){
 // customer routes
 # la route "simple-qrcode"
 Route::get('prestation/getInfoPrestation/{id}', [DemandePrestationController::class, 'getInfoPrestation'])->name('getInfoPrestation');
-// Route::get("simple-qrcode", "DemandePrestationController@generate")->name("simple-qrcode@generate");
+Route::get('sinistre/getInfoSinistre/{id}', [SinistreController::class, 'getInfoSinistre'])->name('getInfoSinistre');
 
 Route::get('storage/prestations/{file}', function ($file) {
     $path = base_path(env('UPLOAD_PRESTATION_FILE') . $file);
@@ -228,6 +230,21 @@ Route::get('storage/prestations/{file}', function ($file) {
     return Response::make($fileContents, 200, ['Content-Type' => $mimeType]);
     
 })->where('file', '.*');
+
+Route::get('storage/sinistre/{file}', function ($file) {
+    $path = base_path(env('UPLOAD_SINISTRE_FILE') . $file);
+
+    if (!file_exists($path)) {
+        abort(404);
+    }
+
+    $fileContents = file_get_contents($path);
+    $mimeType = mime_content_type($path);
+
+    return Response::make($fileContents, 200, ['Content-Type' => $mimeType]);
+    
+})->where('file', '.*');
+
 
 Route::get('get-police/{file}', function ($file) {
     $path = base_path(env('GET_CUSTOMER_CP') . $file);
@@ -298,12 +315,17 @@ Route::prefix('espace-client', 'PreventBackHistory')->name('customer.')->group(f
         // customer impor
         Route::post('/import-customers', [CustomerLoginController::class, 'import'])->name('import');
         Route::post('/import-customers-cp', [CustomerLoginController::class, 'importCP'])->name('import.cp');
+        Route::post('/auto-import-cp', [CustomerLoginController::class, 'autoImportCP'])->name('auto.import.cp');
         
+
+
         Route::post('/clear-contract-session', function () {
             Session::forget('contractDetails');
             return response()->json(['message' => 'Session cleared']);
         })->name('clear.contractDetails.session');
     });
+
+    
 
     Route::middleware('auth:customer', 'PreventBackHistory')->group(function(){
         // Route::post('api/fetch-contract-details', [CustomerController::class, 'fetchContractDetails'])->name('fetch.contract.details');
@@ -353,6 +375,21 @@ Route::prefix('espace-client', 'PreventBackHistory')->name('customer.')->group(f
         Route::post('rdv/add',[RdvController::class, 'store'])->name('rdv.store');
 
          
+    });
+});
+
+Route::prefix('sinistre', 'PreventBackHistory')->name('sinistre.')->group(function(){
+    Route::middleware('guest:web', 'PreventBackHistory')->group(function(){
+        // Route::post('api/checkContrat', [SinistreController::class, 'checkContrat'])->name('checkContrat');
+        Route::get('/', [SinistreController::class, 'index'])->name('index');
+        Route::get('/new', [SinistreController::class, 'newSinistre'])->name('newSinistre');
+        Route::get('/history', [SinistreController::class, 'historySinistre'])->name('historySinistre');
+        Route::post('/getContratAssures', [SinistreController::class, 'getContratAssures'])->name('getContratAssures');
+        Route::get('/create', [SinistreController::class, 'create'])->name('create');
+        Route::post('/store', [SinistreController::class, 'store'])->name('store');
+        Route::get('show/{code}', [SinistreController::class, 'show'])->name('show');
+        Route::get('/edit/{code}', [SinistreController::class, 'edit'])->name('edit');
+        Route::post('/update/{code}', [SinistreController::class, 'update'])->name('update');
     });
 });
 

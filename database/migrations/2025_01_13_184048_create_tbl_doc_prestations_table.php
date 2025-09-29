@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::connection('mysql3')->create('tbl_doc_prestations', function (Blueprint $table) {
             $table->id();
             $table->string('idPrestation')->nullable();
+            $table->string('idDemandeCompte')->nullable();
+            $table->string('filename')->nullable();
             $table->longText('libelle')->nullable();
             $table->longText('path')->nullable();
             $table->string('type')->nullable();

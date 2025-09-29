@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EspaceClient\OTPController;
 use App\Http\Controllers\EspaceClient\RdvController;
+use App\Http\Controllers\Sinistre\SinistreController;
 use App\Http\Controllers\EspaceClient\CustomerController;
 use App\Http\Controllers\EspaceClient\CustomerLoginController;
 use App\Http\Controllers\EspaceClient\DemandePrestationController;
@@ -33,6 +34,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Exemple d'une route publique si vous souhaitez tester sans authentification
 Route::post('/fetch-contract-details', [CustomerController::class, 'fetchContractDetails'])
     ->name('fetch.contract.details');
+
     
 Route::post('/getPrestations', [DemandePrestationController::class, 'getPrestations'])->name('getPrestations');
 Route::post('/generate-etat-cotisation', [CustomerController::class, 'generateEtatCotisationApi']);
@@ -48,3 +50,9 @@ Route::middleware('web')->group(function () {
         return response()->json(['authenticated' => Auth::guard('customer')->check()]);
     });
 });
+
+
+// api sinistre
+
+Route::post('/check-contrat', [SinistreController::class, 'checkContrat']);
+Route::post('/get-sinistre', [SinistreController::class, 'getSinistre']);

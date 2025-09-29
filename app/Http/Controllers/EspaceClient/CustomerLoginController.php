@@ -102,14 +102,14 @@ class CustomerLoginController extends Controller
 
         if ($prospere && $prospere->estClient == 0) {
             if ($prospere->password === $input['password']) {
-                
+
                 session(['customerData' => $prospere->id]);
                 return redirect()->route('customer.registerForm.addContrat', ['id' => $prospere->id]);
-            }else{
+            } else {
                 return redirect()->route('customer.loginForm')->with('fail', 'Nom d\'utilisateur ou mot de passe incorrect.');
             }
-        }else if ($prospere && $prospere->estClient == 1 || $prospere == null) {
-            
+        } else if ($prospere && $prospere->estClient == 1 || $prospere == null) {
+
             // Vérifier si l'utilisateur existe
             if ($customer) {
                 // Vérifier si le mot de passe est haché ou non (Bcrypt)
@@ -121,11 +121,11 @@ class CustomerLoginController extends Controller
                         // $customer->isFirstLog = 1;
                         $customer->save();
                         if ($membre) {
-    
+
                             $membre->pass = Hash::make($input['password']);
                             $membre->save();
                         }
-    
+
                         // Authentifier l'utilisateur
                         Auth::guard('customer')->login($customer);
                         if ($input['type'] == 'RendezVous') {
@@ -161,7 +161,6 @@ class CustomerLoginController extends Controller
                 return redirect()->route('customer.loginForm')->with('fail', 'Utilisateur non trouvé.');
             }
         }
-
     }
     public function loginByUrl(Request $request)
     {
@@ -237,42 +236,198 @@ class CustomerLoginController extends Controller
         // Redirection avec un message de succès
         return back()->with('success', 'Les données ont été importées avec succès.');
     }
+
     public function importCP(Request $request)
-{
-    $externalUploadDir = base_path(env('GET_CUSTOMER_CP')); // Exemple : CPExport/
+    {
+        $externalUploadDir = base_path(env('GET_CUSTOMER_CP'));
 
-    if (!is_dir($externalUploadDir)) {
-        mkdir($externalUploadDir, 0777, true);
-    }
+        if (!is_dir($externalUploadDir)) {
+            mkdir($externalUploadDir, 0777, true);
+        }
 
-    $files = $request->file('file');
+        $files = $request->file('file');
+        $results = [
+            'success' => 0,
+            'errors' => [],
+            'warnings' => []
+        ];
 
-    if (is_array($files)) {
-        foreach ($files as $file) {
-            if ($file->isValid()) {
-                // Formater le nom du fichier
-                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $extensionMaj = $file->getClientOriginalExtension();
-                // extension en miniscule
-                $extension = strtolower($extensionMaj);
-                $fileName = $originalName . '.' . $extension;
-
-                // Créer le dossier "CP" s'il n'existe pas déjà
-                $targetDir = rtrim($externalUploadDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'CP';
-                if (!is_dir($targetDir)) {
-                    mkdir($targetDir, 0777, true);
+        if (is_array($files)) {
+            foreach ($files as $file) {
+                if (!$file->isValid()) {
+                    $results['errors'][] = "Fichier invalide : " . $file->getClientOriginalName();
+                    continue;
                 }
 
-                // Enregistrer le fichier
-                $file->move($targetDir, $fileName);
+                try {
+                    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $idcontrat = str_replace('CP_', '', $originalName);
+                    $extension = strtolower($file->getClientOriginalExtension());
+
+                    $response = Http::withOptions([
+                        'timeout' => 60,
+                    ])->post(config('services.api.encaissement_bis'), [
+                        'idContrat' => $idcontrat,
+                    ]);
+
+                    if (!$response->successful()) {
+                        $results['errors'][] = "API non disponible pour le contrat $idcontrat";
+                        continue;
+                    }
+
+                    $data = $response->json();
+                    $dateEffetReelle = Carbon::createFromFormat('d/m/Y', $data['details'][0]['DateEffetReel']);
+                    $annee = $dateEffetReelle->format('Y');
+                    $mois = ltrim($dateEffetReelle->format('m'), '0');
+
+                    $fileDirectory = $externalUploadDir . '/A' . $annee . '/M' . $mois;
+                    if (!is_dir($fileDirectory)) {
+                        mkdir($fileDirectory, 0777, true);
+                    }
+
+                    $fileName = 'CP_' . $idcontrat . '.' . $extension;
+                    $filePath = $fileDirectory . '/' . $fileName;
+
+                    if (!file_exists($filePath)) {
+                        $file->move($fileDirectory, $fileName);
+                        $results['success']++;
+                        $results['warnings'][] = "Fichier $fileName importé avec succès";
+                    } else {
+                        $results['warnings'][] = "Le fichier existe déjà pour le contrat $idcontrat";
+                    }
+                } catch (\Exception $e) {
+                    $results['errors'][] = "Erreur avec le contrat $idcontrat: " . $e->getMessage();
+                }
+            }
+
+            // Construction du message final
+            $message = '';
+            $messageType = 'error'; // Par défaut
+
+            if ($results['success'] > 0) {
+                $messageType = !empty($results['errors']) ? 'warning' : 'success';
+                $message .= "{$results['success']} fichier(s) importé(s) avec succès. ";
+            }
+
+            if (!empty($results['warnings'])) {
+                $message .= "Remarques: " . implode(', ', $results['warnings']) . ". ";
+            }
+
+            if (!empty($results['errors'])) {
+                $message .= "Erreurs: " . implode(', ', $results['errors']);
+            }
+
+            // return back()
+            //     ->with($messageType, trim($message))
+            //     ->with('import_results', $results); // Pour un éventuel usage ultérieur
+
+            return back()
+                ->with($messageType, trim($message))
+                ->with('import_results', [
+                    'details' => $results, // Conserver la structure complète
+                    'success_count' => $results['success']
+                ]);
+        }
+        return back()->with('error', 'Aucun fichier valide n\'a été envoyé.');
+    }
+
+    // Dans CustomerLoginController.php
+
+    public function autoImportCP()
+    {
+        $sourceDir = base_path(env('GET_DIRECTORY_CP'));
+        $targetDir = base_path(env('GET_CUSTOMER_CP'));
+        $archivedDir = base_path(env('CP_DEJA_COPIEE'));
+
+        // Créer les répertoires s'ils n'existent pas
+        if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+        if (!is_dir($archivedDir)) mkdir($archivedDir, 0777, true);
+
+        $results = [
+            'success' => 0,
+            'errors' => [],
+            'warnings' => [],
+            'processed_files' => []
+        ];
+
+        // Récupérer les fichiers PDF (max 20)
+        $files = glob($sourceDir . 'CP_*.pdf');
+        $files = array_slice($files, 0, 1);
+
+        if (empty($files)) {
+            return response()->json([
+                'status' => 'info',
+                'message' => 'Aucun fichier CP à traiter',
+                'details' => $results
+            ]);
+        }
+
+        foreach ($files as $filePath) {
+            $fileName = basename($filePath);
+            $originalName = pathinfo($fileName, PATHINFO_FILENAME);
+            $idcontrat = str_replace('CP_', '', $originalName);
+
+            try {
+                // Vérifier si le fichier existe déjà dans la destination
+                $response = Http::post(config('services.api.encaissement_bis'), ['idContrat' => $idcontrat]);
+                // $response = Http::withOptions(['timeout' => 60])
+                //     ->post(env('API_ENCAISSEMENT_BIS'), ['idContrat' => $idcontrat]);
+
+                if (!$response->successful()) {
+                    $results['errors'][] = "API non disponible pour le contrat $idcontrat";
+                    continue;
+                }
+
+                $data = $response->json();
+                $dateEffetReelle = Carbon::createFromFormat('d/m/Y', $data['details'][0]['DateEffetReel']);
+                $annee = $dateEffetReelle->format('Y');
+                $mois = ltrim($dateEffetReelle->format('m'), '0');
+
+                // Créer la structure de répertoire cible
+                $targetSubDir = $targetDir . '/A' . $annee . '/M' . $mois;
+                if (!is_dir($targetSubDir)) {
+                    mkdir($targetSubDir, 0777, true);
+                }
+
+                $targetFilePath = $targetSubDir . '/' . $fileName;
+
+                if (!file_exists($targetFilePath)) {
+                    // Copier le fichier vers la destination
+                    copy($filePath, $targetFilePath);
+
+                    // Archiver le fichier source
+                    $archivedFilePath = $archivedDir . '/' . $fileName;
+                    rename($filePath, $archivedFilePath);
+
+                    $results['success']++;
+                    $results['processed_files'][] = $fileName;
+                } else {
+                    // Le fichier existe déjà, on l'archive quand même
+                    $archivedFilePath = $archivedDir . '/' . $fileName;
+                    rename($filePath, $archivedFilePath);
+
+                    $results['warnings'][] = "Le fichier existe déjà pour le contrat $idcontrat";
+                    $results['processed_files'][] = $fileName;
+                }
+            } catch (\Exception $e) {
+                $results['errors'][] = "Erreur avec le contrat $idcontrat: " . $e->getMessage();
             }
         }
 
-        return back()->with('success', 'Les fichiers ont été importés avec succès.');
-    }
+        $message = "Traitement terminé. " . $results['success'] . " fichier(s) copié(s) avec succès.";
+        if (!empty($results['warnings'])) {
+            $message .= " Remarques: " . implode(', ', $results['warnings']);
+        }
+        if (!empty($results['errors'])) {
+            $message .= " Erreurs: " . implode(', ', $results['errors']);
+        }
 
-    return back()->with('error', 'Aucun fichier valide n’a été envoyé.');
-}
+        return response()->json([
+            'status' => $results['success'] > 0 ? 'success' : (empty($results['errors']) ? 'warning' : 'error'),
+            'message' => $message,
+            'details' => $results
+        ]);
+    }
 
     /**
      * Display the specified resource.
@@ -415,7 +570,7 @@ class CustomerLoginController extends Controller
             if ($customer != null || $customer != '') {
                 // $contrat = MembreContrat::where('idcontrat', $idcontrat)->first();
                 $response = Http::withOptions(['timeout' => 60])
-                    ->post('https://api.yakoafricassur.com/oldweb/encaissement-bis', [
+                    ->post(config('services.api.encaissement_bis'), [
                         'idContrat' => $idcontrat,
                     ]);
                 if ($response->successful()) {
@@ -786,7 +941,7 @@ class CustomerLoginController extends Controller
             Auth::guard('customer')->login($customer);
             // return redirect()->route('customer.dashboard');
             return response()->json([
-                'type' => 'success', 
+                'type' => 'success',
                 'urlback' => route('customer.dashboard'),
                 'message' => 'Votre mot de passe a bien été mis à jour.',
                 'code' => 200
@@ -864,41 +1019,7 @@ class CustomerLoginController extends Controller
                 'message' => "Votre compte a été mis à jour avec success ! Veuillez verifier votre messagerie email ($recipientEmail) pour plus de details.",
             ]);
         }
-        
     }
-
-    // public function resetPass(Request $request)
-    // {
-    //     $input = $request->all();
-    //     $this->validate(
-    //         $request,
-    //         [
-    //             'login' => 'required',
-    //             'password' => 'required',
-    //         ]
-    //     );
-    //     $customer = TblCustomer::where('login', $input['login'])->first();
-    //     $membre = Membre::where('login', $input['login'])->first();
-
-    //     if ($customer) {
-    //         // Le mot de passe n'est pas haché, le hacher après une authentification réussie
-    //         $customer->password = Hash::make($input['password']);
-    //         $customer->isFirstLog = 1;
-    //         $customer->save();
-    //         if ($membre) {
-
-    //             $membre->password = Hash::make($input['password']);
-    //             $membre->save();
-    //         }
-    //         // Authentifier l'utilisateur
-    //         Auth::guard('customer')->login($customer);
-    //         return redirect()->route('customer.dashboard');
-    //     } else {
-    //         // Si l'utilisateur n'existe pas
-    //         return redirect()->route('customer.loginForm')->with('fail', 'Utilisateur non trouvé.');
-    //     }
-    // }
-    // return view('users.espace_client.auth.reset-password');
 
     /**
      * Update the specified resource in storage.
@@ -958,95 +1079,21 @@ class CustomerLoginController extends Controller
         }
     }
 
-    // public function destroyToken()
-    // {
-
-    //     $cust = session('DataToken', []);
-    //     if ($cust) {
-
-    //         $customer = TblCustomer::where('id', $cust->id)->first();
-    //         $customer->remember_token = null;
-    //         $customer->save();
-    //         Log::info('Le lien de reinitialisation de votre mot de passe a expiré.'.$cust);
-    //         session()->forget('DataToken');
-
-    //     }else{
-    //         Log::info('Aucune donnee a supprimer.');
-
-    //     }
-    // }
-    // public function destroyToken()
-    // {
-    //     $cust = session('DataToken', []);
-    //     if ($cust) {
-    //         $customer = TblCustomer::where('id', $cust->id)->first();
-    //         // $customer = TblCustomer::where('login', $request->login)->first();
-
-    //         if ($customer) {
-    //             $now = now();
-    //             $tokenCreatedAt = $customer->updated_at; // Date de dernière mise à jour du token
-    //             $tokenExpiryTime = $tokenCreatedAt->addMinutes(60); // Expire après 60 min
-
-    //             if ($now >= $tokenExpiryTime) {
-    //                 $customer->remember_token = null;
-    //                 $customer->save();
-    //                 Log::info('Token réinitialisé avec succès :' . $cust);
-    //                 session()->forget('DataToken');
-    //                 return response()->json(['message' => 'Token réinitialisé avec succès']);
-    //             } else {
-    //                 return response()->json(['message' => 'Token encore valide']);
-    //             }
-    //         }
-    //     } else {
-    //         Log::info('Aucune donnee a supprimer.');
-    //         return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-    //     }
-    // }
-    
 
     public function destroyToken()
-{
-    $now = Carbon::now();
-    $deleted = TblCustomer::where('token_expires_at', '<', $now)
-                ->update(['remember_token' => null, 'token_expires_at' => null]);
+    {
+        $now = Carbon::now();
+        $deleted = TblCustomer::where('token_expires_at', '<', $now)
+            ->update(['remember_token' => null, 'token_expires_at' => null]);
 
-    return response()->json(['message' => "$deleted tokens expirés supprimés"]);
-    // $cust = session('DataToken');
-    // if (!empty($cust) && isset($cust['id'])) {
-    //     $customer = TblCustomer::where('id', $cust['id'])->first();
-
-    //     if ($customer) {
-    //         $now = now();
-    //         $tokenCreatedAt = $customer->updated_at; // Date de dernière mise à jour du token
-    //         $tokenExpiryTime = $tokenCreatedAt->addMinutes(60); // Expire après 60 min
-
-    //         if ($now >= $tokenExpiryTime) {
-    //             $customer->remember_token = null;
-    //             $customer->save();
-
-    //             Log::info('Token réinitialisé avec succès : ' . json_encode($cust));
-    //             session()->forget('DataToken');
-
-    //             return response()->json(['message' => 'Token réinitialisé avec succès']);
-    //         } else {
-    //             return response()->json(['message' => 'Token encore valide']);
-    //         }
-    //     }else {
-    //         Log::info('Aucune donnée à supprimer.');
-    //         return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-    //     }
-    // }else {
-    //     Log::info('Aucune donnée à supprimer.');
-    //     return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-    // }
-
-}
+        return response()->json(['message' => "$deleted tokens expirés supprimés"]);
+    }
 
     public function resetPassForm(string $token)
     {
         $customer = TblCustomer::where('remember_token', $token)
-                ->where('token_expires_at', '>=', Carbon::now()) // Vérifie expiration
-                ->first();
+            ->where('token_expires_at', '>=', Carbon::now()) // Vérifie expiration
+            ->first();
         // $customer = TblCustomer::where('remember_token', $token)->first();
         if (!$customer) {
             return redirect()->route('customer.loginForm')->with('fail', 'Le lien de reinitialisation de votre mot de passe a expiré.');

@@ -201,16 +201,6 @@
                                 <label><strong>Agent : </strong><input type="text" class="input-border-bottom"
                                         style="width: 81%" value="{{$details[0]['CodeConseiller'] ?? ''}} - {{$details[0]['NomAgent'] ?? ''}}"> </label>
                             </div>
-    
-                            {{-- <div class="birthday" style="margin-bottom: 10px;">
-                                <label><strong>Code : </strong><input type="text" class="input-border-bottom"
-                                        style="width: 81%" value="Code assistant Manager"> </label>
-                            </div>
-    
-                            <div class="domicile" style="margin-bottom: 10px;">
-                                <label><strong>code : </strong><input type="text" class="input-border-bottom"
-                                        style="width: 81%" value="Code Manager"> </label>
-                            </div> --}}
                         </div>
     
                         <!-- Clear pour éviter les flottements -->
@@ -227,26 +217,32 @@
                         <label><strong>Fin cotisation :
                             </strong><span>{{$details[0]['FinAdhesion'] ?? ''}}</span></label>
                     </div>
-                    <div style="width: 70%; margin-top: 15px; margin: auto">
+                    <div style="width: 100%; margin-top: 15px; margin: auto">
                         <div style="width: 100%; margin-top: 15px;">
                             <label><strong>Nbre Emission :
                                 </strong><span>{{$details[0]['NbreEmission'] ?? ''}}</span></label>
-                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                             <label><strong>Nbre Réglement :
-                                </strong><span>{{$details[0]['NbreEncaissment'] ?? ''}} ANS</span></label>
-                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                </strong><span>{{ $nbrTotalConfirmer ?? 0 }}</span></label>
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
                             <label><strong>Nbre Impayés :
-                                </strong><span>{{$details[0]['NbreImpayes'] ?? ''}}</span></label>
+                                </strong><span>{{ $nbrTotalNonRegle ?? 0 }}</span></label>
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
+                            <label><strong>Nbre Réglt Partiel :
+                                </strong><span>{{ $nbrTotalPartielle ?? 0 }}</span></label>
                         </div>
                         <div style="width: 100%; margin-top: 15px;">
                             <label><strong>Emissions :
-                                </strong><span>{{ number_format($details[0]['TotalEmission'], 0, ',', ' ') ?? ''}}</span></label>
-                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                </strong><span>{{ number_format($details[0]['TotalEmission'], 0, ',', ' ') ?? ''}} FCFA</span></label>
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
                             <label><strong>Réglements :
-                                </strong><span>{{ number_format($details[0]['TotalEncaissement'], 0, ',', ' ') ?? ''}}</span></label>
-                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                </strong><span>{{ $totalConfirmer ?? 0 }} FCFA</span></label>
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
                             <label><strong>Impayés :
-                                </strong><span>{{ number_format($details[0]['TotalImpayes'], 0, ',', ' ') ?? ''}}</span></label>
+                                </strong><span>{{ $totalNonRegle ?? 0 }} FCFA</span></label>
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+                            <label><strong>Réglt Partiel :
+                                </strong><span>{{ $totalPartielle ?? 0 }} FCFA</span></label>
                         </div>
                     </div>
                     
@@ -385,14 +381,15 @@
     
                     <table border="0.5" cellpadding="7" cellspacing="0" width="100%">
                         <tr>
-                            <th>N°</th>
-                            <th>Date</th>
-                            <th>Montant</th>
-                            <th>Montant réglé</th>
-                            <th>Date réglt</th>
-                            <th>Ref. réglt</th>
-                            <th>Mode réglement</th>
-                            <th>Statut</th>
+                            <th style="text-align: center;">N°</th>
+                            <th style="text-align: center;">N° presentation</th>
+                            <th style="text-align: center;">Date</th>
+                            <th style="text-align: center;">Montant</th>
+                            <th style="text-align: center;">Montant réglé</th>
+                            <th style="text-align: center;">Date réglt</th>
+                            <th style="text-align: center;">Ref. réglt</th>
+                            <th style="text-align: center;">Mode réglement</th>
+                            <th style="text-align: center;">Statut</th>
                         </tr>
                         @php
                             $MontantNetTotal = 0;
@@ -404,14 +401,15 @@
                                 $RegltMontantTotal += (float) $enc['RegltMontant'];
                             @endphp
                             <tr>
-                                <td>{{$enc['IdPresentation'] ?? ''}}</td>
-                                <td>{{$enc['MaDate'] ?? ''}}</td>
-                                <td>{{ number_format($enc['MontantNet'] , 0, ',', ' ') ?? ''}}</td>
-                                <td>{{ number_format($enc['RegltMontant'] , 0, ',', ' ') ?? ''}}</td>
-                                <td>{{$enc['RegltDate'] ?? ''}}</td>
+                                <td style="text-align: center;">{{$loop->iteration}}</td>
+                                <td style="text-align: center;">{{$enc['IdPresentation'] ?? ''}}</td>
+                                <td style="text-align: center;">{{$enc['MaDate'] ?? ''}}</td>
+                                <td style="text-align: center;">{{ number_format($enc['MontantNet'] , 0, ',', ' ') ?? ''}}</td>
+                                <td style="text-align: center;">{{ number_format($enc['RegltMontant'] , 0, ',', ' ') ?? ''}}</td>
+                                <td style="text-align: center;">{{$enc['RegltDate'] ?? ''}}</td>
                                 <td>{{$enc['RegltRef'] ?? ''}}</td>
-                                <td>{{$enc['RegltCodePaiement'] ?? ''}}</td>
-                                <td>{{$enc['Statut'] ?? ''}}</td>
+                                <td style="text-align: center;">{{$enc['RegltCodePaiement'] ?? ''}}</td>
+                                <td style="text-align: center;">{{$enc['Statut'] ?? ''}}</td>
                             </tr>
                             
                             @empty
@@ -423,8 +421,9 @@
                             <tr>
                                 <td> </td>
                                 <td> </td>
-                                <td>{{ number_format($MontantNetTotal , 0, ',', ' ') ?? ''}}</td>
-                                <td>{{ number_format($RegltMontantTotal , 0, ',', ' ') ?? ''}}</td>
+                                <td> </td>
+                                <td style="text-align: center;">{{ number_format($MontantNetTotal , 0, ',', ' ') ?? ''}}</td>
+                                <td style="text-align: center;">{{ number_format($RegltMontantTotal , 0, ',', ' ') ?? ''}}</td>
                                 <td> </td>
                                 <td> </td>
                                 <td> </td>
@@ -450,14 +449,15 @@
     
                     <table border="1" cellpadding="5" cellspacing="0" width="100%">
                         <tr>
-                            <th>N°</th>
-                            <th>Date</th>
-                            <th>Montant</th>
-                            <th>Montant réglé</th>
-                            <th>Date réglt</th>
-                            <th>Ref. réglt</th>
-                            <th>Mode réglement</th>
-                            <th>Statut</th>
+                            <th style="text-align: center;">N°</th>
+                            <th style="text-align: center;">N° presentation</th>
+                            <th style="text-align: center;">Date</th>
+                            <th style="text-align: center;">Montant</th>
+                            <th style="text-align: center;">Montant réglé</th>
+                            <th style="text-align: center;">Date réglt</th>
+                            <th style="text-align: center;">Ref. réglt</th>
+                            <th style="text-align: center;">Mode réglement</th>
+                            <th style="text-align: center;">Statut</th>
                         </tr>
                         @php
                             $MontantNetTotalPartielle = 0;
@@ -465,18 +465,19 @@
                         @endphp
                         @forelse($partielle as $part)
                             @php
-                                $MontantNetTotalPartielle += (float) $enc['MontantNet'];
-                                $RegltMontantTotalPartielle += (float) $enc['RegltMontant'];
+                                $MontantNetTotalPartielle += (float) $part['MontantNet'];
+                                $RegltMontantTotalPartielle += (float) $part['RegltMontant'];
                             @endphp
                             <tr>
-                                <td>{{$part['IdPresentation'] ?? ''}}</td>
-                                <td>{{$part['MaDate'] ?? ''}}</td>
-                                <td>{{ number_format($part['MontantNet'] , 0, ',', ' ') ?? ''}}</td>
-                                <td>{{ number_format($part['RegltMontant'] , 0, ',', ' ') ?? ''}}</td>
-                                <td>{{$part['RegltDate'] ?? ''}}</td>
+                                <td style="text-align: center;">{{$loop->iteration}}</td>
+                                <td style="text-align: center;">{{$part['IdPresentation'] ?? ''}}</td>
+                                <td style="text-align: center;">{{$part['MaDate'] ?? ''}}</td>
+                                <td style="text-align: center;">{{ number_format($part['MontantNet'] , 0, ',', ' ') ?? ''}}</td>
+                                <td style="text-align: center;">{{ number_format($part['RegltMontant'] , 0, ',', ' ') ?? ''}}</td>
+                                <td style="text-align: center;">{{$part['RegltDate'] ?? ''}}</td>
                                 <td>{{$part['RegltRef'] ?? ''}}</td>
-                                <td>{{$part['RegltCodePaiement'] ?? ''}}</td>
-                                <td>{{$part['Statut'] ?? ''}}</td>
+                                <td style="text-align: center;">{{$part['RegltCodePaiement'] ?? ''}}</td>
+                                <td style="text-align: center;">{{$part['Statut'] ?? ''}}</td>
                             </tr>
                             
                         @empty
@@ -488,8 +489,9 @@
                             <tr>
                                 <td> </td>
                                 <td> </td>
-                                <td>{{ number_format($MontantNetTotalPartielle , 0, ',', ' ') ?? ''}}</td>
-                                <td>{{ number_format($RegltMontantTotalPartielle , 0, ',', ' ') ?? ''}}</td>
+                                <td> </td>
+                                <td style="text-align: center;">{{ number_format($MontantNetTotalPartielle , 0, ',', ' ') ?? ''}}</td>
+                                <td style="text-align: center;">{{ number_format($RegltMontantTotalPartielle , 0, ',', ' ') ?? ''}}</td>
                                 <td> </td>
                                 <td> </td>
                                 <td> </td>
@@ -515,14 +517,15 @@
     
                     <table border="0.5" cellpadding="7" cellspacing="0" width="100%">
                         <tr>
-                            <th>N°</th>
-                            <th>Date</th>
-                            <th>Montant</th>
-                            <th>Montant réglé</th>
-                            <th>Date réglt</th>
-                            <th>Ref. réglt</th>
-                            <th>Mode réglement</th>
-                            <th>Statut</th>
+                            <th style="text-align: center;">N°</th>
+                            <th style="text-align: center;">N° presentation</th>
+                            <th style="text-align: center;">Date</th>
+                            <th style="text-align: center;">Montant</th>
+                            <th style="text-align: center;">Montant réglé</th>
+                            <th style="text-align: center;">Date réglt</th>
+                            <th style="text-align: center;">Ref. réglt</th>
+                            <th style="text-align: center;">Mode réglement</th>
+                            <th style="text-align: center;">Statut</th>
                         </tr>
                         @php
                             $MontantNetTotalReglee = 0;
@@ -534,14 +537,15 @@
                                 $RegltMontantTotalReglee += (float) $reglt['RegltMontant'];
                             @endphp
                             <tr>
-                                <td>{{$reglt['IdPresentation'] ?? ''}}</td>
-                                <td>{{$reglt['MaDate'] ?? ''}}</td>
-                                <td>{{ number_format($reglt['MontantNet'] , 0, ',', ' ') ?? ''}}</td>
-                                <td>{{ number_format($reglt['RegltMontant'] , 0, ',', ' ') ?? ''}}</td>
-                                <td>{{$reglt['RegltDate'] ?? ''}}</td>
+                                <td style="text-align: center;">{{ $loop->iteration }}</td>
+                                <td style="text-align: center;">{{$reglt['IdPresentation'] ?? ''}}</td>
+                                <td style="text-align: center;">{{$reglt['MaDate'] ?? ''}}</td>
+                                <td style="text-align: center;">{{ number_format($reglt['MontantNet'] , 0, ',', ' ') ?? ''}}</td>
+                                <td style="text-align: center;">{{ number_format($reglt['RegltMontant'] , 0, ',', ' ') ?? ''}}</td>
+                                <td style="text-align: center;">{{$reglt['RegltDate'] ?? ''}}</td>
                                 <td>{{$reglt['RegltRef'] ?? ''}}</td>
-                                <td>{{$reglt['RegltCodePaiement'] ?? ''}}</td>
-                                <td>{{$reglt['Statut'] ?? ''}}</td>
+                                <td style="text-align: center;">{{$reglt['RegltCodePaiement'] ?? ''}}</td>
+                                <td style="text-align: center;">{{$reglt['Statut'] ?? ''}}</td>
                             </tr>
                             
                         @empty
@@ -553,8 +557,9 @@
                             <tr>
                                 <td> </td>
                                 <td> </td>
-                                <td>{{ number_format($MontantNetTotalReglee , 0, ',', ' ') ?? ''}}</td>
-                                <td>{{ number_format($RegltMontantTotalReglee , 0, ',', ' ') ?? ''}}</td>
+                                <td> </td>
+                                <td style="text-align: center;">{{ number_format($MontantNetTotalReglee , 0, ',', ' ') ?? ''}}</td>
+                                <td style="text-align: center;">{{ number_format($RegltMontantTotalReglee , 0, ',', ' ') ?? ''}}</td>
                                 <td> </td>
                                 <td> </td>
                                 <td> </td>

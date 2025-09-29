@@ -3,7 +3,7 @@
         <div class="card-header text-center">
             <h5 class="mb-1">Vos informations personnelles</h5>
             <p class="mb-4">Nous avons besoin de connaitre l'identité du demandeur afin de pouvoir traiter votre demande</p>
-            <p class="mb-4"><small>Pour toutes modifications de vos informations personnelles, veuillez Cliquez <i><a href="{{ route('customer.prestation.autre', $typePrestationAutre->id) }}" class="text-danger underline text-decoration-none fw-bold">ici</a></i> pour faire la demande</small></span></p>
+            <p class="mb-4"><strong>Pour toutes modifications de vos informations personnelles, veuillez Cliquez <i><a href="{{ route('customer.prestation.autre', $typePrestationAutre->id) }}" class="text-danger underline text-decoration-none fw-bold star">ici</a></i> pour faire la demande</strong></p>
         </div>
         <div class="card-body">
             <!-- Étape 1 -->

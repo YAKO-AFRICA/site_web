@@ -39,14 +39,14 @@
             <div class="modal-body">
                 <div class="card radius-10">
                     <div class="card-body bg-light-success rounded">
-                        <div class="d-flex align-items-center">
-                            <img src="{{ asset('cust_assets/images/avatars/yvon.png')}}" class="rounded-circle p-1 border" width="90" height="90" alt="...">
-                            <div class="flex-grow-1 ms-3 text-dark">
+                        <div class="row">
+                            <div class="col-md-3 col-lg-3 col-sm-12 text-center">
+                                <img src="{{ asset('cust_assets/images/avatars/yvon.png')}}" class="rounded-circle p-1 border img-fluid">
+                            </div>
+                            <div class="col-md-9 col-lg-9 col-sm-12">
                                 <h5 class="mt-0">Qu'est ce qu'un(e) {{$typePrestation->libelle ?? ''}}</h5>
                                 <p class="mb-0">{!! ($typePrestation->description) ?? 'Pas de description' !!}</p>
                             </div>
-                            
-
                         </div>
                     </div>
                     
@@ -55,23 +55,27 @@
                             @if ($typePrestation->impact == 0)
                                 @if (in_array($contratDetails['codeProduit'], $produitsEpargneValides))
                                     @if ($typePrestation->id != 5 && $NbrencConfirmer <= 24)
-                                    "Pour pouvoir demander cette prestation : <strong>{{$typePrestation->libelle ?? ''}}</strong> sur le contrat <strong>{{$contratDetails['IdProposition'] ?? ''}}</strong>, vous devez avoir effectué une cotisation d'au moins 24 mois."
+                                    Vous ne pouvez pas demander cette prestation !
+                                    {{-- "Pour pouvoir demander cette prestation : <strong>{{$typePrestation->libelle ?? ''}}</strong> sur le contrat <strong>{{$contratDetails['IdProposition'] ?? ''}}</strong>, vous devez avoir effectué une cotisation d'au moins 24 mois." --}}
                                     @endif
                                 @endif
                                 @if (in_array($contratDetails['codeProduit'], $produitsObsequeValides1))
                                         @if ( ($typePrestation->id == 4 && $NbrencConfirmer <= 13))
                                             {{-- Pour pouvoir demander ce type de prestation <strong>{{$typePrestation->libelle ?? ''}}</strong> sur le contrat <strong>{{$contratDetails['IdProposition'] ?? ''}}</strong>, vous devez effetuer une cotisation au moins 13 mois
                                              --}}
-                                             "Pour pouvoir demander cette prestation : <strong>{{$typePrestation->libelle ?? ''}}</strong> sur le contrat <strong>{{$contratDetails['IdProposition'] ?? ''}}</strong>, vous devez avoir effectué une cotisation d'au moins 13 mois."
+                                             Vous ne pouvez pas demander cette prestation !
+                                             {{-- "Pour pouvoir demander cette prestation : <strong>{{$typePrestation->libelle ?? ''}}</strong> sur le contrat <strong>{{$contratDetails['IdProposition'] ?? ''}}</strong>, vous devez avoir effectué une cotisation d'au moins 13 mois." --}}
                                         
                                         @elseif($typePrestation->id == 2 && (float) $contratDetails['DureeCotisationAns'] >= $dureeCotisation)
-                                        "Pour pouvoir demander cette prestation : <strong>{{$typePrestation->libelle ?? ''}}</strong> sur le contrat <strong>{{$contratDetails['IdProposition'] ?? ''}}</strong>, vous devez avoir cotisé pendant au moins <strong>{{$contratDetails['DureeCotisationAns'] ?? ''}}</strong> ans."
+                                        {{-- "Pour pouvoir demander cette prestation : <strong>{{$typePrestation->libelle ?? ''}}</strong> sur le contrat <strong>{{$contratDetails['IdProposition'] ?? ''}}</strong>, vous devez avoir cotisé pendant au moins <strong>{{$contratDetails['DureeCotisationAns'] ?? ''}}</strong> ans." --}}
+                                        Vous ne pouvez pas demander cette prestation !
                                         @endif 
                                 @endif
                             @elseif($typePrestation->impact == 1)
                                 @if (in_array($contratDetails['codeProduit'], $produitsEpargneValides))
                                     @if ($TotalEncaissement <= $contisationPourcentage && $typePrestation->id == 3)
-                                        "Désolé, le cumul actuel de vos cotisations ne vous permet pas de demander la prestation <strong>{{$typePrestation->libelle ?? ''}}</strong> sur le contrat <strong>{{$contratDetails['IdProposition'] ?? ''}}</strong>."
+                                        {{-- "Désolé, le cumul actuel de vos cotisations ne vous permet pas de demander la prestation <strong>{{$typePrestation->libelle ?? ''}}</strong> sur le contrat <strong>{{$contratDetails['IdProposition'] ?? ''}}</strong>." --}}
+                                        Vous ne pouvez pas demander cette prestation !
                                     @endif
                                 @endif
                             @endif
@@ -115,11 +119,11 @@
                     @if(in_array($contratDetails['codeProduit'], $produitsObsequeValides1) || in_array($contratDetails['codeProduit'], $produitsObsequeValides2))
                         <a href="{{ route('customer.rdv.create', $typePrestation->id) }}" type="button" class="btn-prime btn-prime-two">Ok, Je Continue</a>
                     @endif
-                    @if(in_array($contratDetails['codeProduit'], $produitsObsequeValides2))
+                    {{-- @if(in_array($contratDetails['codeProduit'], $produitsObsequeValides2))
                         <a href="{{ route('customer.rdv.create', $typePrestation->id) }}" class="btn-prime btn-prime-two">
                             Ok, Je Continue
                         </a>
-                    @endif
+                    @endif --}}
                 </div>
             @elseif($typePrestation->impact == 'Autre')
                 <div class="modal-footer">

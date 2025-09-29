@@ -63,8 +63,6 @@
                                 </a>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             </div>
@@ -103,35 +101,93 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.type !== "success") {
-                            msgErreur.textContent = "Désolé ! La police du contrat N° " + idContrat + " n'est pas encore disponible !";
-                            msgErreur.style.display = "block";
+                        if (data.code == 404) {
+                            // utilise SweetAlert pour afficher un message d'erreur
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erreur',
+                                text: data.message,
+                                showConfirmButton: true,
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#076633',
+                                position: 'center',
+                                timer: 8000,
+                                timerProgressBar: true,
+                            });
+                            // msgErreur.textContent = "Désolé ! La police du contrat N° " + idContrat + " n'est pas encore disponible !";
+                            // msgErreur.style.display = "block";
                             spinner.style.display = "none";
                             previewContainer.innerHTML = "";
                             downloadButton.style.display = "none";
                             return;
+                        }else if(data.code == 400){
+                            // utilise SweetAlert pour afficher un message d'erreur
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erreur',
+                                text: data.message,
+                                showConfirmButton: true,
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#076633',
+                                position: 'center',
+                                timer: 8000,
+                                timerProgressBar: true,
+                            });
+                            spinner.style.display = "none";
+                            previewContainer.innerHTML = "";
+                            downloadButton.style.display = "none";
+                            return;
+                        }else if(data.code == 500){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erreur',
+                                text: data.message,
+                                showConfirmButton: true,
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#076633',
+                                position: 'center',
+                                timer: 8000,
+                                timerProgressBar: true,
+                            });
+                            spinner.style.display = "none";
+                            previewContainer.innerHTML = "";
+                            downloadButton.style.display = "none";
+                            return;
+                        }else{
+                            
+                            const pdfUrl = data.url;
+                            console.log(pdfUrl);
+                            previewContainer.innerHTML = `
+                                <iframe src="${pdfUrl}" width="100%" height="600px" style="border: 1px solid #ddd;"></iframe>
+                            `;
+                            downloadButton.href = pdfUrl;
+                            downloadButton.download = `CP_${idContrat}.pdf`;
+                            downloadButton.style.display = "inline-block"; // Afficher le bouton
+                            spinner.style.display = "none"; // Cacher le spinner
                         }
 
-                        const pdfUrl = data.url;
-                        
-
-                        previewContainer.innerHTML = `
-                <iframe src="${pdfUrl}" width="100%" height="600px" style="border: 1px solid #ddd;"></iframe>
-            `;
-
-                        downloadButton.href = pdfUrl;
-                        downloadButton.download = `CP_${idContrat}.pdf`;
-                        downloadButton.style.display = "inline-block"; // Afficher le bouton
-
-                        spinner.style.display = "none"; // Cacher le spinner
                     })
+                    
                     .catch(error => {
+
                         console.error(error);
-                        spinner.style.display = "none"; // Cacher le spinner
-                        msgErreur.textContent = "Désolé ! La police de votre contrat N° " + idContrat + " n'est pas encore disponible !";
-                        msgErreur.style.display = "block";
-                        previewContainer.innerHTML = "";
-                        downloadButton.style.display = "none";
+                        Swal.fire({
+                                icon: 'error',
+                                title: 'Erreur',
+                                text: "Désolé ! La police du contrat N° " + idContrat + " n'est pas encore disponible ! ",
+                                showConfirmButton: true,
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#076633',
+                                position: 'center',
+                                timer: 8000,
+                                timerProgressBar: true,
+                                showCloseButton: true,
+                            });
+                            spinner.style.display = "none";
+                            previewContainer.innerHTML = "";
+                            downloadButton.style.display = "none";
+                            return;
+                        
                     });
             });
         });

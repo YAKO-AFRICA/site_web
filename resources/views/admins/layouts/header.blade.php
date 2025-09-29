@@ -219,36 +219,46 @@
             </li>
             @endcan
             
+            @can('Voir les types de Prestation')
+              <li class="nav-item">
+                <!-- label-->
+                <p class="navbar-vertical-label">Gestion des type de prestations</p>
+                <hr class="navbar-vertical-line" /><!-- parent pages-->
+                <ul class="nav" id="nv-e-commerce">
+                    <li class="nav-item">
+                      <div class="nav-item-wrapper">
+                          <a class="nav-link dropdown-indicator label-1" href="#nv-homeAgents" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-homeAgents">
+                            <div class="d-flex align-items-center">
+                              <div class="dropdown-indicator-icon-wrapper">
+                                <span class="fas fa-caret-right dropdown-indicator-icon"></span>
+                              </div>
+                              <span class="nav-link-icon">
+                                <span data-feather="pie-chart"></span>
+                              </span><span class="nav-link-text">Type Prestation</span>
+                              <span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
+                            </div>
+                          </a>
+                          <div class="parent-wrapper label-1">
+                            <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-homeAgents">
+                              <li class="collapsed-nav-item-title d-none">Type Prestation</li>
+                              <li class="nav-item"><a class="nav-link" href="{{ route('customer.typePrestation') }}">
+                                  <div class="d-flex align-items-center"><span class="nav-link-text">Liste</span></div>
+                                </a><!-- more inner pages-->
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                    </li>
+                </ul> 
+              </li>
+            @endcan
+
             @can('Voir gestion des utilisateurs')
               <li class="nav-item">
                 <!-- label-->
                 <p class="navbar-vertical-label">Gestion des utilisateurs</p>
                 <hr class="navbar-vertical-line" /><!-- parent pages-->
                 <ul class="nav" id="nv-e-commerce">
-                      {{-- <li class="nav-item">
-                        <div class="nav-item-wrapper">
-                            <a class="nav-link dropdown-indicator label-1" href="#nv-homeAgents" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="nv-homeAgents">
-                              <div class="d-flex align-items-center">
-                                <div class="dropdown-indicator-icon-wrapper">
-                                  <span class="fas fa-caret-right dropdown-indicator-icon"></span>
-                                </div>
-                                <span class="nav-link-icon">
-                                  <span data-feather="pie-chart"></span>
-                                </span><span class="nav-link-text">Type Prestation</span>
-                                <span class="fa-solid fa-circle text-info ms-1 new-page-indicator" style="font-size: 6px"></span>
-                              </div>
-                            </a>
-                            <div class="parent-wrapper label-1">
-                              <ul class="nav collapse parent" data-bs-parent="#navbarVerticalCollapse" id="nv-homeAgents">
-                                <li class="collapsed-nav-item-title d-none">Type Prestation</li>
-                                <li class="nav-item"><a class="nav-link" href="{{ route('customer.typePrestation') }}">
-                                    <div class="d-flex align-items-center"><span class="nav-link-text">Liste</span></div>
-                                  </a><!-- more inner pages-->
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                      </li> --}}
                       <li class="nav-item">
                           <a class="nav-link" href="{{ route('setting.users') }}" title="Utilisateurs">
                               <div class="d-flex align-items-center">

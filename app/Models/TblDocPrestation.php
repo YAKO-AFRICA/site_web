@@ -13,6 +13,7 @@ class TblDocPrestation extends Model
     protected $fillable = [
         'idPrestation',
         'idDemandeCompte',
+        'filename',
         'libelle',
         'path',
         'type',

@@ -22,7 +22,7 @@
 	<link href="{{ asset('cust_assets/css/icons.css')}}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/main.css')}}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css')}}">
-	<title>Login || Yako Africa Assurances Vie</title>
+	<title>Info prestation || Yako Africa Assurances Vie</title>
 
 </head>
 
@@ -55,20 +55,24 @@
                         <div class="list-group list-group-flush mb-3">
                             <span>Status de la prestation</span>
                         </div>
-                        @if ($prestation->etape == 1)
-                            <div class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3">
+                        @if ($prestation->etape == 0)
+                            <span class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3">
                                 <i class="bx bxs-circle me-1"></i>En attente de transmission
-                            </div>
-                        @elseif($prestation->etape == 2)
-                            <div class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3">
-                                <i class="bx bxs-circle me-1"></i>Transmis pour traitement
-                            </div>
-                        @elseif($prestation->etape == 3)
-                            <div class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3">
+                            </span>
+                        @elseif ($prestation->etape == 1)
+                            <span class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3">
+                                <i class="bx bxs-circle me-1"></i>Demande transmise pour traitement
+                            </span>
+                        @elseif ($prestation->etape == 2)
+                            <span class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3">
+                                <i class="bx bxs-circle me-1"></i>Demande acceptée et en cours de traitement
+                            </span>
+                        @elseif ($prestation->etape == 3)
+                            <span class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3">
                                 <i class="bx bxs-circle me-1"></i>Demande rejétée
-                            </div>
+                            </span>
                         @else
-                            -
+                            --
                         @endif
 
                     </div>

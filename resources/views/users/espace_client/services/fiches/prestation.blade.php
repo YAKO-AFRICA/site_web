@@ -201,6 +201,9 @@
 </head>
 <body >
 
+    @php
+        \Carbon\Carbon::setLocale('fr');
+    @endphp
     
     <main class="main">   
         <section class="main-section" style="position: relative; height: 100%; width: 100%; overflow: hidden;">
@@ -224,6 +227,9 @@
                 background: url('data:image/jpg;base64,{{ base64_encode(file_get_contents(public_path("cust_assets/images/bg-logo.png"))) }}') no-repeat center; 
                 background-size: contain; opacity: 0.1; z-index: 1;">
             </div>
+             <label for="cachet" style="position: absolute; top: 55px; left: 200px; max-height: 120px; max-width: 130px; z-index: -2;">
+                <img src="data:image/jpg;base64,{{ base64_encode(file_get_contents(public_path('cust_assets/images/cachet-yako.jpeg'))) }}" alt="Yako Africa Logo" style="height: 120px; width: 130px" class="logo">
+            </label>
             <div class="content" style="padding: 0px 20px;">
                 <section class="section-identification">
                     <h5>IDENTIFICATION DECLARANT</h5>
@@ -505,7 +511,7 @@
                                     border-radius: 3px;
                                     background-color: #ffffff;" 
                                 id="telPaiement" 
-                                value="{{ $prestation->telPaiement ?? '.' }} ." /> 
+                                value="{{ $prestation->telPaiement ?? '.' }}" /> 
                             <br>
                             
                             <label for="virementBancaire" style="margin-right: 4px">Virement Bancaire &nbsp;&nbsp;&nbsp;</label>
@@ -574,14 +580,23 @@
                                 padding: 5px;
                                 font-size: 14px;
                                 border-radius: 3px;
-                                background-color: #ffffff;" name="" value="{{ $prestation->created_at->format('d/m/Y') ?? '.' }}" /> <br> <br>
+                                background-color: #ffffff;" name="" value="{{ \Carbon\Carbon::parse($prestation->created_at)->translatedFormat('d F Y') ?? '.' }}" /> <br> <br>
+                            {{-- <input type="text" 
+                            style="
+                                width: 66%;
+                                margin-bottom: -7px;
+                                border: 1px solid #90C8A7;
+                                padding: 5px;
+                                font-size: 14px;
+                                border-radius: 3px;
+                                background-color: #ffffff;" name="" value="{{ $prestation->created_at->format('d/m/Y') ?? '.' }}" /> <br> <br> --}}
                             
                         </div>
                     </div>
-                    <label for="qrcode" style="position: absolute; top: 310px; left: 200px; max-height: 65px; max-width: 65px;">
+                    <label for="signature" style="position: absolute; top: 310px; left: 200px; max-height: 65px; max-width: 65px;">
                         
                         @if($imageSrc != '')
-                            <img src="{{ $imageSrc }}" alt="Yako Africa Logo" style="height: 65px; width: 65px" class="logo">
+                            <img src="{{ $imageSrc }}" alt="Signature" style="height: 65px; width: 65px" class="logo">
                         @endif
                     </label>
                 </section>
@@ -642,32 +657,19 @@
                     <input type="text" 
                            style="width: 4%; margin-bottom: -7px; border: 1px solid #90C8A7; padding: 5px; font-size: 14px; text-align:center; color: #F7A400; border-radius: 3px; background-color: #ffffff;"
                            value="{{ $bulletin != null ? 'X' : '.' }}" />&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
-                    {{-- <input type="text" 
-                           style="width: 4%; margin-bottom: -7px; border: 1px solid #90C8A7; padding: 5px; font-size: 14px; text-align:center; color: #F7A400; border-radius: 3px; background-color: #ffffff;"
-                           value="{{ isset($prestation->docPrestation[1]) && $prestation->id == optional($prestation->docPrestation[1])->idPrestation && optional($prestation->docPrestation[1])->libelle !== null ? 'X' : '.' }}" />&nbsp; &nbsp;
-                 --}}
+                  
                     <label for="prenom">RIB &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <input type="text" style="width: 4%; margin-bottom: -7px; border: 1px solid #90C8A7; padding: 5px; font-size: 14px; text-align:center; color: #F7A400; border-radius: 3px; background-color: #ffffff;"
                            value="{{ $RIB != null ? 'X' : '.' }}" /> <br><br>
 
-                    {{-- <input type="text" 
-                           style="width: 4%; margin-bottom: -7px; border: 1px solid #90C8A7; padding: 5px; font-size: 14px; text-align:center; color: #F7A400; border-radius: 3px; background-color: #ffffff;"
-                           value="{{ isset($prestation->docPrestation[2]) && $prestation->id == optional($prestation->docPrestation[2])->idPrestation && optional($prestation->docPrestation[2])->libelle !== null ? 'X' : '.' }}" /><br><br>
-                 --}}
                     <label for="prenom">Attestation de <br> déclaration de <br>perte du contrat &nbsp; &nbsp;&nbsp;&nbsp;</label> 
                     <input type="text" style="width: 4%; margin-bottom: -7px; border: 1px solid #90C8A7; padding: 5px; text-align:center; color: #F7A400; font-size: 14px; border-radius: 3px; background-color: #ffffff;"
                            value="{{ $AttestationPerteContrat != null ? 'X' : '.' }}" />&nbsp; &nbsp; 
-                    {{-- <input type="text" 
-                           style="width: 4%; margin-bottom: -7px; border: 1px solid #90C8A7; padding: 5px; text-align:center; color: #F7A400; font-size: 14px; border-radius: 3px; background-color: #ffffff;"
-                           value="{{ isset($prestation->docPrestation[6]) && $prestation->id == optional($prestation->docPrestation[6])->idPrestation && optional($prestation->docPrestation[6])->libelle !== null ? 'X' : '.' }}" />&nbsp; &nbsp;
-                 --}}
+                    
                     <label for="prenom">Fiche d'identification du N° de téléphone &nbsp;&nbsp;</label>
                     <input type="text" style="width: 4%; margin-bottom: -7px; border: 1px solid #90C8A7; padding: 5px; text-align:center; color: #F7A400; font-size: 14px; border-radius: 3px; background-color: #ffffff;"
                            value="{{ $FicheIDNum != null ? 'X' : '.' }}" />&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-                    {{-- <input type="text" 
-                        style="width: 4%; margin-bottom: -7px; border: 1px solid #90C8A7; padding: 5px; text-align:center; color: #F7A400; font-size: 14px; border-radius: 3px; background-color: #ffffff;"
-                        value="{{ isset($prestation->docPrestation[5]) && $prestation->id == optional($prestation->docPrestation[5])->idPrestation && optional($prestation->docPrestation[5])->libelle !== null ? 'X' : '.' }}" />&nbsp; &nbsp;
-                         --}}
+                
 
                     
                     <label for="qrcode" style="position: absolute; top: -193px; left: 650px">
@@ -678,9 +680,6 @@
                     <input type="text" style="width: 4%; margin-bottom: -7px; border: 1px solid #90C8A7; padding: 5px; text-align:center; color: #F7A400; font-size: 14px; border-radius: 3px; background-color: #ffffff;"
                            value="{{ $CNI != null ? 'X' : '.' }}" />&nbsp; &nbsp;
 
-                    {{-- <input type="text" 
-                           style="width: 4%; margin-bottom: -7px; border: 1px solid #90C8A7; padding: 5px; text-align:center; color: #F7A400; font-size: 14px; border-radius: 3px; background-color: #ffffff;"
-                           value="{{ isset($prestation->docPrestation[3]) && isset($prestation->docPrestation[4]) && $prestation->id == optional($prestation->docPrestation[3])->idPrestation && $prestation->id == optional($prestation->docPrestation[4])->idPrestation && optional($prestation->docPrestation[3])->libelle !== null && optional($prestation->docPrestation[4])->libelle !== null ? 'X' : '.' }}" /> --}}
                 </div>
                 
                 

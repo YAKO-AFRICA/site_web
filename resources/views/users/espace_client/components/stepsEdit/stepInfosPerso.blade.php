@@ -29,7 +29,7 @@
                     <div class="col-12 col-lg-6">
                         <label for="datenaissance" class="form-label">Quelle est votre date de naissance ?</label>
                         <input type="text" class="form-control datepicke" id="datenaissance" name="datenaissance" 
-                               value="{{ \Carbon\Carbon::parse($prestation->datenaissance) ?? '' }}" 
+                               value="{{ $prestation->datenaissance ?? '' }}" 
                                placeholder="dd/mm/yyyy" readonly>
                     </div>
                     <div class="col-12 col-lg-6">

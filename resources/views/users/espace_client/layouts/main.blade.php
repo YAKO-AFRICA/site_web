@@ -16,6 +16,7 @@
     <link href="{{ asset('https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('cust_assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet" />
     <link href="{{ asset('cust_assets/plugins/metismenu/css/metisMenu.min.css') }}" rel="stylesheet" />
+
     <link href="{{ asset('cust_assets/plugins/datatable/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" />
     <!-- loader-->
     <link href="{{ asset('cust_assets/plugins/bs-stepper/css/bs-stepper.css') }}" rel="stylesheet" />
@@ -30,6 +31,7 @@
         href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/swiper-bundle.css') }}">
+    {{-- <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"> --}}
     <link href="{{ asset('cust_assets/css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('cust_assets/css/icons.css') }}" rel="stylesheet">
@@ -96,6 +98,7 @@
     <script src="{{ asset('cust_assets/plugins/Drag-And-Drop/dist/imageuploadify.min.js') }}"></script>
     <script src="{{ asset('https://cdn.jsdelivr.net/npm/flatpickr') }}"></script>
     <script src="{{ asset('cust_assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js') }}"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="{{ asset('cust_assets/plugins/select2/js/select2-custom.js') }}"></script>
     <script src="{{ asset('cust_assets/plugins/vectormap/jquery-jvectormap-2.0.2.min.js') }}"></script>
@@ -109,6 +112,109 @@
     <script src="{{ asset('cust_assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('cust_assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
 
+
+    <script src="https://cdn.tiny.cloud/1/pfjd5f3rf5sx7e99t8p7wi1x9yz3phproft7hk92nakivoru/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+        tinymce.init({
+            selector: 'textarea.tinymce-editor',
+            height: 400,
+            language: 'fr_FR', // Interface en français
+            plugins: [
+                'advlist autolink lists link image charmap preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table emoticons wordcount help',
+                'export pagebreak codesample'
+            ],
+            toolbar: 'undo redo | formatselect | ' +
+                'bold italic underline strikethrough forecolor backcolor | ' +
+                'alignleft aligncenter alignright alignjustify | ' +
+                'bullist numlist outdent indent | link image media emoticons | ' +
+                'table codesample export | removeformat | fullscreen preview help',
+
+            menubar: 'file edit view insert format tools table help',
+
+            // Style par défaut du contenu
+            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px; line-height:1.6 }',
+
+            image_title: true,
+            automatic_uploads: true,
+            file_picker_types: 'image media',
+
+            // Gestion des uploads (images & vidéos)
+            file_picker_callback: function(callback, value, meta) {
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+
+                if (meta.filetype === 'image') {
+                    input.setAttribute('accept', 'image/*');
+                } else if (meta.filetype === 'media') {
+                    input.setAttribute('accept', 'video/*');
+                }
+
+                input.onchange = function() {
+                    var file = this.files[0];
+                    var reader = new FileReader();
+                    reader.onload = function() {
+                        var id = 'blobid' + (new Date()).getTime();
+                        var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                        var base64 = reader.result.split(',')[1];
+                        var blobInfo = blobCache.create(id, file, base64);
+                        blobCache.add(blobInfo);
+                        callback(blobInfo.blobUri(), {
+                            title: file.name
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                };
+                input.click();
+            },
+
+            // Options supplémentaires
+            table_default_attributes: {
+                border: '1'
+            },
+            table_default_styles: {
+                'border-collapse': 'collapse',
+                'width': '100%'
+            },
+            codesample_languages: [{
+                    text: 'HTML/XML',
+                    value: 'markup'
+                },
+                {
+                    text: 'JavaScript',
+                    value: 'javascript'
+                },
+                {
+                    text: 'CSS',
+                    value: 'css'
+                },
+                {
+                    text: 'PHP',
+                    value: 'php'
+                },
+                {
+                    text: 'Python',
+                    value: 'python'
+                },
+                {
+                    text: 'Java',
+                    value: 'java'
+                },
+                {
+                    text: 'C#',
+                    value: 'csharp'
+                }
+            ]
+        });
+    </script>
+
+    <script>
+        var quill = new Quill('.editor', {
+            theme: 'snow'
+        });
+    </script>
     <script>
         $(document).ready(function() {
 
@@ -180,24 +286,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
     <script>
-
         document.addEventListener('DOMContentLoaded', function() {
             let isJobRunning = false;
-    
+
             function executeCronJob() {
                 if (!isJobRunning) {
                     isJobRunning = true;
                     axios.post("{{ route('etatCotisation.clearFolder') }}", {}, {
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                        },
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                            },
                         })
                         .then(response => {
                             console.log(' ');
                             // console.log(response.data.message);
-                            
+
                         })
                         .catch(error => {
                             console.error("Erreur lors de l'exécution du cron :", error);
@@ -209,9 +314,52 @@
                     console.log("La tâche cron est déjà en cours.");
                 }
             }
-    
+
             // Exécuter toutes les 60 secondes (1 minute)
             setInterval(executeCronJob, 60000);
+        });
+    </script>
+
+
+
+
+    <script>
+        const noCopy = document.querySelector('.no-copy');
+        const noCut = document.querySelector('.no-cut');
+        const noPaste = document.querySelector('.no-paste');
+
+        noCopy.addEventListener('copy', function(event) {
+            event.preventDefault();
+            swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'La copie de ce champ est désactivée.',
+                showConfirmButton: false,
+                timer: 1500
+            })
+
+        });
+
+        noCut.addEventListener('cut', function(e) {
+            e.preventDefault();
+            swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'La coupe de ce champ est désactivée.',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        });
+
+        noPaste.addEventListener('paste', function(e) {
+            e.preventDefault();
+            swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'La coller de ce champ est désactivée.',
+                showConfirmButton: false,
+                timer: 1500
+            })
         });
     </script>
 </body>

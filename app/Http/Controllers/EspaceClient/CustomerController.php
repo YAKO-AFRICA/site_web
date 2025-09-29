@@ -10,6 +10,7 @@ use App\Models\MembreContrat;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Mail\UserRegisteredMail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -42,9 +43,14 @@ class CustomerController extends Controller
             // Utiliser Guzzle directement pour un meilleur contrôle
             $response = Http::withOptions([
                 'timeout' => 60,  // Augmenter le délai d'attente
-            ])->post('https://api.yakoafricassur.com/oldweb/encaissement-bis', [
+            ])->post(config('services.api.encaissement_bis'), [
                 'idContrat' => $idcontrat,
             ]);
+            // $response = Http::withOptions([
+            //     'timeout' => 60,  // Augmenter le délai d'attente
+            // ])->post(env('API_ENCAISSEMENT_BIS'), [
+            //     'idContrat' => $idcontrat,
+            // ]);
 
             if ($response->successful()) {
                 return response()->json([
@@ -64,6 +70,7 @@ class CustomerController extends Controller
             ], 500);
         }
     }
+
     public function AddContratByAuthCustomer(Request $request)
     {
         try {
@@ -76,7 +83,7 @@ class CustomerController extends Controller
 
             // $contrat = MembreContrat::where('idcontrat', $idcontrat)->first();
             $response = Http::withOptions(['timeout' => 60])
-                ->post('https://api.yakoafricassur.com/oldweb/encaissement-bis', [
+                ->post(config('services.api.encaissement_bis'), [
                     'idContrat' => $idcontrat,
                 ]);
             if ($response->successful()) {
@@ -224,29 +231,58 @@ class CustomerController extends Controller
             $idcontrat = $request->input('contrat');
             $externalUploadDir = base_path(env('GET_CUSTOMER_CP'));
 
-            if (!is_dir($externalUploadDir)) {
-                mkdir($externalUploadDir, 0777, true);
-            }
+            $response = Http::withOptions([
+                'timeout' => 60,  // Augmenter le délai d'attente
+            ])->post(config('services.api.encaissement_bis'), [
+                'idContrat' => $idcontrat,
+            ]);
 
-            $fileName = 'CP/' . 'CP_' . $idcontrat . '.pdf';
-            $filePath = $externalUploadDir  . DIRECTORY_SEPARATOR . $fileName;
+            if ($response->successful()) {
+                $data = $response->json();
+                $dateEffetReelle = $data['details'][0]['DateEffetReel'];
+                $dateEffetReelle = Carbon::createFromFormat('d/m/Y', $dateEffetReelle)->format('d-m-Y');
 
-            if (!file_exists($filePath)) {
+                // recuperer l'annee de la date d'effet reelle
+                $annee = Carbon::createFromFormat('d-m-Y', $dateEffetReelle)->format('Y');
+
+                // recuperer le mois de la date d'effet reelle en format de deux chiffres et retirer le zéro si le mois est inferieur a 10
+                $mois =  Carbon::createFromFormat('d-m-Y', $dateEffetReelle)->format('m');
+                $mois = ltrim($mois, '0');
+
+                if (!is_dir($externalUploadDir)) {
+                    mkdir($externalUploadDir, 0777, true);
+                }
+
+                $fileName = 'A' . $annee . '/M' . $mois . '/' . 'CP_' . $idcontrat . '.pdf';
+                $filePath = $externalUploadDir  . DIRECTORY_SEPARATOR . $fileName;
+
+                if (!file_exists($filePath)) {
+                    return response()->json([
+                        'type' => 'error',
+                        'signification' => 'Le fichier demandé est introuvable.',
+                        'message' => 'Désolé ! La police du contrat N° ' . $idcontrat . ' n\'est pas encore disponible !',
+                        'code' => 404,
+                    ], 404);
+                }
+
+                // Construire l'URL absolue du fichier PDF
+                $fileUrl = url('get-police/' . $fileName);
+
+                return response()->json([
+                    'type' => 'success',
+                    'signification' => 'Fichier trouvé.',
+                    'message' => 'Fichier trouvé.',
+                    'url' => $fileUrl,
+                    'code' => 200,
+                ], 200);
+            } else {
                 return response()->json([
                     'type' => 'error',
-                    'message' => 'Le fichier demandé est introuvable.',
-                    'code' => 404,
-                ], 404);
+                    'signification' => 'Impossible de récupérer les informations du contrat.',
+                    'message' => 'Impossible de récupérer les informations du contrat.',
+                    'code' => 400,
+                ], 400);
             }
-
-            // Construire l'URL absolue du fichier PDF
-            $fileUrl = url('get-police/' . $fileName);
-
-            return response()->json([
-                'type' => 'success',
-                'message' => 'Fichier trouvé.',
-                'url' => $fileUrl,
-            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'type' => 'error',
@@ -255,6 +291,46 @@ class CustomerController extends Controller
             ], 500);
         }
     }
+
+
+
+    // public function getPolice(Request $request)
+    // {
+    //     try {
+    //         $idcontrat = $request->input('contrat');
+    //         $externalUploadDir = base_path(env('GET_CUSTOMER_CP'));
+
+    //         if (!is_dir($externalUploadDir)) {
+    //             mkdir($externalUploadDir, 0777, true);
+    //         }
+
+    //         $fileName = 'CP/' . 'CP_' . $idcontrat . '.pdf';
+    //         $filePath = $externalUploadDir  . DIRECTORY_SEPARATOR . $fileName;
+
+    //         if (!file_exists($filePath)) {
+    //             return response()->json([
+    //                 'type' => 'error',
+    //                 'message' => 'Le fichier demandé est introuvable.',
+    //                 'code' => 404,
+    //             ], 404);
+    //         }
+
+    //         // Construire l'URL absolue du fichier PDF
+    //         $fileUrl = url('get-police/' . $fileName);
+
+    //         return response()->json([
+    //             'type' => 'success',
+    //             'message' => 'Fichier trouvé.',
+    //             'url' => $fileUrl,
+    //         ], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'type' => 'error',
+    //             'message' => 'Une erreur s\'est produite : ' . $e->getMessage(),
+    //             'code' => 500,
+    //         ], 500);
+    //     }
+    // }
 
 
     /**
@@ -266,7 +342,7 @@ class CustomerController extends Controller
             DB::beginTransaction();
             $idcontrat = $request->input('contrat');
             $response = Http::withOptions(['timeout' => 60])
-                ->post('https://api.yakoafricassur.com/oldweb/encaissement-bis', [
+                ->post(config('services.api.encaissement_bis'), [
                     'idContrat' => $idcontrat,
                 ]);
             if ($response->successful()) {
@@ -280,9 +356,27 @@ class CustomerController extends Controller
                     $nonRegle = $etatCotisation['enc']['nonRegle'];
                     $confirmer = $etatCotisation['enc']['confirmer'];
                     $partielle = $etatCotisation['enc']['partielle'];
-                    // dd($nonRegle);
+                    $totalNonRegle = array_sum(array_map(function ($item) {
+                        return isset($item['MontantNet']) ? (float) $item['MontantNet'] : 0;
+                    }, $nonRegle));
+                    $totalConfirmer = array_sum(array_map(function ($item) {
+                        return isset($item['RegltMontant']) ? (float) $item['RegltMontant'] : 0;
+                    }, $confirmer));
+                    $totalPartielle = array_sum(array_map(function ($item) {
+                        return isset($item['RegltMontant']) ? (float) $item['RegltMontant'] : 0;
+                    }, $partielle));
+
+                    // utilise les separateurs de milliers pour les nombres totalNonRegle, totalConfirmer, totalPartielle
+                    $totalNonRegle   = number_format($totalNonRegle, 0, ',', ' ');
+                    $totalConfirmer  = number_format($totalConfirmer, 0, ',', ' ');
+                    $totalPartielle  = number_format($totalPartielle, 0, ',', ' ');
+
+
+                    $nbrTotalNonRegle = count($nonRegle);
+                    $nbrTotalConfirmer = count($confirmer);
+                    $nbrTotalPartielle = count($partielle);
                     $dateConsultation = now()->format('d-m-Y H:i:s');
-                    $pdf = pdf::loadView('users.espace_client.services.cotisation.ficheEtat', compact('assures', 'payeurs', 'details', 'nonRegle', 'confirmer', 'partielle', 'dateConsultation'));
+                    $pdf = pdf::loadView('users.espace_client.services.cotisation.ficheEtat', compact('assures', 'payeurs', 'details', 'nonRegle', 'confirmer', 'partielle', 'dateConsultation', 'nbrTotalNonRegle', 'nbrTotalConfirmer', 'nbrTotalPartielle', 'totalNonRegle', 'totalConfirmer', 'totalPartielle'));
                     $pdf->setOption('enable-javascript', false);
                     $pdf->setOption('isPhpEnabled', true); // Active PHP inline 
                     $filename = 'etat_cotisation_' . $idcontrat . now()->format('d-m-Y') . '.pdf';
@@ -314,7 +408,7 @@ class CustomerController extends Controller
             DB::beginTransaction();
             $idcontrat = $request->input('contrat');
             $response = Http::withOptions(['timeout' => 60])
-                ->post('https://api.yakoafricassur.com/oldweb/encaissement-bis', [
+                ->post(config('services.api.encaissement_bis'), [
                     'idContrat' => $idcontrat,
                 ]);
             if ($response->successful()) {
@@ -326,8 +420,27 @@ class CustomerController extends Controller
                     $nonRegle = $etatCotisation['enc']['nonRegle'];
                     $confirmer = $etatCotisation['enc']['confirmer'];
                     $partielle = $etatCotisation['enc']['partielle'];
+                    $totalNonRegle = array_sum(array_map(function ($item) {
+                        return isset($item['MontantNet']) ? (float) $item['MontantNet'] : 0;
+                    }, $nonRegle));
+                    $totalConfirmer = array_sum(array_map(function ($item) {
+                        return isset($item['RegltMontant']) ? (float) $item['RegltMontant'] : 0;
+                    }, $confirmer));
+                    $totalPartielle = array_sum(array_map(function ($item) {
+                        return isset($item['RegltMontant']) ? (float) $item['RegltMontant'] : 0;
+                    }, $partielle));
+
+                    // utilise les separateurs de milliers pour les nombres totalNonRegle, totalConfirmer, totalPartielle
+                    $totalNonRegle   = number_format($totalNonRegle, 0, ',', ' ');
+                    $totalConfirmer  = number_format($totalConfirmer, 0, ',', ' ');
+                    $totalPartielle  = number_format($totalPartielle, 0, ',', ' ');
+
+
+                    $nbrTotalNonRegle = count($nonRegle);
+                    $nbrTotalConfirmer = count($confirmer);
+                    $nbrTotalPartielle = count($partielle);
                     $dateConsultation = now()->format('d-m-Y H:i:s');
-                    $pdf = pdf::loadView('users.espace_client.services.cotisation.ficheEtatApi', compact('assures', 'payeurs', 'details', 'nonRegle', 'confirmer', 'partielle', 'dateConsultation'));
+                    $pdf = pdf::loadView('users.espace_client.services.cotisation.ficheEtatApi', compact('assures', 'payeurs', 'details', 'nonRegle', 'confirmer', 'partielle', 'dateConsultation', 'nbrTotalNonRegle', 'nbrTotalConfirmer', 'nbrTotalPartielle', 'totalNonRegle', 'totalConfirmer', 'totalPartielle'));
                     $pdf->setOption('enable-javascript', false);
                     $pdf->setOption('isPhpEnabled', true); // Active PHP inline
                     $filename = 'etat_cotisation_' . $idcontrat . '.pdf';

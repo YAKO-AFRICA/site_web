@@ -223,7 +223,7 @@
                                 </strong><span>{{$details[0]['NbreEmission'] ?? ''}}</span></label>
                             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                             <label><strong>Nbre Réglement :
-                                </strong><span>{{$details[0]['NbreEncaissment'] ?? ''}} ANS</span></label>
+                                </strong><span>{{$details[0]['NbreEncaissment'] ?? ''}}</span></label>
                             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                             <label><strong>Nbre Impayés :
                                 </strong><span>{{$details[0]['NbreImpayes'] ?? ''}}</span></label>

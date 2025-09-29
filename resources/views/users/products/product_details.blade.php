@@ -173,7 +173,7 @@
                                                                     </div>
                                                                     <div class="col-md-6">
                                                                         <div class="form-grp">
-                                                                            <input type="number" name="customer_whatsapp" placeholder="Téléphone WhatsApp" required autocomplete="off">
+                                                                            <input type="number" name="customer_whatsapp" placeholder="Téléphone WhatsApp" autocomplete="off">
                                                                         </div>
                                                                     </div>
                                                                     
@@ -217,7 +217,7 @@
                                                                 <div class="row mb-2">
                                                                     <div class="col-md-12">
                                                                         <div class="form-grp">
-                                                                            <input type="email" name="customer_email" placeholder="Votre adresse email" autocomplete="off">
+                                                                            <input type="email" name="customer_email" placeholder="Votre adresse email" required autocomplete="off">
                                                                         </div>
                                                                     </div>
                                                                     <input type="hidden" name="object" value="Pré-souscription" required autocomplete="off">

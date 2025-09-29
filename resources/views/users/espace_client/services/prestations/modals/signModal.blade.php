@@ -20,15 +20,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title text-center">Signature electroique</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                {{-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> --}}
             </div>
 
             <div class="modal-body">
 
                 <div class="card p-2" id="signature-iframe">
-                    {{-- <iframe src="{{ url('http://192.168.11.6:8001/signature/'.$token['token'].'/'.$token['operation_type'].'/'.$token['key_uuid']) }}" frameborder="0" style="width: 100%; height: 60vh"></iframe> --}}
-                    <iframe
-                        src="{{ url('https://apisign.yakoafricassur.com/signature/' . $token['token'] . '/' . $token['operation_type'] . '/' . $token['key_uuid']) }}"
+                    <iframe src="{{ url(config('services.sign_api').'signature/' . $token['token'] . '/' . $token['operation_type'] . '/' . $token['key_uuid']) }}"
                         frameborder="0" style="width: 100%; height: 60vh"></iframe>
                 </div>
                 <div class="card p-2" id="signature-qrcode">
@@ -39,8 +37,7 @@
                         <div class="row">
                             <div class="col-12 text-center justify-content-center">
                                 {!! QrCode::size(200)->generate(
-                                    url(
-                                        'https://apisign.yakoafricassur.com/signature/' .
+                                    url(config('services.sign_api').'signature/' .
                                             $token['token'] .
                                             '/' .
                                             $token['operation_type'] .
@@ -55,7 +52,7 @@
                         <div class="row">
                             <div class="col-12">
                                 Vous pouvez également signer en cliquant:
-                                <a href="https://apisign.yakoafricassur.com/signature/{{ $token['token'] }}/{{ $token['operation_type'] }}/{{ $token['key_uuid'] }}"
+                                <a href="{{ config('services.sign_api').'signature/' . $token['token'] . '/' . $token['operation_type'] . '/' . $token['key_uuid'] }}"
                                     target="_blank">
                                     <strong>ICI</strong>
                                 </a>
@@ -64,9 +61,9 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
+            {{-- <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>
