@@ -21,19 +21,19 @@
                             <span>Status de la prestation</span>
                         </div>
                         @if ($prestation->etape == 0)
-                            <span class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3">
+                            <span class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3 text-wrap">
                                 <i class="bx bxs-circle me-1"></i>En attente de transmission
                             </span>
                         @elseif ($prestation->etape == 1)
-                            <span class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3">
+                            <span class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3 text-wrap">
                                 <i class="bx bxs-circle me-1"></i>Demande transmise pour traitement
                             </span>
                         @elseif ($prestation->etape == 2)
-                            <span class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3">
+                            <span class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3 text-wrap">
                                 <i class="bx bxs-circle me-1"></i>Demande acceptée et en cours de traitement
                             </span>
                         @elseif ($prestation->etape == 3)
-                            <span class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3">
+                            <span class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3 text-wrap">
                                 <i class="bx bxs-circle me-1"></i>Demande rejétée
                             </span>
                         @else
@@ -58,21 +58,25 @@
                                 </div>
                                 <div class="flex-grow-1 ms-2">
                                     <h6 class="mb-0" style="font-size: 10px">
-                                        {{ $doc->type == 'Police'
-                                            ? "Police du contrat d'assurance"
-                                            : ($doc->type == 'bulletin'
-                                                ? "Bulletin du contrat d'assurance"
-                                                : ($doc->type == 'RIB'
-                                                    ? 'RIB du compte courant'
-                                                    : ($doc->type == 'CNI'
-                                                        ? 'CNI'
-                                                        : ($doc->type == 'FicheIDNum'
-                                                            ? 'Fiche ID numéro'
-                                                            : ($doc->type == 'AttestationPerteContrat'
-                                                                ? 'Attestation de perte de contrat'
-                                                                : ($doc->type == 'etatPrestation'
-                                                                    ? 'Fiche de la prestation'
-                                                                    : '')))))) }}
+                                        @if ($doc->filename != '' || $doc->filename != null)
+                                            {{ $doc->filename }}
+                                        @else
+                                            {{ $doc->type == 'Police'
+                                                ? "Police du contrat d'assurance"
+                                                : ($doc->type == 'bulletin'
+                                                    ? "Bulletin du contrat d'assurance"
+                                                    : ($doc->type == 'RIB'
+                                                        ? 'RIB du compte courant'
+                                                        : ($doc->type == 'CNI'
+                                                            ? 'CNI'
+                                                            : ($doc->type == 'FicheIDNum'
+                                                                ? 'Fiche ID numéro'
+                                                                : ($doc->type == 'AttestationPerteContrat'
+                                                                    ? 'Attestation de perte de contrat'
+                                                                    : ($doc->type == 'etatPrestation'
+                                                                        ? 'Fiche de la prestation'
+                                                                        : '')))))) }}
+                                        @endif
                                     </h6>
                                     <p class="mb-0 text-secondary" style="font-size: 0.6em">
                                         {{ $doc->created_at ?? '' }}
@@ -89,43 +93,51 @@
                                     <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Preview
-                                                    {{ $doc->type == 'Police'
-                                                        ? "Police du contrat d'assurance"
-                                                        : ($doc->type == 'bulletin'
-                                                            ? "Bulletin du contrat d'assurance"
-                                                            : ($doc->type == 'RIB'
-                                                                ? 'RIB du compte courant'
-                                                                : ($doc->type == 'CNI'
-                                                                    ? 'CNI'
-                                                                    : ($doc->type == 'FicheIDNum'
-                                                                        ? 'Fiche ID numéro'
-                                                                        : ($doc->type == 'AttestationPerteContrat'
-                                                                            ? 'Attestation de perte de contrat'
-                                                                            : ($doc->type == 'etatPrestation'
-                                                                                ? 'Fiche de la prestation'
-                                                                                : '')))))) }}
+                                                <h5 class="modal-title" id="exampleModalLabel">
+                                                    @if ($doc->filename != '' || $doc->filename != null)
+                                                        {{ $doc->filename }}
+                                                    @else
+                                                        {{ $doc->type == 'Police'
+                                                            ? "Police du contrat d'assurance"
+                                                            : ($doc->type == 'bulletin'
+                                                                ? "Bulletin du contrat d'assurance"
+                                                                : ($doc->type == 'RIB'
+                                                                    ? 'RIB du compte courant'
+                                                                    : ($doc->type == 'CNI'
+                                                                        ? 'CNI'
+                                                                        : ($doc->type == 'FicheIDNum'
+                                                                            ? 'Fiche ID numéro'
+                                                                            : ($doc->type == 'AttestationPerteContrat'
+                                                                                ? 'Attestation de perte de contrat'
+                                                                                : ($doc->type == 'etatPrestation'
+                                                                                    ? 'Fiche de la prestation'
+                                                                                    : '')))))) }}
+                                                    @endif
                                                 </h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body" style="width: 100%; height: 80vh">
-                                                @if ($doc->type == 'etatPrestation')
+                                                <iframe style="width: 100%; height: 100%" src="{{ asset($doc->path) }}"
+                                                    frameborder="0"></iframe>
+                                                {{-- @if ($doc->type == 'etatPrestation')
                                                     <iframe style="width: 100%; height: 100%" src="{{ asset($doc->path) }}"
                                                         frameborder="0"></iframe>
                                                 @else
                                                     <iframe style="width: 100%; height: 100%" src="{{ asset($doc->path) }}"
                                                         frameborder="0"></iframe>
-                                                @endif
+                                                @endif --}}
                                             </div>
                                             <div class="modal-footer">
-                                                @if ($doc->type == 'etatPrestation')
-                                                    <button type="button" class="btn-prime btn-prime-two text-white"
-                                                        data-bs-dismiss="modal">
-                                                        <a class="text-white" href="{{ asset($doc->path) }}"
-                                                            id="download-bulletin" title="Preview" download>Telecharger
-                                                            <i class="bx bx-download"></i>
-                                                        </a></button>
+                                                <button type="button" class="btn-prime btn-prime-two text-white"
+                                                    data-bs-dismiss="modal">
+                                                    <a class="text-white" href="{{ asset($doc->path) }}"
+                                                        id="download-bulletin" title="Preview" download>Telecharger
+                                                        <i class="bx bx-download"></i>
+                                                    </a>
+                                                </button>
+                                                {{-- @if ($doc->type == 'etatPrestation')
+                                                    
                                                 @else
                                                     <button type="button" class="btn-prime btn-prime-two text-white"
                                                         data-bs-dismiss="modal">
@@ -133,7 +145,7 @@
                                                             id="download-bulletin" title="Preview" download>Telecharger
                                                             <i class="bx bx-download"></i>
                                                         </a></button>
-                                                @endif
+                                                @endif --}}
 
                                                 <button type="button" class="btn-prime"
                                                     data-bs-dismiss="modal">Fermer</button>
@@ -183,7 +195,7 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <h3>Prestation</h3>
-                                        @if ($prestation)
+                                        @if ($prestation && $prestation->prestationlibelle != 'Autre')
                                             <div class="mt-4">
                                                 <dl class="row">
                                                     <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Type de prestation:
@@ -228,6 +240,18 @@
                                                         {{ $prestation->created_at?->format('d-m-Y à H:i') ?? 'Non renseigné' }}
                                                     </dd>
 
+                                                </dl>
+                                            </div>
+                                        @elseif ($prestation && $prestation->prestationlibelle == 'Autre')
+                                            <div class="mt-4">
+                                                <dl class="row">
+                                                    <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Motif de la demande :
+                                                    </dt>
+                                                    <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5">
+                                                        {{ $prestation->typeprestation ?? 'Non renseigné' }} </dd>
+                                                    <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">ID du contrat :</dt>
+                                                    <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5">
+                                                        {{ $prestation->idcontrat ?? 'Non renseigné' }} </dd>
                                                 </dl>
                                             </div>
                                         @else

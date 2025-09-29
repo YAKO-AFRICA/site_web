@@ -2580,10 +2580,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>${formatDate(prestation.created_at)}</td>
                         <td>
                             <div class="d-flex order-actions">
-                                ${isPrestationAutre 
-                                    ? `<a href="/espace-client/details-prestation/${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>`
-                                    : `<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>`
-                                }
+                               
+                                <a href="/espace-client/details-prestation/${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>
                                 <a href="${editPrestationUrl}" class="ms-3 border ${isEditable ? '' : 'disabled-link'}" 
                                     title="${isEditable ? '' : 'Impossible de modifier la demande une fois transmise'}">
                                     <i class='bx bxs-edit'></i>
@@ -2606,6 +2604,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
+        // ${isPrestationAutre 
+        //     ? `<a href="/espace-client/details-prestation/${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>`
+        //     : `<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>`
+        // }
         // Anciennes prestations
         if (oldPrestations && oldPrestations.length > 0) {
             hasData = true;

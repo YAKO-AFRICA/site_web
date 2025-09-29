@@ -669,8 +669,8 @@ class DemandePrestationController extends Controller
                 if ($prestationPdfUrl['success'] == true) {
                     return response()->json([
                         'type' => 'success',
-                        // 'urlback' => $prestationPdfUrl['file_url'],
-                        'urlback' => route('customer.prestation.edit', $prestation->code ?? $PrestationRdv->code),
+                        'urlback' => $prestationPdfUrl['redirect_url'],
+                        // 'urlback' => route('customer.prestation.edit', $prestation->code ?? $PrestationRdv->code),
                         'url' => $prestationPdfUrl['file_url'],
                         'message' => "Enregistré avec succès !",
                         'code' => 200,
@@ -874,43 +874,6 @@ class DemandePrestationController extends Controller
                     $versoFileSouscripteur = null;
                     $prestationFiles = [];
 
-                    // foreach ($request->file('libelle') as $index => $file) {
-                    //     $fileType = $request->type[$index];
-                    //     $filename = $request->filename[$index];
-
-                    //     if ($fileType === 'CNIrecto') {
-                    //         $rectoFile = $file;
-                    //     } elseif ($fileType === 'CNIverso') {
-                    //         $versoFile = $file;
-                    //     } elseif ($fileType === 'CNIrectoBeneficiaire') {
-                    //         $rectoFileBeneficiaire = $file;
-                    //     } elseif ($fileType === 'CNIversoBeneficiaire') {
-                    //         $versoFileBeneficiaire = $file;
-                    //     } elseif ($fileType === 'CNIrectoPayeurPrime') {
-                    //         $rectoFilePayeurPrime = $file;
-                    //     } elseif ($fileType === 'CNIversoPayeurPrime') {
-                    //         $versoFilePayeurPrime = $file;
-                    //     } elseif ($fileType === 'CNIrectoAssure') {
-                    //         $rectoFileAssure = $file;
-                    //     } elseif ($fileType === 'CNIversoAssure') {
-                    //         $versoFileAssure = $file;
-                    //     } elseif ($fileType === 'CNIrectoSouscripteur') {
-                    //         $rectoFileSouscripteur = $file;
-                    //     } elseif ($fileType === 'CNIversoSouscripteur') {
-                    //         $versoFileSouscripteur = $file;
-                    //     }else{
-                    //         $libelle = Carbon::now()->format('Ymd_His') . '_' . $contrat . '_' . $fileType . '.' . $file->extension();
-                    //         $file->move($externalUploadDir . 'docsPrestation/', $libelle);
-                    //         $prestationFiles[] = [
-                    //             'idPrestation' => $prestation->id,
-                    //             'filename' => $filename,
-                    //             'libelle' => $libelle,
-                    //             'path' => 'storage/prestations/docsPrestation/' . $libelle,
-                    //             'type' => $fileType,
-                    //         ];
-                    //     }
-                        
-                    // }
                     foreach ($request->file('libelle') as $index => $file) {
                         // ⚠️ Si pas de fichier, on ignore (évite de récupérer type[] et filename[])
                         if (!$file) {
@@ -1111,7 +1074,7 @@ class DemandePrestationController extends Controller
                 }else{
                     return response()->json([
                         'type' => 'success',
-                        'urlback' => "",
+                        'urlback' =>  $prestationPdfUrl['redirect_url'],
                         'url' => $prestationPdfUrl['file_url'],
                         'message' => "Enregistré avec succès!",
                     ]);
