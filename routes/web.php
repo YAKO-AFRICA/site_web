@@ -390,6 +390,10 @@ Route::prefix('sinistre', 'PreventBackHistory')->name('sinistre.')->group(functi
         Route::get('show/{code}', [SinistreController::class, 'show'])->name('show');
         Route::get('/edit/{code}', [SinistreController::class, 'edit'])->name('edit');
         Route::post('/update/{code}', [SinistreController::class, 'update'])->name('update');
+        Route::post('/destroy/{code}', [SinistreController::class, 'destroy'])->name('destroy');
+        Route::post('/addDoc', [SinistreController::class, 'addDocSinistre'])->name('addDoc');
+        Route::post('/destroyDoc/{id}', [SinistreController::class, 'destroyDoc'])->name('destroyDoc');
+        Route::post('/transmettreSinistre/{code}', [SinistreController::class, 'transmettreSinistre'])->name('transmettreSinistre');
     });
 });
 

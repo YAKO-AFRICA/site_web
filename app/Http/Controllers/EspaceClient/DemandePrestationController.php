@@ -1255,7 +1255,10 @@ class DemandePrestationController extends Controller
         $idcontrat = $request->input('idcontratPrest');
 
         try {
-            $prestations = TblPrestation::where('idcontrat', $idcontrat)->with('docPrestation')->get();
+            $prestations = TblPrestation::where('idcontrat', $idcontrat)
+            ->with('docPrestation')
+            ->orderBy('created_at', 'desc')
+            ->get();
             if ($prestations->isEmpty()) {
                 return response()->json(['status' => 'success', 'data' => []]);
             }

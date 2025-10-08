@@ -1785,6 +1785,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 success: function (response) {
                     if (response.status === 'success') {
                         var details = response.data.details;
+                        var encaissement = response.data.enc;
+                        console.log(response.data);
                         var TotalPrime = parseInt(details[0].TotalPrime);
                         if (details && details.length > 0) {
                             const MonContrat = parseInt(details[0].IdProposition);
@@ -1811,13 +1813,25 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
 
                             // D'autres propriétés de details[0]
+                            let periodicite = '';
+                            if (details[0].periodicite == 'M') {
+                                periodicite = '/ Mois';
+                            } else if (details[0].periodicite == 'T') {
+                                periodicite = '/ Trimestre';
+                            } else if (details[0].periodicite == 'S') {
+                                periodicite = '/ Semestre';
+                            } else if (details[0].periodicite == 'A') {
+                                periodicite = '/ Année';
+                            }else if (details[0].periodicite == 'U'){
+                                periodicite = 'En versement unique';
+                            }
                             var CapitalSouscrit = parseInt(details[0].CapitalSouscrit);
                             $("#Capital").val(CapitalSouscrit);
                             $("#CapitalSouscrit").text(CapitalSouscrit + ' FCFA');
                             $("#DureeCotisationAns").text(details[0].DureeCotisationAns + ' ans');
-                            $("#TotalPrime").text(TotalPrime + ' FCFA /mois');
-                            $("#NbreEncaissment").text(details[0].NbreEncaissment);
-                            $("#NbreImpayes").text(details[0].NbreImpayes);
+                            $("#TotalPrime").text(TotalPrime + ' FCFA ' + periodicite);
+                            $("#NbreEncaissment").text(encaissement.confirmer.length);
+                            $("#NbreImpayes").text(encaissement.nonRegle.length);
 
                         } else {
                             console.error('Aucun détail trouvé pour ce contrat.');
@@ -2569,7 +2583,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const isEditable = prestation.etape == 0 || prestation.etape == 3;
                 const editPrestationUrl = `/espace-client/prestation/${prestation.etape == 3 ? 'modifier-apres-rejet' : 'edit'}/${prestation.code}`;
                 const hasMontant = prestation.montantSouhaite != null && prestation.montantSouhaite !== '';
-                const isPrestationAutre = prestation.prestationlibelle != 'Autre';
+                const isNotPrestationAutre = prestation.prestationlibelle != 'Autre';
 
                 allRows.push(`
                     <tr class="new-prestation">
@@ -2582,8 +2596,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="d-flex order-actions">
                                
                                 <a href="/espace-client/details-prestation/${prestation.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>
-                                <a href="${editPrestationUrl}" class="ms-3 border ${isEditable ? '' : 'disabled-link'}" 
-                                    title="${isEditable ? '' : 'Impossible de modifier la demande une fois transmise'}">
+                                <a href="${editPrestationUrl}" class="ms-3 border ${isEditable && isNotPrestationAutre ? '' : 'disabled-link'}" 
+                                    title="${isEditable && isNotPrestationAutre ? '' : 'Impossible de modifier la demande une fois transmise'}">
                                     <i class='bx bxs-edit'></i>
                                 </a>
                                 
@@ -2646,6 +2660,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Initialiser DataTables
         dataTableInstance = $(tablePrestation).DataTable({
+            order: [],
             lengthChange: true,
             language: {
                 search: "Recherche :",
@@ -2855,6 +2870,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             </tr>`).join('');
                         // Initialiser DataTables après l'ajout des lignes
                         dataTableInstance = $(tableRdv).DataTable({
+                            order: [],
                             lengthChange: true,
                             language: {
                                 search: "Recherche :",
@@ -3181,7 +3197,7 @@ const documents = [
     {
       "idfichier": 1,
       "CodeDoc": "COND_PART",
-      "libelleFichier": "Copie des conditions particulières / bulletin d’adhésion ou déclaration de perte du contrat",
+      "libelleFichier": "Conditions particulières / bulletin d’adhésion ou déclaration de perte du contrat",
       "listDoc": [
         { "codeDoc": "COND_PART", "libelleDoc": "Conditions particulières" },
         { "codeDoc": "BULLETIN_ADHESION", "libelleDoc": "Bulletin d’adhésion" },
@@ -3192,6 +3208,8 @@ const documents = [
       "InvaliditeTotale": true,
       "InvaliditePartielle": true,
       "Accidentel": false,
+      "CorpsConserveOui": false,
+      "CorpsConserveNon": false,
       "InhumationEuLieu": false,
       "DecesSouscripteur": true,
       "MobileMoney_Paiement": false,
@@ -3204,6 +3222,8 @@ const documents = [
             "Deces": true,
             "Invalidite": true,
             "Accidentel": false,
+            "CorpsConserveOui": false,
+            "CorpsConserveNon": false,
             "InhumationEuLieu": false,
             "MobileMoney_Paiement": false,
             "Virement_Bancaire": false,
@@ -3219,13 +3239,16 @@ const documents = [
         { "codeDoc": "CARTE_CONSULAIRE_ASSURE", "libelleDoc": "Carte consulaire de l'assuré" },
         { "codeDoc": "CARTE_SEJOUR_ASSURE", "libelleDoc": "Carte de séjour de l'assuré" },
         { "codeDoc": "EXTRAIT_NAISSANCE_ASSURE", "libelleDoc": "Extrait d’acte de naissance de l'assuré" },
-        { "codeDoc": "JUGEMENT_SUPPLETIF_ASSURE", "libelleDoc": "Jugement supplétif de l'assuré" }
+        { "codeDoc": "JUGEMENT_SUPPLETIF_ASSURE", "libelleDoc": "Jugement supplétif de l'assuré" },
+        { "codeDoc": "AUTRE_PIECE_ASSURE", "libelleDoc": "Autre pièce d'identification de l'assuré" }
       ],
       "Deces": true,
       "Invalidite": true,
       "InvaliditeTotale": true,
       "InvaliditePartielle": true,
       "Accidentel": false,
+      "CorpsConserveOui": false,
+      "CorpsConserveNon": false,
       "InhumationEuLieu": false,
       "DecesSouscripteur": true,
       "MobileMoney_Paiement": false,
@@ -3238,6 +3261,8 @@ const documents = [
             "Deces": true,
             "Invalidite": true,
             "Accidentel": false,
+            "CorpsConserveOui": false,
+            "CorpsConserveNon": false,
             "InhumationEuLieu": false,
             "MobileMoney_Paiement": false,
             "Virement_Bancaire": false,
@@ -3247,7 +3272,7 @@ const documents = [
     {
       "idfichier": 3,
       "CodeDoc": "CERTIF_MED_DECES",
-      "libelleFichier": "Copie du certificat de décès délivré par un médecin",
+      "libelleFichier": "Certificat de décès délivré par un médecin",
       "listDoc": [
         { "codeDoc": "DOC_CERTIF_MED_DECES", "libelleDoc": "Certificat médical de décès" }
       ],
@@ -3257,6 +3282,8 @@ const documents = [
       "InvaliditePartielle": false,
       "Accidentel": false,
       "InhumationEuLieu": false,
+      "CorpsConserveOui": false,
+      "CorpsConserveNon": false,
       "DecesSouscripteur": true,
       "MobileMoney_Paiement": false,
       "Virement_Bancaire": false,
@@ -3268,6 +3295,8 @@ const documents = [
             "Deces": true,
             "Invalidite": false,
             "Accidentel": false,
+            "CorpsConserveOui": false,
+            "CorpsConserveNon": false,
             "InhumationEuLieu": false,
             "MobileMoney_Paiement": false,
             "Virement_Bancaire": false,
@@ -3277,7 +3306,7 @@ const documents = [
     {
       "idfichier": 4,
       "CodeDoc": "ACTE_DECES_MAIRIE",
-      "libelleFichier": "Copie de l’acte de décès délivré par une mairie",
+      "libelleFichier": "Acte de décès délivré par une mairie",
       "listDoc": [
         { "codeDoc": "DOC_ACTE_DECES", "libelleDoc": "Acte de décès (mairie)" }
       ],
@@ -3287,6 +3316,8 @@ const documents = [
       "InvaliditePartielle": false,
       "Accidentel": false,
       "InhumationEuLieu": false,
+      "CorpsConserveOui": false,
+      "CorpsConserveNon": false,
       "DecesSouscripteur": true,
       "MobileMoney_Paiement": false,
       "Virement_Bancaire": false,
@@ -3299,6 +3330,8 @@ const documents = [
             "Invalidite": false,
             "Accidentel": false,
             "InhumationEuLieu": false,
+            "CorpsConserveOui": false,
+            "CorpsConserveNon": false,
             "MobileMoney_Paiement": false,
             "Virement_Bancaire": false,
         }
@@ -3312,7 +3345,8 @@ const documents = [
         { "codeDoc": "CNI_BENEF", "libelleDoc": "CNI du bénéficiaire" },
         { "codeDoc": "ATTEST_IDENTITE_BENEF", "libelleDoc": "Attestation d’identité du bénéficiaire" },
         { "codeDoc": "CARTE_CONSULAIRE_BENEF", "libelleDoc": "Carte consulaire du bénéficiaire" },
-        { "codeDoc": "EXTRAIT_NAISSANCE_BENEF", "libelleDoc": "Extrait de naissance (si mineur) du bénéficiaire" }
+        { "codeDoc": "EXTRAIT_NAISSANCE_BENEF", "libelleDoc": "Extrait de naissance (si mineur) du bénéficiaire" },
+        { "codeDoc": "AUTRE_PIECE_BENEF", "libelleDoc": "Autre pièce d'identification du bénéficiaire" }
       ],
       "Deces": true,
       "Invalidite": true,
@@ -3340,7 +3374,7 @@ const documents = [
     {
       "idfichier": 6,
       "CodeDoc": "CERTIF_GENRE_MORT",
-      "libelleFichier": "Copie du certificat de genre de mort délivré par un médecin",
+      "libelleFichier": "Certificat de genre de mort délivré par un médecin",
       "listDoc": [
         { "codeDoc": "DOC_CERTIF_GENRE_MORT", "libelleDoc": "Certificat de genre de mort" }
       ],
@@ -3350,6 +3384,7 @@ const documents = [
       "InvaliditePartielle": false,
       "Accidentel": false,
       "InhumationEuLieu": false,
+      "CorpsConserveEuLieu": false,
       "DecesSouscripteur": true,
       "MobileMoney_Paiement": false,
       "Virement_Bancaire": false,
@@ -3362,6 +3397,8 @@ const documents = [
             "Invalidite": false,
             "Accidentel": false,
             "InhumationEuLieu": false,
+            "CorpsConserveOui": false,
+            "CorpsConserveNon": false,
             "MobileMoney_Paiement": false,
             "Virement_Bancaire": false,
         }
@@ -3380,6 +3417,8 @@ const documents = [
       "InvaliditePartielle": false,
       "Accidentel": false,
       "InhumationEuLieu": false,
+      "CorpsConserveOui": true,
+      "CorpsConserveNon": false,
       "DecesSouscripteur": true,
       "MobileMoney_Paiement": false,
       "Virement_Bancaire": false,
@@ -3392,6 +3431,8 @@ const documents = [
             "Invalidite": false,
             "Accidentel": false,
             "InhumationEuLieu": false,
+            "CorpsConserveOui": true,
+            "CorpsConserveNon": false,
             "MobileMoney_Paiement": false,
             "Virement_Bancaire": false,
         }
@@ -3410,6 +3451,8 @@ const documents = [
       "InvaliditePartielle": false,
       "Accidentel": false,
       "InhumationEuLieu": true,
+      "CorpsConserveOui": false,
+      "CorpsConserveNon": false,
       "DecesSouscripteur": true,
       "MobileMoney_Paiement": false,
       "Virement_Bancaire": false,
@@ -3422,6 +3465,8 @@ const documents = [
             "Invalidite": false,
             "Accidentel": false,
             "InhumationEuLieu": true,
+            "CorpsConserveOui": false,
+            "CorpsConserveNon": false,
             "MobileMoney_Paiement": false,
             "Virement_Bancaire": false,
         }
@@ -3440,6 +3485,8 @@ const documents = [
       "InvaliditePartielle": false,
       "Accidentel": false,
       "InhumationEuLieu": false,
+      "CorpsConserveOui": false,
+      "CorpsConserveNon": true,
       "DecesSouscripteur": true,
       "MobileMoney_Paiement": false,
       "Virement_Bancaire": false,
@@ -3452,157 +3499,8 @@ const documents = [
             "Invalidite": false,
             "Accidentel": false,
             "InhumationEuLieu": false,
-            "MobileMoney_Paiement": false,
-            "Virement_Bancaire": false,
-        }
-      ]
-    },
-    {
-      "idfichier": 10,
-      "CodeDoc": "ACTE_NOTORIETE",
-      "libelleFichier": "Acte de notoriété (tribunal) si bénéficiaire(s) non désigné(s)",
-      "listDoc": [
-        { "codeDoc": "DOC_ACTE_NOTORIETE", "libelleDoc": "Acte de notoriété" }
-      ],
-      "Deces": true,
-      "Invalidite": false,
-      "InvaliditeTotale": false,
-      "InvaliditePartielle": false,
-      "Accidentel": false,
-      "InhumationEuLieu": false,
-      "DecesSouscripteur": true,
-      "MobileMoney_Paiement": false,
-      "Virement_Bancaire": false,
-      "EPARGNE": true,
-      "OBSEQUE": true,
-      "MIXTE": true,
-      "Requis": [
-        {
-            "Deces": false,
-            "Invalidite": false,
-            "Accidentel": false,
-            "InhumationEuLieu": false,
-            "MobileMoney_Paiement": false,
-            "Virement_Bancaire": false,
-        }
-      ]
-    },
-    {
-      "idfichier": 11,
-      "CodeDoc": "CERTIF_NON_APPEL",
-      "libelleFichier": "Certificat de non appel à l’acte de notoriété (tribunal)",
-      "listDoc": [
-        { "codeDoc": "DOC_CERTIF_NON_APPEL", "libelleDoc": "Certificat de non appel" }
-      ],
-      "Deces": true,
-      "Invalidite": false,
-      "InvaliditeTotale": false,
-      "InvaliditePartielle": false,
-      "Accidentel": false,
-      "InhumationEuLieu": false,
-      "DecesSouscripteur": true,
-      "MobileMoney_Paiement": false,
-      "Virement_Bancaire": false,
-      "EPARGNE": true,
-      "OBSEQUE": true,
-      "MIXTE": true,
-      "Requis": [
-        {
-            "Deces": true,
-            "Invalidite": false,
-            "Accidentel": false,
-            "InhumationEuLieu": false,
-            "MobileMoney_Paiement": false,
-            "Virement_Bancaire": false,
-        }
-      ]
-    },
-    {
-      "idfichier": 12,
-      "CodeDoc": "CERTIF_TUTELLE",
-      "libelleFichier": "Certificat de tutelle ou administration légale (tribunal) si bénéficiaire(s) mineur(s) ou invalide",
-      "listDoc": [
-        { "codeDoc": "DOC_CERTIF_TUTELLE", "libelleDoc": "Certificat de tutelle ou administration légale" }
-      ],
-      "Deces": true,
-      "Invalidite": true,
-      "InvaliditeTotale": true,
-      "InvaliditePartielle": true,
-      "Accidentel": false,
-      "InhumationEuLieu": false,
-      "DecesSouscripteur": true,
-      "MobileMoney_Paiement": false,
-      "Virement_Bancaire": false,
-      "EPARGNE": true,
-      "OBSEQUE": true,
-      "MIXTE": true,
-      "Requis": [
-        {
-            "Deces": false,
-            "Invalidite": false,
-            "Accidentel": false,
-            "InhumationEuLieu": false,
-            "MobileMoney_Paiement": false,
-            "Virement_Bancaire": false,
-        }
-      ]
-    },
-    {
-      "idfichier": 13,
-      "CodeDoc": "PROCURATION",
-      "libelleFichier": "Procuration légalisée (mairie) ou spéciale (tribunal)",
-      "listDoc": [
-        { "codeDoc": "PROCURATION_LEGALE", "libelleDoc": "Procuration légalisée (mairie)" },
-        { "codeDoc": "PROCURATION_SPECIALE", "libelleDoc": "Procuration spéciale (tribunal)" }
-      ],
-      "Deces": true,
-      "Invalidite": false,
-      "InvaliditeTotale": false,
-      "InvaliditePartielle": false,
-      "Accidentel": false,
-      "InhumationEuLieu": false,
-      "DecesSouscripteur": true,
-      "MobileMoney_Paiement": false,
-      "Virement_Bancaire": false,
-      "EPARGNE": true,
-      "OBSEQUE": true,
-      "MIXTE": true,
-      "Requis": [
-        {
-            "Deces": true,
-            "Invalidite": false,
-            "Accidentel": false,
-            "InhumationEuLieu": false,
-            "MobileMoney_Paiement": false,
-            "Virement_Bancaire": false,
-        }
-      ]
-    },
-    {
-      "idfichier": 14,
-      "CodeDoc": "ACTE_MARIAGE",
-      "libelleFichier": "Acte de mariage (si conjoint bénéficiaire)",
-      "listDoc": [
-        { "codeDoc": "DOC_ACTE_MARIAGE", "libelleDoc": "Acte de mariage" }
-      ],
-      "Deces": true,
-      "Invalidite": false,
-      "InvaliditeTotale": false,
-      "InvaliditePartielle": false,
-      "Accidentel": false,
-      "InhumationEuLieu": false,
-      "DecesSouscripteur": true,
-      "MobileMoney_Paiement": false,
-      "Virement_Bancaire": false,
-      "EPARGNE": true,
-      "OBSEQUE": true,
-      "MIXTE": true,
-      "Requis": [
-        {
-            "Deces": false,
-            "Invalidite": false,
-            "Accidentel": false,
-            "InhumationEuLieu": false,
+            "CorpsConserveOui": false,
+            "CorpsConserveNon": true,
             "MobileMoney_Paiement": false,
             "Virement_Bancaire": false,
         }
@@ -3728,6 +3626,162 @@ const documents = [
         }
         ]
     }
+
+    // {
+    //     "idfichier": 14,
+    //     "CodeDoc": "ACTE_MARIAGE",
+    //     "libelleFichier": "Acte de mariage (si conjoint bénéficiaire)",
+    //     "listDoc": [
+    //       { "codeDoc": "DOC_ACTE_MARIAGE", "libelleDoc": "Acte de mariage" }
+    //     ],
+    //     "Deces": true,
+    //     "Invalidite": false,
+    //     "InvaliditeTotale": false,
+    //     "InvaliditePartielle": false,
+    //     "Accidentel": false,
+    //     "InhumationEuLieu": false,
+    //     "DecesSouscripteur": true,
+    //     "MobileMoney_Paiement": false,
+    //     "Virement_Bancaire": false,
+    //     "EPARGNE": true,
+    //     "OBSEQUE": true,
+    //     "MIXTE": true,
+    //     "Requis": [
+    //       {
+    //           "Deces": false,
+    //           "Invalidite": false,
+    //           "Accidentel": false,
+    //           "InhumationEuLieu": false,
+    //           "MobileMoney_Paiement": false,
+    //           "Virement_Bancaire": false,
+    //       }
+    //     ]
+    //   },
+
+    // {
+    //     "idfichier": 13,
+    //     "CodeDoc": "PROCURATION",
+    //     "libelleFichier": "Procuration légalisée (mairie) ou spéciale (tribunal)",
+    //     "listDoc": [
+    //       { "codeDoc": "PROCURATION_LEGALE", "libelleDoc": "Procuration légalisée (mairie)" },
+    //       { "codeDoc": "PROCURATION_SPECIALE", "libelleDoc": "Procuration spéciale (tribunal)" }
+    //     ],
+    //     "Deces": true,
+    //     "Invalidite": false,
+    //     "InvaliditeTotale": false,
+    //     "InvaliditePartielle": false,
+    //     "Accidentel": false,
+    //     "InhumationEuLieu": false,
+    //     "DecesSouscripteur": true,
+    //     "MobileMoney_Paiement": false,
+    //     "Virement_Bancaire": false,
+    //     "EPARGNE": true,
+    //     "OBSEQUE": true,
+    //     "MIXTE": true,
+    //     "Requis": [
+    //       {
+    //           "Deces": true,
+    //           "Invalidite": false,
+    //           "Accidentel": false,
+    //           "InhumationEuLieu": false,
+    //           "MobileMoney_Paiement": false,
+    //           "Virement_Bancaire": false,
+    //       }
+    //     ]
+    //   },
+
+    // {
+    //     "idfichier": 11,
+    //     "CodeDoc": "CERTIF_NON_APPEL",
+    //     "libelleFichier": "Certificat de non appel à l’acte de notoriété (tribunal)",
+    //     "listDoc": [
+    //       { "codeDoc": "DOC_CERTIF_NON_APPEL", "libelleDoc": "Certificat de non appel" }
+    //     ],
+    //     "Deces": true,
+    //     "Invalidite": false,
+    //     "InvaliditeTotale": false,
+    //     "InvaliditePartielle": false,
+    //     "Accidentel": false,
+    //     "InhumationEuLieu": false,
+    //     "DecesSouscripteur": true,
+    //     "MobileMoney_Paiement": false,
+    //     "Virement_Bancaire": false,
+    //     "EPARGNE": true,
+    //     "OBSEQUE": true,
+    //     "MIXTE": true,
+    //     "Requis": [
+    //       {
+    //           "Deces": true,
+    //           "Invalidite": false,
+    //           "Accidentel": false,
+    //           "InhumationEuLieu": false,
+    //           "MobileMoney_Paiement": false,
+    //           "Virement_Bancaire": false,
+    //       }
+    //     ]
+    //   },
+
+    // {
+    //     "idfichier": 10,
+    //     "CodeDoc": "ACTE_NOTORIETE",
+    //     "libelleFichier": "Acte de notoriété (tribunal) si bénéficiaire(s) non désigné(s)",
+    //     "listDoc": [
+    //       { "codeDoc": "DOC_ACTE_NOTORIETE", "libelleDoc": "Acte de notoriété" }
+    //     ],
+    //     "Deces": true,
+    //     "Invalidite": false,
+    //     "InvaliditeTotale": false,
+    //     "InvaliditePartielle": false,
+    //     "Accidentel": false,
+    //     "InhumationEuLieu": false,
+    //     "DecesSouscripteur": true,
+    //     "MobileMoney_Paiement": false,
+    //     "Virement_Bancaire": false,
+    //     "EPARGNE": true,
+    //     "OBSEQUE": true,
+    //     "MIXTE": true,
+    //     "Requis": [
+    //       {
+    //           "Deces": false,
+    //           "Invalidite": false,
+    //           "Accidentel": false,
+    //           "InhumationEuLieu": false,
+    //           "MobileMoney_Paiement": false,
+    //           "Virement_Bancaire": false,
+    //       }
+    //     ]
+    //   },
+
+    // {
+    //     "idfichier": 12,
+    //     "CodeDoc": "CERTIF_TUTELLE",
+    //     "libelleFichier": "Certificat de tutelle ou administration légale (tribunal) si bénéficiaire(s) mineur(s) ou invalide",
+    //     "listDoc": [
+    //       { "codeDoc": "DOC_CERTIF_TUTELLE", "libelleDoc": "Certificat de tutelle ou administration légale" }
+    //     ],
+    //     "Deces": true,
+    //     "Invalidite": true,
+    //     "InvaliditeTotale": true,
+    //     "InvaliditePartielle": true,
+    //     "Accidentel": false,
+    //     "InhumationEuLieu": false,
+    //     "DecesSouscripteur": true,
+    //     "MobileMoney_Paiement": false,
+    //     "Virement_Bancaire": false,
+    //     "EPARGNE": true,
+    //     "OBSEQUE": true,
+    //     "MIXTE": true,
+    //     "Requis": [
+    //       {
+    //           "Deces": false,
+    //           "Invalidite": false,
+    //           "Accidentel": false,
+    //           "InhumationEuLieu": false,
+    //           "MobileMoney_Paiement": false,
+    //           "Virement_Bancaire": false,
+    //       }
+    //     ]
+    //   },
 ];
   
 document.addEventListener('DOMContentLoaded', function () {
@@ -3743,17 +3797,20 @@ document.addEventListener('DOMContentLoaded', function () {
     msgCarrenceError.text("").hide();
     msgCarrenceSuccess.text("").hide();
 
+    console.log('beneficiaires : ',beneficiaires)
+
     // affichage des éléments en fonction de la nature du sinistre
     const natureSinistreDecesCheckbox = document.getElementById('natureDeces');
     const dateSinistre = document.getElementById('dateSinistre');
     const natureSinistreInvaliditeCheckbox = document.getElementById('natureInvalidite');
+    const corpsConserveRadios = document.querySelectorAll('input[name="corpsConserve"]');
     const CodeFiliatioAssure = document.getElementById('CodeFiliatioAssure').value;
     const decesAccidentelRadios = document.querySelectorAll('input[name="decesAccidentel"]');
     const declarationTardiveRadios = document.querySelectorAll('input[name="declarationTardive"]');
     const natureSinistreRadios = document.querySelectorAll('input[name="natureSinistre"]');
     const paiementMethodRadios = form.querySelectorAll('input[name="moyenPaiement"]')
     // IDs des éléments à afficher ou masquer
-    const elementsDeces = ['typeDecesBlock', 'declarationTardiveBlock', 'lieuConservationBlock', 'montantBONBlock', 'dateLieuLeveeBlock', 'dateLieuInhumationBlock'];
+    const elementsDeces = ['typeDecesBlock', 'corpsConserveBlock', 'montantBONBlock', 'dateLieuLeveeBlock', 'dateLieuInhumationBlock'];
     const elementsInvalidite = [];
 
     setRequired(['natureSinistre']);
@@ -3774,6 +3831,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const codeProduitYAKO = ['YKE_2008','YKE_2018','YKS_2008','YKS_2018','YKF_2008','YKF_2018','YKR_2021'];
     dateSinistre.readOnly = true;
 
+    const dateLeveeInput = document.getElementById('dateLevee');
+    const dateInhumationInput = document.getElementById('dateInhumation');
+
+    dateLeveeInput.addEventListener('change', function () {
+        const selectedDate = this.value;
+        dateInhumationInput.min = selectedDate;
+
+        // Si une date d'inhumation est déjà sélectionnée mais est antérieure à la levée
+        if (dateInhumationInput.value && dateInhumationInput.value < selectedDate) {
+            dateInhumationInput.value = selectedDate;
+        }
+    });
+
     function toggleElements() {
         const isDecesChecked = natureSinistreDecesCheckbox.checked;
         const isInvaliditeChecked = natureSinistreInvaliditeCheckbox.checked;
@@ -3783,7 +3853,7 @@ document.addEventListener('DOMContentLoaded', function () {
             hideElements(elementsInvalidite);
             
             dateSinistre.readOnly = true;
-            setRequired(['decesAccidentel', 'declarationTardive', 'dateSinistre', 'causeSinistre', 'lieuConservation', 'dateLevee', 'lieuLevee', 'dateInhumation', 'lieuInhumation']);
+            setRequired(['decesAccidentel', 'corpsConserve','dateSinistre', 'causeSinistre','dateLevee', 'lieuLevee', 'dateInhumation', 'lieuInhumation']);
             removeRequired([]);
             elementsInvalidite.forEach(id => clearChamps('#etapeSinistre3', `#${id} input, #${id} select, #${id} textarea`));
             clearChamps('#etapeSinistre3', `#dateSinistreBlock input`)
@@ -3794,18 +3864,19 @@ document.addEventListener('DOMContentLoaded', function () {
     
             dateSinistre.readOnly = false;
             setRequired(['dateSinistre','causeSinistre']);
-            removeRequired(['decesAccidentel', 'declarationTardive', 'lieuConservation', 'dateLevee', 'lieuLevee', 'dateInhumation', 'lieuInhumation']);
+            removeRequired(['decesAccidentel', 'corpsConserve', 'declarationTardive', 'lieuConservation', 'dateLevee', 'lieuLevee', 'dateInhumation', 'lieuInhumation']);
             elementsDeces.forEach(id => clearChamps('#etapeSinistre3', `#${id} input, #${id} select, #${id} textarea`));
             clearChamps('#etapeSinistre3', `#dateSinistreBlock input`)
         } 
         else {
             hideElements(elementsDeces.concat(elementsInvalidite));
-            removeRequired(['decesAccidentel', 'declarationTardive', 'dateSinistre', 'causeSinistre', 'lieuConservation', 'dateLevee', 'lieuLevee', 'dateInhumation', 'lieuInhumation']);
+            removeRequired(['decesAccidentel', 'corpsConserve', 'declarationTardive', 'dateSinistre', 'causeSinistre', 'lieuConservation', 'dateLevee', 'lieuLevee', 'dateInhumation', 'lieuInhumation']);
             elementsDeces.forEach(id => clearChamps('#etapeSinistre3', `#${id} input, #${id} select, #${id} textarea`));
             clearChamps('#etapeSinistre3', `#dateSinistreBlock input`)
             elementsInvalidite.forEach(id => clearChamps('#etapeSinistre3', `#${id} input, #${id} select, #${id} textarea`));
         }
     }
+    
 
     // Validation unique sur la date du sinistre
     dateSinistre.addEventListener('input', function () {
@@ -3851,7 +3922,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Contrats obsèques (codes KDEC et KVIE)
     const TypeContratObseque = ['KDEC', 'KVIE'];
-    function getToShowDocuments(natureSinistre, decesAccidentel, declarationTardive, typeContrat, CodeFiliation, PaiementMethod) {
+    function getToShowDocuments(natureSinistre, decesAccidentel, corpsConserve, declarationTardive, typeContrat, CodeFiliation, PaiementMethod) {
         // Réinitialiser l'affichage
         docsListTable.innerHTML = '';
         let documentsToShow = [...documents]; // copie
@@ -3892,7 +3963,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 documentsToShow = documentsToShow.filter(doc => !doc.Accidentel);
                 // console.log("Après filtre Accidentel = 0:", documentsToShow);
             }
+
             
+            if (corpsConserve == 1) {
+                // garde les docs actuels ET ajoute ceux où CorpsConserveOui = true
+                documentsToShow = [
+                    ...documentsToShow,
+                    ...documents.filter(doc => doc.CorpsConserveOui)
+                ];
+                documentsToShow = documentsToShow.filter((doc, index, self) =>
+                    index === self.findIndex(d => d.idfichier === doc.idfichier)
+                );
+                 // retire les documents où CorpsConserveNon = true
+                 documentsToShow = documentsToShow.filter(doc => !doc.CorpsConserveNon);
+            } else if (corpsConserve == 0) {
+                // retire les documents où CorpsConserveOui = true
+                documentsToShow = documentsToShow.filter(doc => !doc.CorpsConserveOui);
+
+                 // garde les docs actuels ET ajoute ceux où CorpsConserveNon = true
+                 documentsToShow = [
+                    ...documentsToShow,
+                    ...documents.filter(doc => doc.CorpsConserveNon)
+                ];
+                documentsToShow = documentsToShow.filter((doc, index, self) =>
+                    index === self.findIndex(d => d.idfichier === doc.idfichier)
+                );
+            }
+
             if (declarationTardive == 1) {
                 // garde les docs actuels ET ajoute ceux où InhumationEuLieu = true
                 documentsToShow = [
@@ -4016,77 +4113,139 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 1) Générer le HTML
             documentsToShow.forEach((doc) => {
-                // Calcul du required selon ta logique
                 const requis = Array.isArray(doc.Requis) ? doc.Requis[0] : doc.Requis;
                 const isRequired = requis.Deces || requis.Invalidite || requis.Accidentel || requis.InhumationEuLieu;
-
-                const row = `
-                    <tr data-docid="${doc.idfichier}" data-row-required="${isRequired ? '1' : '0'}">
-                        <!-- Colonne Libellé Fichier -->
-                        <td class="align-middle">
-                            <div class="text-wrap">${doc.libelleFichier} ${isRequired ? '<span class="star">*</span>' : ''}</div>
-                        </td>
-
-                        <!-- Colonne Radio -->
-                        <td>
-                            <ul class="list-grou">
-                                ${doc.listDoc.length > 1
-                                    ? `
-                                        <label>Veuillez choisir le document en votre possession ${isRequired ? '<span class="star">*</span>' : ''}</label>
-                                        ${doc.listDoc.map((d, i) => `
+            
+                let row = '';
+            
+                // Si le document est pour chaque bénéficiaire
+                if (doc.CodeDoc === 'ID_BENEFICIAIRE') {
+                    row = beneficiaires.map((ben) => `
+                        <tr data-docid="${doc.idfichier}_${ben.IdPropositionPartenaires}" data-row-required="${isRequired ? '1' : '0'}">
+                            <td class="align-middle">
+                                <div class="text-wrap">
+                                    ${doc.libelleFichier} ${ben.PrenomAssu} ${ben.nomAssu} ${isRequired ? '<span class="star">*</span>' : ''}
+                                </div>
+                            </td>
+            
+                            <td>
+                                <ul class="list-grou">
+                                    ${doc.listDoc.length > 1
+                                        ? `
+                                            <label>Veuillez choisir le document en votre possession ${isRequired ? '<span class="star">*</span>' : ''}</label>
+                                            ${doc.listDoc.map((d) => `
+                                                <li class="list-group-ite">
+                                                    <input type="radio"
+                                                        id="${d.codeDoc}_${ben.IdPropositionPartenaires}"
+                                                        name="docLibelle[${doc.idfichier}_${ben.IdPropositionPartenaires}]"
+                                                        value="${d.libelleDoc} ${ben.PrenomAssu} ${ben.nomAssu}"
+                                                        class="doc-radio"
+                                                        data-target="libelle-${doc.idfichier}_${ben.IdPropositionPartenaires}">
+                                                    <label for="${d.codeDoc}_${ben.IdPropositionPartenaires}">${d.libelleDoc}</label>
+                                                </li>
+                                            `).join('')}
+                                        `
+                                        : `
                                             <li class="list-group-ite">
                                                 <input type="radio"
-                                                    id="${d.codeDoc}"
+                                                    id="${doc.listDoc[0].codeDoc}_${ben.IdPropositionPartenaires}"
+                                                    name="docLibelle[${doc.idfichier}_${ben.IdPropositionPartenaires}]"
+                                                    value="${doc.listDoc[0].libelleDoc} ${ben.PrenomAssu} ${ben.nomAssu}"
+                                                    class="doc-radio"
+                                                    data-target="libelle-${doc.idfichier}_${ben.IdPropositionPartenaires}"
+                                                    ${isRequired ? 'checked' : ''}>
+                                                <label for="${doc.listDoc[0].codeDoc}_${ben.IdPropositionPartenaires}">${doc.listDoc[0].libelleDoc}</label>
+                                            </li>
+                                        `}
+                                </ul>
+                            </td>
+            
+                            <td class="align-middle text-center">
+                                <div class="file-input d-flex align-items-center justify-content-center">
+                                    <input type="hidden" id="libelle-${doc.idfichier}_${ben.IdPropositionPartenaires}" name="libelle[]" value="">
+                                    <input type="file"
+                                        id="file-${doc.idfichier}_${ben.IdPropositionPartenaires}"
+                                        name="docFile[]"
+                                        accept=".pdf,.png,.jpg,.jpeg"
+                                        hidden
+                                        data-file-required="${isRequired ? '1' : '0'}">
+            
+                                    <button type="button"
+                                            class="btn-prime btn-prime-two p-2 addFileBtn"
+                                            data-target="file-${doc.idfichier}_${ben.IdPropositionPartenaires}">
+                                        <i class='bx bx-plus-circle'></i>
+                                    </button>
+                                </div>
+                                <div class="file-preview-container mt-2 d-flex align-items-center justify-content-center">
+                                    <span class="file-preview ms-2 text-muted small"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    // Document générique (non lié à un bénéficiaire spécifique)
+                    row = `
+                        <tr data-docid="${doc.idfichier}" data-row-required="${isRequired ? '1' : '0'}">
+                            <td class="align-middle">
+                                <div class="text-wrap">${doc.libelleFichier} ${isRequired ? '<span class="star">*</span>' : ''}</div>
+                            </td>
+            
+                            <td>
+                                <ul class="list-grou">
+                                    ${doc.listDoc.length > 1
+                                        ? `
+                                            <label>Veuillez choisir le document en votre possession ${isRequired ? '<span class="star">*</span>' : ''}</label>
+                                            ${doc.listDoc.map((d) => `
+                                                <li class="list-group-ite">
+                                                    <input type="radio"
+                                                        id="${d.codeDoc}"
+                                                        name="docLibelle[${doc.idfichier}]"
+                                                        value="${d.libelleDoc}"
+                                                        class="doc-radio"
+                                                        data-target="libelle-${doc.idfichier}">
+                                                    <label for="${d.codeDoc}">${d.libelleDoc}</label>
+                                                </li>
+                                            `).join('')}
+                                        `
+                                        : `
+                                            <li class="list-group-ite">
+                                                <input type="radio"
+                                                    id="${doc.listDoc[0].codeDoc}"
                                                     name="docLibelle[${doc.idfichier}]"
-                                                    value="${d.libelleDoc}"
+                                                    value="${doc.listDoc[0].libelleDoc}"
                                                     class="doc-radio"
                                                     data-target="libelle-${doc.idfichier}"
-                                                    >
-                                                <label for="${d.codeDoc}">${d.libelleDoc}</label>
+                                                    ${isRequired ? 'checked' : ''}>
+                                                <label for="${doc.listDoc[0].codeDoc}">${doc.listDoc[0].libelleDoc}</label>
                                             </li>
-                                        `).join('')}
-                                    `
-                                    : `
-                                        <li class="list-group-ite">
-                                            <input type="radio"
-                                                id="${doc.listDoc[0].codeDoc}"
-                                                name="docLibelle[${doc.idfichier}]"
-                                                value="${doc.listDoc[0].libelleDoc}"
-                                                class="doc-radio"
-                                                data-target="libelle-${doc.idfichier}"
-                                                ${isRequired ? 'checked' : ''}>
-                                            <label for="${doc.listDoc[0].codeDoc}">${doc.listDoc[0].libelleDoc}</label>
-                                        </li>
-                                    `
-                                }
-                            </ul>
-                        </td>
-                        <td class="align-middle text-center">
-                            <div class="file-input d-flex align-items-center justify-content-center">
-                                <input type="hidden" id="libelle-${doc.idfichier}" name="libelle[]" value="">
-                                <input type="file"
-                                    id="file-${doc.idfichier}"
-                                    name="docFile[]"
-                                    accept=".pdf,.png,.jpg,.jpeg"
-                                    hidden
-                                    data-file-required="${isRequired ? '1' : '0'}">
-
-                                <button type="button"
-                                        class="btn-prime btn-prime-two p-2 addFileBtn"
-                                        data-target="file-${doc.idfichier}">
-                                    <i class='bx bx-plus-circle'></i>
-                                </button>
-
-                            </div>
-                            <div class="file-preview-container mt-2 d-flex align-items-center justify-content-center">
-                                <!-- Ici on injectera l’aperçu -->
-                                <span class="file-preview ms-2 text-muted small"></span>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-
-                // ${i === 0 ? 'checked' : ''}
+                                        `}
+                                </ul>
+                            </td>
+            
+                            <td class="align-middle text-center">
+                                <div class="file-input d-flex align-items-center justify-content-center">
+                                    <input type="hidden" id="libelle-${doc.idfichier}" name="libelle[]" value="">
+                                    <input type="file"
+                                        id="file-${doc.idfichier}"
+                                        name="docFile[]"
+                                        accept=".pdf,.png,.jpg,.jpeg"
+                                        hidden
+                                        data-file-required="${isRequired ? '1' : '0'}">
+            
+                                    <button type="button"
+                                            class="btn-prime btn-prime-two p-2 addFileBtn"
+                                            data-target="file-${doc.idfichier}">
+                                        <i class='bx bx-plus-circle'></i>
+                                    </button>
+                                </div>
+                                <div class="file-preview-container mt-2 d-flex align-items-center justify-content-center">
+                                    <span class="file-preview ms-2 text-muted small"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            
                 docsListTable.innerHTML += row;
             });
 
@@ -4307,18 +4466,40 @@ document.addEventListener('DOMContentLoaded', function () {
         msgCarrenceSuccess.text("").hide();
     }
 
+    function toggleCorpsConserve(){
+        const corpsConserveChecked = document.querySelector('input[name="corpsConserve"]:checked')?.value || null;
+        const lieuConservation = document.querySelector('input[name="lieuConservation"]');
+        
+        if (corpsConserveChecked == 1) {
+            showElements(['declarationTardiveBlock', 'lieuConservationBlock']);
+            setRequired(['declarationTardive', 'lieuConservation']);
+            removeRequired([]);
+        } else if (corpsConserveChecked == 0) {
+            showElements(['declarationTardiveBlock']);
+            hideElements(['lieuConservationBlock']);
+            setRequired(['declarationTardive']);
+            removeRequired(['lieuConservation']);
+            lieuConservation.value = '';
+        }
+        else {
+            hideElements(['declarationTardiveBlock', 'lieuConservationBlock']);
+            removeRequired(['declarationTardive', 'lieuConservation']);
+        }
+    }
+
     function toggleDocuments() {
         const isDecesChecked = natureSinistreDecesCheckbox.checked;
         const isInvaliditeChecked = natureSinistreInvaliditeCheckbox.checked;
         const accidentelChecked = document.querySelector('input[name="decesAccidentel"]:checked')?.value ?? null;
         const declarationTardiveChecked = document.querySelector('input[name="declarationTardive"]:checked')?.value ?? null;
+        const corpsConserveChecked = document.querySelector('input[name="corpsConserve"]:checked')?.value ?? null;
         const paiementMethodChecked = form.querySelector('input[name="moyenPaiement"]:checked')?.value ?? null;
         console.log('paiementMethodChecked', paiementMethodChecked);
         
         if (isDecesChecked) {
-            getToShowDocuments("Deces", accidentelChecked, declarationTardiveChecked, typeContrat, CodeFiliatioAssure, paiementMethodChecked);
+            getToShowDocuments("Deces", accidentelChecked, corpsConserveChecked, declarationTardiveChecked, typeContrat, CodeFiliatioAssure, paiementMethodChecked);
         } else if (isInvaliditeChecked) {
-            getToShowDocuments("Invalidite", accidentelChecked, declarationTardiveChecked, typeContrat, CodeFiliatioAssure, paiementMethodChecked);
+            getToShowDocuments("Invalidite", accidentelChecked, corpsConserveChecked, declarationTardiveChecked, typeContrat, CodeFiliatioAssure, paiementMethodChecked);
         }
         
     }
@@ -4327,16 +4508,23 @@ document.addEventListener('DOMContentLoaded', function () {
     natureSinistreDecesCheckbox.addEventListener('change', () => {
         toggleElements();
         toggleDocuments();
+        toggleCorpsConserve();
     });
     natureSinistreInvaliditeCheckbox.addEventListener('change', () => {
         toggleElements();
         toggleDocuments();
+        toggleCorpsConserve();
     });
     
     decesAccidentelRadios.forEach(radio => {
         radio.addEventListener('change', toggleDateSinistre);
         radio.addEventListener('change', toggleDocuments);
         radio.addEventListener('change', () => verifierEtape("#etapeSinistre3"));
+    });
+    corpsConserveRadios.forEach(radio => {
+        // radio.addEventListener('change', toggleElements);
+        radio.addEventListener('change', toggleDocuments);
+        radio.addEventListener('change', toggleCorpsConserve);
     });
     paiementMethodRadios.forEach(radio => {
         radio.addEventListener('change', toggleDocuments);
@@ -4448,6 +4636,7 @@ document.addEventListener('DOMContentLoaded', function () {
      toggleElements();
      toggleDateSinistre();
      toggleDocuments();
+     toggleCorpsConserve();
     //  updateIBAN();
      // Active la surveillance sur chaque étape
     activerSurveillance("#etapeSinistre1");
@@ -4515,7 +4704,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.status === 'success') {
                 const sinistres = data.data;
                 if (sinistres.length > 0) {
-                    tableSinistreBody.innerHTML = sinistres.map(sinistre => `
+                    tableSinistreBody.innerHTML = sinistres.map(sinistre => {
+                        const isEditable = sinistre.etape == 0 || sinistre.etape == 3;
+                        return `
                         <tr>
                             <td>${sinistre.code || '-'}</td>
                             <td>${sinistre.idcontrat || '-'}</td>
@@ -4537,21 +4728,26 @@ document.addEventListener('DOMContentLoaded', function () {
                             <td>
                                 <div class="d-flex order-actions">
                                     <a href="/sinistre/show/${sinistre.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>
-                                    <a href="javascript:;" class="ms-3 border ${sinistre.etape != 0 ? 'disabled-link' : ''}" 
-                                        title="${sinistre.etape != 0 ? 'Impossible de modifier la demande une fois transmise' : ''}">
+                                    <a href="/sinistre/edit/${sinistre.code}" class="ms-3 border ${isEditable ? '' : 'disabled-link'}" 
+                                        title="${isEditable ? '' : 'Impossible de modifier la demande une fois transmise'}">
                                         <i class='bx bxs-edit'></i>
                                     </a>
                                     
-                                    <a href="javascript:;" class="deleteConfirmation border ms-3 ${sinistre.etape != 0 ? 'disabled-link' : ''}"
-                                        data-type="confirmation_redirect" data-placement="top"
-                                        data-token="${csrfToken}" data-bs-toggle="tooltip" data-bs-placement="top" 
-                                        title="${ sinistre.etape != 0 ? 'Impossible de supprimer la demande une fois transmise' : '' }"
-                                        data-id="${sinistre.code}" ><i
-                                            class='bx bxs-trash' style="cursor: pointer"></i>
-                                    </a>
+                                   
+                                    <a href="javascript:;" class="deleteConfirmation border ms-3 ${isEditable ? '' : 'disabled-link'}"
+                                    data-type="confirmation_redirect" data-placement="top"
+                                    data-token="${csrfToken}" data-bs-toggle="tooltip" data-bs-placement="top" 
+                                    title="${isEditable ? '' : 'Impossible de supprimer la demande une fois transmise'}"
+                                    data-url="/sinistre/destroy/${sinistre.code}"
+                                    data-title="Vous êtes sur le point de supprimer la pré-déclaration N° ${sinistre.code}"
+                                    data-id="${sinistre.code}" data-param="0"
+                                    data-route="/sinistre/destroy/${sinistre.code}" ><i
+                                        class='bx bxs-trash' style="cursor: pointer"></i>
+                                </a>
                                 </div>
                             </td>
-                        </tr>`).join('');
+                        </tr>`;
+                    }).join('');
 
                     // Initialiser DataTables après ajout des lignes
                     dataTableInstance = $(tableSinistre).DataTable({

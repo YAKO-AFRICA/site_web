@@ -659,8 +659,10 @@
                 <section class="section-identificatio" style="margin-top: -45px; padding: 0 -70px; ">
                     <div class="section-documents" style="background-color: #E7F0EB; margin: 2px -20px; height: 150px; padding: 0px 10px;">
                         
-                        <div class="form-group" style="width: 60%; float: left; padding-top: 110px;">
-                            <label for="nom" style="margin-right: 24px">Fait à ........................................ le .................................. </label>
+                        <div class="form-group" style="width: 60%; float: left; padding-top: 2px;">
+                            <p style="text-align: justify;"> <span style="font-weight: bold; color: red;">NB : </span> <small style="">Cher <b>Bruce YAPO Bruce YAPO YAPO</b>,<br> Nous vous informons que vous êtes prié de vous présenter à l’agence Yako Africa, muni des originaux des documents transmis lors de votre prédéclaration de sinistre, dès réception du message confirmant son acceptation. Cette étape est nécessaire afin de finaliser votre déclaration de sinistre.</small></p>
+                            {{-- <p>NB : <small>Cher(e) <b>Bruce YAPO Bruce YAPO YAPO</b>,<br> Nous vous invitons à vous rendre à l’agence Yako Africa, muni(e) des originaux des documents fournis lors de votre prédéclaration de sinistre, dès réception du message d’acceptation. Cela nous permettra de finaliser rapidement le traitement de votre déclaration de sinistre.</small></p> --}}
+                            <p style="margin-top: 7px">Fait à ........................................ le .................................. </p>
                         </div>
                         <div class="form-group" style="width: 40%; float: right; text-align: center;">
                             <h6>Signature du déclarant</h6>

@@ -96,90 +96,177 @@
                                     </div>
                                     <div class="form-body">
                                         <form id="customerForm" action="{{ route('customer.login') }}" method="POST">
+
                                             @if (Session::get('fail'))
+
                                                 <div class="alert alert-danger alert-dismissible fade show"
+
                                                     role="alert">
+
                                                     {{ Session::get('fail') }}
+
                                                 </div>
+
                                             @endif
+
                                             @if (Session::get('success'))
+
                                                 <div class="alert alert-success alert-dismissible fade show"
+
                                                     role="alert">
+
                                                     {{ Session::get('success') }}
+
                                                 </div>
+
                                             @endif
+
                                             @csrf
+
                                             <div class="row g-3">
+
                                                 <div class="col-12">
-                                                    <label for="login" class="form-label">Nom d'utilisateur</label>
+
+                                                    <label for="login" class="form-label">Login</label>
+
                                                     <input type="text" class="form-control" id="login"
-                                                        name="login" placeholder="Nom d'utilisateur"
+
+                                                        name="login" placeholder="Veuillez entrer votre login"
+
                                                         autocomplete="off">
+
+                                                        <small class="text-info">NB: Login, Il s'agit du numéro de téléphone renseigné lors de la création ou de la mise à jour de votre compte</small>
+
                                                     @error('login')
+
                                                         <span class="text-danger">Veuillez entrer votre nom
+
                                                             d'utilisateur</span>
+
                                                     @enderror
+
                                                     <p class="text-danger" style="font-weight: bold; font-style:italic;"
+
                                                         id="message"></p>
+
                                                 </div>
+
                                                 <div class="col-12" id="inputChoosePasswordDiv">
+
                                                     <label for="inputChoosePassword" class="form-label">Mot de
+
                                                         passe</label>
+
                                                     <div class="input-group" id="show_hide_password">
+
                                                         <input type="password" class="form-control border-end-0"
+
                                                             id="inputChoosePassword" name="password" disabled>
+
                                                         <a href="javascript:;"
+
                                                             class="input-group-text bg-transparent"><i
+
                                                                 class="bx bx-hide"></i></a>
 
+
+
                                                         <input type="text" id="rien" name="type"
+
                                                             value="Rien" hidden>
+
                                                     </div>
+
                                                     @error('password')
+
                                                         <span class="text-danger">Veuillez entrer votre mot de passe</span>
+
                                                     @enderror
-                                                </div>
-                                                <div class="col-md-12 mb-3 text-end" id="forgetPasswordDiv">
-                                                    <a href="javascript:;" class="text-end" data-bs-toggle="modal"
-                                                        data-bs-target="#resetSendMailModal">
-                                                        Mot de passe oublié ?
-                                                    </a>
-                                                    {{-- <a href="authentication-forgot-password.html" class="">Mot de passe oublié ?</a> --}}
+
                                                 </div>
 
+                                                <div class="col-md-12 mb-3 text-end" id="forgetPasswordDiv">
+
+                                                    <a href="javascript:;" class="text-end" data-bs-toggle="modal"
+
+                                                        data-bs-target="#resetSendMailModal">
+
+                                                        Mot de passe oublié ?
+
+                                                    </a>
+
+                                                    {{-- <a href="authentication-forgot-password.html" class="">Mot de passe oublié ?</a> --}}
+
+                                                </div>
+
+
+
                                             </div>
+
+
 
                                             {{-- si Aucune des options ci-dessous, desactiver le champ password  --}}
+
                                             <div class="row mb-3" id="submitBtu">
+
                                                 <div class="col-md-12  text-center">
+
                                                     <button class="btn-prime btn-prime-two d-block w-100">Se
+
                                                         connecter</button>
+
                                                 </div>
+
                                             </div>
+
                                             <div class="col-md-12 mb-5 text-start">
+
                                                 Pas de compte ? <a href="{{ route('customer.registerForm') }}"
+
                                                     class="">Créer votre compte</a>
+
                                             </div>
+
+
 
                                             <div id="options" class="text-center my-3">
+
                                                 <a href="{{ route('customer.registerForm') }}" id="btn-inscrire"
+
                                                     class="btn-prime btn-prime-two d-block d-none">Créer mon compte
+
                                                     YNOV</a>
+
                                                 <a href="javascript:;" id="btn-modifier"
+
                                                     class="btn-prime btn-prime-two d-block d-none"
+
                                                     data-bs-toggle="modal"
+
                                                     data-bs-target="#ModifierModal">Modifier</a>
+
                                                 <a href="javascript:;" id="btn-mettre-a-jour"
+
                                                     class="btn-prime btn-prime-two d-block d-none"
+
                                                     data-bs-toggle="modal" data-bs-target="#updatModal">Mettre à
+
                                                     jour</a>
+
                                             </div>
 
+
+
                                             {{-- ce bouton doit etre toujour visible --}}
+
                                             <div class="col-md-12 mt-3 text-center">
+
                                                 <a href="{{ route('index') }}" class="btn-prime d-block">Retour au
+
                                                     site</a>
+
                                             </div>
+
                                         </form>
                                         <br><br>
 

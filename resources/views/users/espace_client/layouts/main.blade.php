@@ -220,6 +220,7 @@
 
 
             var table = $('#example2').DataTable({
+                order: [],
                 lengthChange: true,
                 buttons: ['copy', 'excel', 'pdf', 'print'],
                 language: {

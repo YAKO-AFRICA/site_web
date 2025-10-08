@@ -110,7 +110,7 @@
                     </div>
                     <div style="width: 45%; font-size: 12px; font-weight: bold; height: 25px; display: flex; justify-content: center; align-items: center; float: right">
                         <h2 style="font-size: 15px; margin-left: 110px; margin-right: 15px;">
-                            Editer par : Le Conseiller
+                            Edité par : Le Conseiller
                         </h2><br>
                         <h2 style="font-size: 12px; float: right; margin-right: 15px">
                            le &nbsp;&nbsp; {{$dateConsultation ?? 'N/A'}}
@@ -179,10 +179,10 @@
                                         style="width: 67%" value="{{$details[0]['IDUnique'] ?? ''}}"> </label>
                             </div>
     
-                            <div class="domicile" style="margin-bottom: 10px;">
+                            {{-- <div class="domicile" style="margin-bottom: 10px;">
                                 <label><strong>N° controle : </strong><input type="text" class="input-border-bottom"
                                         style="width: 75%" value="{{$details[0]['CodeProposition'] ?? ''}}"> </label>
-                            </div>
+                            </div> --}}
     
                             {{-- <div class="profession" style="margin-bottom: 10px;">
                                 <label><strong>Réseau : </strong><input type="text" class="input-border-bottom"
@@ -222,26 +222,26 @@
                             <label><strong>Nbre Emission :
                                 </strong><span>{{$details[0]['NbreEmission'] ?? ''}}</span></label>
                             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                            <label><strong>Nbre Réglement :
+                            <label><strong>Nbre Règlement :
                                 </strong><span>{{ $nbrTotalConfirmer ?? 0 }}</span></label>
                             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
-                            <label><strong>Nbre Impayés :
+                            <label><strong>Nbre Impayé :
                                 </strong><span>{{ $nbrTotalNonRegle ?? 0 }}</span></label>
                             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
-                            <label><strong>Nbre Réglt Partiel :
+                            <label><strong>Nbre Règlt Partiel :
                                 </strong><span>{{ $nbrTotalPartielle ?? 0 }}</span></label>
                         </div>
                         <div style="width: 100%; margin-top: 15px;">
                             <label><strong>Emissions :
                                 </strong><span>{{ number_format($details[0]['TotalEmission'], 0, ',', ' ') ?? ''}} FCFA</span></label>
                             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-                            <label><strong>Réglements :
+                            <label><strong>Règlements :
                                 </strong><span>{{ $totalConfirmer ?? 0 }} FCFA</span></label>
                             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-                            <label><strong>Impayés :
+                            <label><strong>Impayé :
                                 </strong><span>{{ $totalNonRegle ?? 0 }} FCFA</span></label>
                             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-                            <label><strong>Réglt Partiel :
+                            <label><strong>Règlt Partiel :
                                 </strong><span>{{ $totalPartielle ?? 0 }} FCFA</span></label>
                         </div>
                     </div>
@@ -288,7 +288,7 @@
                 </div>
                 <div class=""
                     style="width: 30%; background-color: #747171; padding: 5px; border-radius: 0 7px 7px 0; margin-left: 30px;">
-                    <h4 style="color: #fff; font-size: 15px; margin: 0;">ASSURE</h4>
+                    <h4 style="color: #fff; font-size: 15px; margin: 0;">ASSURÉ</h4>
                 </div>
                 <!-- Contenu -->
                 <div class="content1" style="margin-top: 5px; padding: 10px;">
@@ -301,7 +301,7 @@
                             <th>Frais Accs.</th>
                             <th>Prime Hors Accs.</th>
                             <th>Prime total </th>
-                            <th>Periodicites</th>
+                            <th>Périodicité</th>
                         </tr>
                         @foreach($assures as $assure)
                             <tr>
@@ -342,7 +342,7 @@
                 </div>
                 <div class=""
                     style="width: 30%; background-color: #747171; padding: 5px; border-radius: 0 7px 7px 0; margin-left: 30px;">
-                    <h4 style="color: #fff; font-size: 15px; margin: 0;">PAYEUR(S) DE PRIME</h4>
+                    <h4 style="color: #fff; font-size: 15px; margin: 0;">PAYEUR DE PRIME</h4>
                 </div>
                 <!-- Contenu -->
                 <div class="content1" style="margin-top: 5px; padding: 10px;">
@@ -374,7 +374,7 @@
                 </div>
                 <div class=""
                     style="width: 30%; background-color: #747171; padding: 5px; border-radius: 0 7px 7px 0; margin-left: 30px;">
-                    <h4 style="color: #fff; font-size: 15px; margin: 0;">PRIMES NON REGLEES</h4>
+                    <h4 style="color: #fff; font-size: 15px; margin: 0;">PRIMES NON REGLÉES</h4>
                 </div>
                 <!-- Contenu -->
                 <div class="content1" style="margin-top: 5px; padding: 10px;">
@@ -386,10 +386,9 @@
                             <th style="text-align: center;">Date</th>
                             <th style="text-align: center;">Montant</th>
                             <th style="text-align: center;">Montant réglé</th>
-                            <th style="text-align: center;">Date réglt</th>
-                            <th style="text-align: center;">Ref. réglt</th>
-                            <th style="text-align: center;">Mode réglement</th>
-                            <th style="text-align: center;">Statut</th>
+                            <th style="text-align: center;">Date règlt</th>
+                            <th style="text-align: center;">Ref. règlt</th>
+                            <th style="text-align: center;">Mode règlement</th>
                         </tr>
                         @php
                             $MontantNetTotal = 0;
@@ -409,12 +408,12 @@
                                 <td style="text-align: center;">{{$enc['RegltDate'] ?? ''}}</td>
                                 <td>{{$enc['RegltRef'] ?? ''}}</td>
                                 <td style="text-align: center;">{{$enc['RegltCodePaiement'] ?? ''}}</td>
-                                <td style="text-align: center;">{{$enc['Statut'] ?? ''}}</td>
+                                {{-- <td style="text-align: center;">{{$enc['Statut'] ?? ''}}</td> --}}
                             </tr>
                             
                             @empty
                             <tr>
-                                <td colspan="8" style="text-align: center">Aucune prime non reglée</td>
+                                <td colspan="8" style="text-align: center">Aucune prime non réglée</td>
                             </tr>
                         @endforelse
                         @if (count($nonRegle) > 0)
@@ -442,7 +441,7 @@
                 </div>
                 <div class=""
                     style="width: 55%; background-color: #747171; padding: 5px; border-radius: 0 7px 7px 0; margin-left: 30px;">
-                    <h4 style="color: #fff; font-size: 15px; margin: 0;">PRIMES REGLEES PARTIELLEMENTS</h4>
+                    <h4 style="color: #fff; font-size: 15px; margin: 0;">PRIMES REGLÉES PARTIELLEMENT</h4>
                 </div>
                 <!-- Contenu -->
                 <div class="content1" style="margin-top: 5px; padding: 10px;">
@@ -454,10 +453,10 @@
                             <th style="text-align: center;">Date</th>
                             <th style="text-align: center;">Montant</th>
                             <th style="text-align: center;">Montant réglé</th>
-                            <th style="text-align: center;">Date réglt</th>
-                            <th style="text-align: center;">Ref. réglt</th>
-                            <th style="text-align: center;">Mode réglement</th>
-                            <th style="text-align: center;">Statut</th>
+                            <th style="text-align: center;">Date règlt</th>
+                            <th style="text-align: center;">Ref. règlt</th>
+                            <th style="text-align: center;">Mode règlement</th>
+                            {{-- <th style="text-align: center;">Statut</th> --}}
                         </tr>
                         @php
                             $MontantNetTotalPartielle = 0;
@@ -477,12 +476,12 @@
                                 <td style="text-align: center;">{{$part['RegltDate'] ?? ''}}</td>
                                 <td>{{$part['RegltRef'] ?? ''}}</td>
                                 <td style="text-align: center;">{{$part['RegltCodePaiement'] ?? ''}}</td>
-                                <td style="text-align: center;">{{$part['Statut'] ?? ''}}</td>
+                                {{-- <td style="text-align: center;">{{$part['Statut'] ?? ''}}</td> --}}
                             </tr>
                             
                         @empty
                             <tr>
-                                <td colspan="8" style="text-align: center">Aucune prime reglée partiellement</td>
+                                <td colspan="8" style="text-align: center">Aucune prime réglée partiellement</td>
                             </tr>
                         @endforelse
                         @if(count($partielle) > 0)
@@ -510,7 +509,7 @@
                 </div>
                 <div class=""
                     style="width: 30%; background-color: #747171; padding: 5px; border-radius: 0 7px 7px 0; margin-left: 30px;">
-                    <h4 style="color: #fff; font-size: 15px; margin: 0;">PRIMES REGLEES</h4>
+                    <h4 style="color: #fff; font-size: 15px; margin: 0;">PRIMES REGLÉES</h4>
                 </div>
                 <!-- Contenu -->
                 <div class="content1" style="margin-top: 5px; padding: 10px;">
@@ -522,10 +521,10 @@
                             <th style="text-align: center;">Date</th>
                             <th style="text-align: center;">Montant</th>
                             <th style="text-align: center;">Montant réglé</th>
-                            <th style="text-align: center;">Date réglt</th>
-                            <th style="text-align: center;">Ref. réglt</th>
-                            <th style="text-align: center;">Mode réglement</th>
-                            <th style="text-align: center;">Statut</th>
+                            <th style="text-align: center;">Date règlt</th>
+                            <th style="text-align: center;">Ref. règlt</th>
+                            <th style="text-align: center;">Mode règlement</th>
+                            {{-- <th style="text-align: center;">Statut</th> --}}
                         </tr>
                         @php
                             $MontantNetTotalReglee = 0;
@@ -545,12 +544,12 @@
                                 <td style="text-align: center;">{{$reglt['RegltDate'] ?? ''}}</td>
                                 <td>{{$reglt['RegltRef'] ?? ''}}</td>
                                 <td style="text-align: center;">{{$reglt['RegltCodePaiement'] ?? ''}}</td>
-                                <td style="text-align: center;">{{$reglt['Statut'] ?? ''}}</td>
+                                {{-- <td style="text-align: center;">{{$reglt['Statut'] ?? ''}}</td> --}}
                             </tr>
                             
                         @empty
                             <tr>
-                                <td colspan="8" style="text-align: center">Aucune prime reglée</td>
+                                <td colspan="8" style="text-align: center">Aucune prime réglée</td>
                             </tr>
                         @endforelse
                         @if(count($confirmer) > 0)

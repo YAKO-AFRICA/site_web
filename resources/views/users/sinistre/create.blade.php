@@ -48,7 +48,7 @@
         </div>
         <div class="card-body">
 
-            <form id="sinistreForm" action="{{ route('sinistre.store') }}" method="POST" enctype="multipart/form-data" class="submitForm">
+            <form id="sinistreForm" method="POST" enctype="multipart/form-data" class="submitForm">
                 @csrf
                 <div class="">
                     <div class="accordion" id="accordionExample">
@@ -130,10 +130,9 @@
                                         </div>
                                         <div class="col-12 col-lg-6">
                                             <label for="emailDecalarant" class="form-label">Quelle est votre adresse email
-                                                ? <span class="star">*</span></label>
+                                                ?</label>
                                             <input type="email" class="form-control" id="emailDecalarant"
-                                                name="emailDecalarant" value="" placeholder="Votre adresse email"
-                                                required>
+                                                name="emailDecalarant" value="" placeholder="Votre adresse email">
                                         </div>
 
                                     </div>
@@ -261,8 +260,8 @@
                             <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
                                 data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <div class="row g-3 mb-3">
-                                        <div class="col-md-4">
+                                    <div class="row g-3 mb-3 justify-content-center align-items-center">
+                                        <div class="col-md-6">
                                             <label for="nature" class="form-label">Nature du sinistre <span
                                                     class="star">*</span> </label> &nbsp;
 
@@ -277,7 +276,7 @@
                                                 <label class="form-check-label" for="natureInvalidite">Invalidité</label>
                                             </div>
                                         </div>
-                                        <div class="col-md-4" id="typeDecesBlock">
+                                        <div class="col-md-6" id="typeDecesBlock">
                                             <label for="" class="form-label">Le décès est-il accidentel ? <span
                                                     class="star">*</span> </label> &nbsp;
 
@@ -292,8 +291,26 @@
                                                 <label class="form-check-label" for="AccidentelNon">Non</label>
                                             </div>
                                         </div>
-                                        <div class="col-md-4" id="declarationTardiveBlock">
-                                            <label for="nature" class="form-label">L'inhumation à t-il déjà eu lieu ?
+                                    </div>
+
+                                    <div class="row g-3 justify-content-center align-items-center mb-3">
+                                        <div class="col-md-6" id="corpsConserveBlock">
+                                            <label for="" class="form-label">Le corps a t-il été conservé ? <span
+                                                    class="star">*</span> </label> &nbsp;
+
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="corpsConserve"
+                                                    id="corpsConserveOui" value="1">
+                                                <label class="form-check-label" for="corpsConserveOui">Oui</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="corpsConserve"
+                                                    id="corpsConserveNon" value="0">
+                                                <label class="form-check-label" for="corpsConserveNon">Non</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6" id="declarationTardiveBlock">
+                                            <label for="nature" class="form-label">L'inhumation a t-elle déjà eu lieu ?
                                                 <span class="star">*</span> </label> &nbsp;
 
                                             <div class="form-check form-check-inline">
@@ -309,6 +326,7 @@
                                         </div>
 
                                     </div>
+
                                     <div class="row g-3 mb-3" id="dateCauseSinistreBlock">
                                         <div class="col-md-6" id="dateSinistreBlock">
                                             <label for="dateSinistre" class="form-label">Date du sinistre <span
@@ -873,8 +891,76 @@
     </script>
 
     <script>
+
+    // const row = `
+                //     <tr data-docid="${doc.idfichier}" data-row-required="${isRequired ? '1' : '0'}">
+                //         <!-- Colonne Libellé Fichier -->
+                //         <td class="align-middle">
+                //             <div class="text-wrap">${doc.libelleFichier} ${isRequired ? '<span class="star">*</span>' : ''}</div>
+                //         </td>
+
+                //         <!-- Colonne Radio -->
+                //         <td>
+                //             <ul class="list-grou">
+                //                 ${doc.listDoc.length > 1
+                //                     ? `
+                //                         <label>Veuillez choisir le document en votre possession ${isRequired ? '<span class="star">*</span>' : ''}</label>
+                //                         ${doc.listDoc.map((d, i) => `
+                //                             <li class="list-group-ite">
+                //                                 <input type="radio"
+                //                                     id="${d.codeDoc}"
+                //                                     name="docLibelle[${doc.idfichier}]"
+                //                                     value="${d.libelleDoc}"
+                //                                     class="doc-radio"
+                //                                     data-target="libelle-${doc.idfichier}"
+                //                                     >
+                //                                 <label for="${d.codeDoc}">${d.libelleDoc}</label>
+                //                             </li>
+                //                         `).join('')}
+                //                     `
+                //                     : `
+                //                         <li class="list-group-ite">
+                //                             <input type="radio"
+                //                                 id="${doc.listDoc[0].codeDoc}"
+                //                                 name="docLibelle[${doc.idfichier}]"
+                //                                 value="${doc.listDoc[0].libelleDoc}"
+                //                                 class="doc-radio"
+                //                                 data-target="libelle-${doc.idfichier}"
+                //                                 ${isRequired ? 'checked' : ''}>
+                //                             <label for="${doc.listDoc[0].codeDoc}">${doc.listDoc[0].libelleDoc}</label>
+                //                         </li>
+                //                     `
+                //                 }
+                //             </ul>
+                //         </td>
+                //         <td class="align-middle text-center">
+                //             <div class="file-input d-flex align-items-center justify-content-center">
+                //                 <input type="hidden" id="libelle-${doc.idfichier}" name="libelle[]" value="">
+                //                 <input type="file"
+                //                     id="file-${doc.idfichier}"
+                //                     name="docFile[]"
+                //                     accept=".pdf,.png,.jpg,.jpeg"
+                //                     hidden
+                //                     data-file-required="${isRequired ? '1' : '0'}">
+
+                //                 <button type="button"
+                //                         class="btn-prime btn-prime-two p-2 addFileBtn"
+                //                         data-target="file-${doc.idfichier}">
+                //                     <i class='bx bx-plus-circle'></i>
+                //                 </button>
+
+                //             </div>
+                //             <div class="file-preview-container mt-2 d-flex align-items-center justify-content-center">
+                //                 <!-- Ici on injectera l’aperçu -->
+                //                 <span class="file-preview ms-2 text-muted small"></span>
+                //             </div>
+                //         </td>
+                //     </tr>
+                // `;
         const SIGN_API = "{{ config('services.sign_api') }}";
         const OTP_API = "{{ config('services.otp_api') }}";
+       var beneficiaires = @json($beneficiaires ?? []);
+       beneficiaires = Object.values(beneficiaires);
     </script>
 
     <script>
@@ -1357,7 +1443,6 @@
             nextStepBtn.disabled = true;
 
             if (ibanPaiementSection && !ibanPaiementSection.classList.contains('d-none')) {
-                {{-- console.log('ibanPaiementSectiondfdg : ',ibanPaiementSection) --}}
                 ibanMsgError.textContent = "";
                 ibanMsgError.style.display = "none";
                 ibanMsgSuccess.textContent = "";
@@ -1403,9 +1488,6 @@
             // --- Téléphone ---
             if (telPaiementSection && !telPaiementSection.classList.contains('d-none')) {
                 let prefix = "";
-                {{-- changePhoneButtonForMobileMoney.classList.remove('d-none');
-                changePhoneButton.classList.add('d-none'); --}}
-                {{-- console.log('telPaiementSectiondgdd : ',telPaiementSection) --}}
 
                 // Quand on change d'opérateur → on définit le bon préfixe
                 operateurInputs.forEach(input => {
@@ -1498,11 +1580,8 @@
                     const idContrat = form.querySelector('[name="idcontrat"]') ?.value || '';
                     const moyenPaiement = form.querySelector('[name="moyenPaiement"]:checked') ?.value || '';
                     const operateur = form.querySelector('[name="Operateur"]:checked') ?.value || '';
-                    console.log('operateurdfgfdgd : ',operateur)
                     const telPaiement = form.querySelector('[name="TelPaiement"]') ?.value || '';
-                    console.log('telPaiementeeeedsd : ',telPaiement)
                     const iban = form.querySelector('[name="IBAN"]') ?.value || '';
-                    console.log('ibanvgdvfdd : ',iban)
 
                     // Récupération des informations du déclarant
                     const nomDecalarant = form.querySelector('[name="nomDecalarant"]') ?.value || '';
@@ -1583,7 +1662,6 @@
                     //const ibanPaiementSection = document.getElementById('IBANPaiement');
 
                     if (moyenPaiement == 'Mobile_Money') {
-                        console.log('operateur : ',operateur)
                         changePhoneButton.classList.add('d-none');
                         changePhoneButtonForMobileMoney.classList.remove('d-none');
                         const operateurText = operateur == 'Orange_money' ? 'Orange Money' :
@@ -1596,7 +1674,6 @@
                         form.querySelector('#NRIB').textContent = '';
                         phoneInput.readOnly = true;
                     } else if (moyenPaiement == 'Virement_Bancaire') {
-                        console.log('iban : ',iban)
                         changePhoneButton.classList.remove('d-none');
                         changePhoneButtonForMobileMoney.classList.add('d-none');
                         form.querySelector('#NRIB').textContent = iban;
@@ -1606,30 +1683,6 @@
 
 
                     }
-                    {{-- if (telPaiementSection.classList.contains('d-none') && moyenPaiement == 'Mobile_Money') {
-                        console.log('operateur : ',operateur)
-                        changePhoneButton.classList.add('d-none');
-                        changePhoneButtonForMobileMoney.classList.remove('d-none');
-                        const operateurText = operateur == 'Orange_money' ? 'Orange Money' :
-                            operateur == 'MTN_money' ? 'MTN Money' :
-                            operateur == 'Moov_money' ? 'Moov Money' : '';
-                            console.log('operateurText : ',operateurText)
-                            console.log('telPaiement : ',telPaiement)
-                        form.querySelector('#Operat').textContent = operateurText;
-                        form.querySelector('#TelPaie').textContent = telPaiement;
-                        form.querySelector('#NRIB').textContent = '';
-                        phoneInput.readOnly = true;
-                    } else if (ibanPaiementSection.classList.contains('d-none') && moyenPaiement == 'Virement_Bancaire') {
-                        console.log('iban : ',iban)
-                        changePhoneButton.classList.remove('d-none');
-                        changePhoneButtonForMobileMoney.classList.add('d-none');
-                        form.querySelector('#NRIB').textContent = iban;
-                        form.querySelector('#Operat').textContent = '';
-                        form.querySelector('#TelPaie').textContent = '';
-                        phoneInput.readOnly = false;
-
-
-                    } --}}
 
                 } catch (error) {
                     console.error("Erreur lors de la mise à jour du résumé :", error);
@@ -1640,6 +1693,68 @@
         } else {
             console.warn("Formulaire introuvable : vérifie que sinistreForm existe dans la page.");
         }
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("sinistreForm");
+            const btn = document.getElementById("btn-submit");
+
+            btn.addEventListener("click", function(event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: 'Traitement en cours...',
+                    text: 'Veuillez patienter...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
+                const formData = new FormData(form);
+
+                axios.post('{{ route('sinistre.store') }}', formData)
+                .then(function(response) {
+                    if (response.data.type === "success") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Succès',
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK',
+                            text: response.data.message,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                if (response.data.url) {
+                                    window.open(response.data.url, '_blank');
+                                }
+
+                                if (response.data.urlback) {
+                                    window.location.href = response.data.urlback;
+                                }
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erreur...',
+                            showConfirmButton: true,
+                            confirmButtonText: 'Reessayer',
+                            text: response.data.message,
+                        });
+                    }
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur...',
+                        showConfirmButton: true,
+                        confirmButtonText: 'Reessayer',
+                        text: response?.data?.message || "Une erreur est survenue.",
+                    });
+                });
+            });
         });
     </script>
 @endsection

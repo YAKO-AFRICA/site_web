@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use App\Models\TblMotifrejetbyprestat;
+use Illuminate\Support\Facades\Session;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class SinistreController extends Controller
@@ -89,7 +92,7 @@ class SinistreController extends Controller
                 ], 400);
             }
 
-            
+
             $datenaissance = (!Auth::guard('customer')->check())
                 ? $DateNaissanceContrat
                 : Carbon::parse($request->input('datenaissanceSous'))->format('d/m/Y');
@@ -100,7 +103,7 @@ class SinistreController extends Controller
                     'message' => "La date de naissance saisie ne correspond pas à celle enregistrée dans le contrat. Veuillez contacter YAKO AFRICA +(225)27 20 33 15 00.",
                 ], 400);
             }
-            $codeProduitYAKOFondPerdu = ['YKS_2008','YKS_2018','YKF_2008','YKF_2018'];
+            $codeProduitYAKOFondPerdu = ['YKS_2008', 'YKS_2018', 'YKF_2008', 'YKF_2018'];
             // Ajouter 10 ans
             $DateFinAdhesion = Carbon::parse($data['details'][0]['DateEffetReel']);
             $DateFinAdhesion->addYears(10);
@@ -135,7 +138,7 @@ class SinistreController extends Controller
         }
     }
 
-
+    // api pour edit
     public function getContratAssures(Request $request)
     {
         $idcontrat = $request->input('IdProposition');
@@ -152,14 +155,42 @@ class SinistreController extends Controller
                 session(['contratActeur' => $data['allActeur']]);
                 session(['contratActeurAssure' => collect($data['allActeur'])->where('CodeRole', 'ASS')->where('IdPropositionPartenaires', $CodeAssure)->first()]);
                 session(['contratActeurBeneficiaire' => collect($data['allActeur'])->where('CodeRole', 'BEN')]);
-                // dd(session('contratActeurAssure'));
 
-                return response()->json([
-                    'type' => 'success',
-                    'urlback' => route('sinistre.create'),
-                    'message' => 'Un instant ...',
-                    'code' => 200,
-                ]);
+                $CodeAssure = session('contratActeurAssure')['IdPropositionPartenaires'];
+
+                $sinistreEnCours = TblSinistre::where([
+                    ['idcontrat', '=', $idcontrat],
+                    ['codeAssuree', '=', $CodeAssure],
+                    ['etape', '=', 1],
+                ])->first();
+                $sinistreInacheve = TblSinistre::where([
+                    ['idcontrat', '=', $idcontrat],
+                    ['codeAssuree', '=', $CodeAssure],
+                    ['etape', '=', 0],
+                ])->first();
+
+                if ($sinistreEnCours) {
+                    return response()->json([
+                        'type' => 'error',
+                        'urlback' => '',
+                        'message' => "Une pré-déclaration de sinistre N° $sinistreEnCours->code pour le contrat $sinistreEnCours->idcontrat sur l'assuré(e) $sinistreEnCours->prenomAssuree $sinistreEnCours->nomAssuree est en cours de traitement. Veuillez patienter.",
+                        'code' => 500,
+                    ]);
+                } else if ($sinistreInacheve) {
+                    return response()->json([
+                        'type' => 'error',
+                        'urlback' => '',
+                        'message' => "Vous avez une pré-déclaration de sinistre N° $sinistreInacheve->code pour le contrat $sinistreInacheve->idcontrat sur l'assuré(e) $sinistreInacheve->prenomAssuree $sinistreInacheve->nomAssuree inachevée. Veuillez finaliser la pré-déclaration.",
+                        'code' => 500,
+                    ]);
+                } else {
+                    return response()->json([
+                        'type' => 'success',
+                        'urlback' => route('sinistre.create'),
+                        'message' => 'Un instant ...',
+                        'code' => 200,
+                    ]);
+                }
             } else {
                 return response()->json([
                     'type' => 'error',
@@ -183,7 +214,7 @@ class SinistreController extends Controller
     {
         // Vérification des sessions REQUISES
         if (!session()->has('contratDetails') || !session()->has('contratActeur')) {
-            return redirect()->route('sinistre.index')->with('error', 'Votre Session a expirée');
+            return redirect()->route('sinistre.newSinistre')->with('error', 'Votre Session a expirée');
         }
 
         // Récupération des données de session
@@ -191,6 +222,8 @@ class SinistreController extends Controller
         $acteurs = session('contratActeur');
         $assuree = session('contratActeurAssure');
         $beneficiaires = session('contratActeurBeneficiaire');
+
+        // dd($beneficiaires);
 
         // $maladies = TblMaladie::all();
 
@@ -322,14 +355,14 @@ class SinistreController extends Controller
                     'message' => "Une pré-déclaration de sinistre N° $sinistreEnCours->code pour le contrat $sinistreEnCours->idcontrat sur l'assuré(e) $sinistreEnCours->prenomAssuree $sinistreEnCours->nomAssuree est en cours de traitement. Veuillez patienter.",
                     'code' => 500,
                 ]);
-            }else if ($sinistreInacheve) {
+            } else if ($sinistreInacheve) {
                 return response()->json([
                     'type' => 'error',
                     'urlback' => '',
                     'message' => "Vous avez une pré-déclaration de sinistre N° $sinistreInacheve->code pour le contrat $sinistreInacheve->idcontrat sur l'assuré(e) $sinistreInacheve->prenomAssuree $sinistreInacheve->nomAssuree inachevée. Veuillez finaliser la pré-déclaration.",
                     'code' => 500,
                 ]);
-            }else{
+            } else {
                 $sinistre = TblSinistre::create([
                     'code' => RefgenerateCodePrest(TblSinistre::class, 'SIN-', 'code'),
                     'nomDecalarant' => $request->nomDecalarant,
@@ -379,7 +412,7 @@ class SinistreController extends Controller
                         'message' => "Erreur lors de l'enregistrement de la pré-déclaration de sinistre",
                         'code' => 500,
                     ]);
-                }else{
+                } else {
                     // Chemin externe pour stocker les fichiers
                     $externalUploadDir = base_path(env('UPLOAD_SINISTRE_FILE'));
 
@@ -393,13 +426,13 @@ class SinistreController extends Controller
                         // $rectoFile = null;
                         // $versoFile = null;
                         $sinistreFiles = [];
-                        
+
                         foreach ($request->file('docFile') as $index => $file) {
                             $fileLibelle = $request->libelle[$index];
                             // suppremer les espace, les caractères spéciaux et les mettre en majuscule la première lettre de chaque mot
                             $fileType = ucwords(str_replace(' ', '', $fileLibelle));
                             $fileType = preg_replace('/[^a-zA-Z0-9]/', '', $fileType);
-                            
+
                             $fileName = Carbon::now()->format('Ymd_His') . '_' . $contrat . '_' . $fileType . '.' . $file->extension();
                             $file->move($externalUploadDir . "$sinistre->code/docsSinistre/", $fileName);
                             $sinistreFiles[] = [
@@ -409,35 +442,6 @@ class SinistreController extends Controller
                                 'filename' => $fileName,
                             ];
                         }
-
-
-                        // Si les fichiers recto et verso sont présents, fusionner en un fichier PDF
-                        // if ($rectoFile && $versoFile) {
-                        //     $mergedFileName = Carbon::now()->format('Ymd_His') . '_CNI_' . $contrat . '.pdf';
-                        //     $mergedFilePath = $externalUploadDir . 'docsPrestation/' . $mergedFileName;
-
-                        //     // Charger les fichiers recto et verso
-                        //     $rectoContent = file_get_contents($rectoFile->getPathname());
-                        //     $versoContent = file_get_contents($versoFile->getPathname());
-
-                        //     // Créer une vue HTML pour le PDF
-                        //     $html = view('users.espace_client.services.fiches.cni', [
-                        //         'rectoContent' => base64_encode($rectoContent),
-                        //         'versoContent' => base64_encode($versoContent)
-                        //     ])->render();
-
-                        //     // Générer le PDF
-                        //     $pdf = Pdf::loadHTML($html)->setPaper('a4', 'portrait');
-                        //     $pdf->save($mergedFilePath);
-
-                        //     // Enregistrer dans la base de données
-                        //     $prestationFiles[] = [
-                        //         'idPrestation' => $prestation->id ?? $PrestationRdv->id,
-                        //         'libelle' => $mergedFileName,
-                        //         'path' => "storage/prestations/$sinistre->code/docsPrestation/$mergedFileName",
-                        //         'type' => 'CNI',
-                        //     ];
-                        // }
 
                         // Enregistrer tous les fichiers
                         foreach ($sinistreFiles as $fileData) {
@@ -450,16 +454,25 @@ class SinistreController extends Controller
                     ]);
                     // DB::commit();
                     $sinistrePdfUrl = $this->generateSinistrePdf($sinistre);
-                    return response()->json([
-                        'type' => 'success',
-                        'urlback' => $sinistrePdfUrl['file_url'],
-                        'urlShow' => $sinistrePdfUrl['redirect_url'],
-                        'message' => "Enregistré avec succès !",
-                        'code' => 200,
-                    ]);
-                        
+
+                    if ($sinistrePdfUrl['success'] == false) {
+                        return response()->json([
+                            'type' => 'error',
+                            'urlback' => '',
+                            'message' => "Une erreur est survenue lors de la génération de la fiche de sinistre! " . $sinistrePdfUrl['message'],
+                            'code' => 500,
+                        ]);
+                    } else {
+                        return response()->json([
+                            'type' => 'success',
+                            'urlback' => $sinistrePdfUrl['redirect_url'],
+                            'url' => $sinistrePdfUrl['file_url'],
+                            'message' => "Enregistré avec succès !",
+                            'code' => 200,
+                        ]);
+                    }
                 }
-            }  
+            }
         } catch (\Throwable $th) {
             DB::rollBack();
 
@@ -512,7 +525,7 @@ class SinistreController extends Controller
             $pdf->save($filePath);
 
             // Enregistrer le fichier dans la base de données
-            TblDocSinistre::create([    
+            TblDocSinistre::create([
                 'idSinistre' => $sinistre->id,
                 'libelle' => 'Fiche de déclaration de sinistre',
                 'path' => "storage/sinistre/$sinistre->code/ficheSinistre/$fileName",
@@ -572,24 +585,542 @@ class SinistreController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $code)
     {
-        //
+        $sinistre = TblSinistre::where('code', $code)->first();
+        // Vérifier si la session contient déjà les docs de ce sinistre
+        $sessionKey = 'sinistre_docs_' . $sinistre->id;
+
+        if (!Session::has($sessionKey)) {
+            // Charger les documents depuis la base seulement la première fois
+            $documents = TblDocSinistre::select('id', 'libelle', 'filename', 'path')
+                ->where('idSinistre', $sinistre->id)
+                ->get()
+                ->toArray();
+
+            // Stocker dans la session (non modifiable ensuite)
+            Session::put($sessionKey, $documents);
+        }
+
+        // Récupérer la liste depuis la session
+        // $documentsSession = Session::get($sessionKey);
+        // $documentsRequired = $sinistre->docSinistre->toArray();
+
+        // Vérifier si tous les documents requis sont disponibles
+        // $conditionsInvalides = count($documentsRequired) !== count($documentsSession);
+        // dd($documentsRequired);
+
+        $documentsSession = collect(Session::get($sessionKey));
+
+        // Documents requis (ex. docSinistre = documents à fournir)
+        $documentsRequired = $documentsSession->pluck('libelle')->toArray();
+
+        // Documents déjà fournis
+        $documentsExistants = collect($sinistre->docSinistre)->pluck('libelle')->toArray();
+
+        // 🔍 Trouver les documents manquants
+        $documentsManquants = array_diff($documentsRequired, $documentsExistants);
+        // dd($documentsManquants,$documentsRequired,$documentsExistants);
+
+        $conditionsInvalides = count($documentsManquants) > 0;
+
+        $idcontrat = $sinistre->idcontrat;
+        $CodeAssure = $sinistre->codeAssuree;
+
+        $response = Http::withOptions(['timeout' => 60])
+            ->post(config('services.api.encaissement_bis'), [
+                'idContrat' => $idcontrat,
+            ]);
+        if ($response->successful()) {
+            $data = $response->json();
+            if (!empty($data['details'])) {
+                $details = $data['details'][0];
+                $contratActeur = $data['allActeur'];
+                $contratActeurAssure = collect($data['allActeur'])->where('CodeRole', 'ASS')->where('IdPropositionPartenaires', $CodeAssure)->first();
+                // dd($contratActeurAssure);
+                $contratActeurBeneficiaire = collect($data['allActeur'])->where('CodeRole', 'BEN');
+            }
+        }
+
+        $villes = TblVille::all();
+        $response = Http::withOptions(['timeout' => 60])
+            ->get(config('services.api.filiations'));
+        if ($response->successful()) {
+            $data = $response->json();
+            if (!empty($data)) {
+                $filiations = $data;
+            }
+        } else {
+            $filiations = [];
+        }
+        $response = Http::withOptions(['timeout' => 60])
+            ->get(config('services.api.maladies'));
+        if ($response->successful()) {
+            $data = $response->json();
+            if (!empty($data)) {
+                $maladies = $data;
+            }
+        } else {
+            $maladies = [];
+        }
+        $response = Http::withOptions(['timeout' => 60])
+            ->get(config('services.api.pompes_funebres_list'));
+        if ($response->successful()) {
+            $data = $response->json();
+            if (!empty($data)) {
+                $lieuConservation = $data;
+            }
+        } else {
+            $lieuConservation = [];
+        }
+        return view('users.sinistre.edit', compact('sinistre', 'villes', 'filiations', 'maladies', 'lieuConservation', 'details', 'contratActeur', 'contratActeurAssure', 'contratActeurBeneficiaire', 'conditionsInvalides', 'documentsManquants'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $code)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $updatedSinistre = TblSinistre::where('code', $code)->first();
+            $updatedSinistre->update([
+                'nomDecalarant' => $request->nomDecalarant ?? $updatedSinistre->nomDecalarant,
+                'prenomDecalarant' => $request->prenomDecalarant ?? $updatedSinistre->prenomDecalarant,
+                'datenaissanceDecalarant' => $request->datenaissanceDecalarant ?? $updatedSinistre->datenaissanceDecalarant,
+                'lieunaissanceDecalarant' => $request->lieunaissanceDecalarant ?? $updatedSinistre->lieunaissanceDecalarant,
+                'filiation' => $request->filiation ?? $updatedSinistre->filiation,
+                'lieuresidenceDecalarant' => $request->lieuresidenceDecalarant ?? $updatedSinistre->lieuresidenceDecalarant,
+                'celDecalarant' => $request->celDecalarant ?? $updatedSinistre->celDecalarant,
+                'emailDecalarant' => $request->emailDecalarant ?? $updatedSinistre->emailDecalarant,
+                'genreAssuree' => $request->genreAssuree ?? $updatedSinistre->genreAssuree,
+                'nomAssuree' => $request->nomAssuree ?? $updatedSinistre->nomAssuree,
+                'prenomAssuree' => $request->prenomAssuree ?? $updatedSinistre->prenomAssuree,
+                'datenaissanceAssuree' => $request->datenaissanceAssuree ?? $updatedSinistre->datenaissanceAssuree,
+                'lieunaissanceAssuree' => $request->lieunaissanceAssuree ?? $updatedSinistre->lieunaissanceAssuree,
+                'professionAssuree' => $request->professionAssuree ?? $updatedSinistre->professionAssuree,
+                'lieuresidenceAssuree' => $request->lieuresidenceAssuree ?? $updatedSinistre->lieuresidenceAssuree,
+                'natureSinistre' => $request->natureSinistre ?? $updatedSinistre->natureSinistre,
+                'decesAccidentel' => $request->decesAccidentel ?? $updatedSinistre->decesAccidentel,
+                'declarationTardive' => $request->declarationTardive ?? $updatedSinistre->declarationTardive,
+                'dateSinistre' => $request->dateSinistre ?? $updatedSinistre->dateSinistre,
+                'causeSinistre' => $request->causeSinistre ?? $updatedSinistre->causeSinistre,
+                'lieuConservation' => $request->lieuConservation ?? $updatedSinistre->lieuConservation,
+                'montantBON' => $request->montantBON ?? $updatedSinistre->montantBON,
+                'dateLevee' => $request->dateLevee ?? $updatedSinistre->dateLevee,
+                'lieuLevee' => $request->lieuLevee ?? $updatedSinistre->lieuLevee,
+                'dateInhumation' => $request->dateInhumation ?? $updatedSinistre->dateInhumation,
+                'lieuInhumation' => $request->lieuInhumation ?? $updatedSinistre->lieuInhumation,
+                'codeAssuree' => $request->codeAssuree ?? $updatedSinistre->codeAssuree,
+                'etape' => 0,
+            ]);
+
+            if ($updatedSinistre) {
+                $sinistrePdfUrl = $this->updateSinistrePdf($updatedSinistre);
+                // $motifsRejet = TblMotifrejetbyprestat::where('codeprestation', $code)->get();
+                // foreach ($motifsRejet as $motif) {
+                //     $motif->delete();
+                // }
+                if (!$sinistrePdfUrl) {
+                    Log::info("Erreur lors de la mise à jour du PDF du sinistre");
+                }
+                $dataResponse = [
+                    'type' => 'success',
+                    'urlback' => 'back',
+                    'message' => "Modifiée avec succès!",
+                    'code' => 200,
+                ];
+                DB::commit();
+            } else {
+                DB::rollback();
+                $dataResponse = [
+                    'type' => 'error',
+                    'urlback' => '',
+                    'message' => "Erreur lors de la mise à jour!",
+                    'code' => 500,
+                ];
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $dataResponse = [
+                'type' => 'error',
+                'urlback' => '',
+                'message' => "Erreur systeme! $th",
+                'code' => 500,
+            ];
+        }
+        return response()->json($dataResponse);
+    }
+
+    public function addDocSinistre(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $sinistre = TblSinistre::where('code', $request->code)->first();
+            // Chemin externe pour stocker les fichiers
+            $externalUploadDir = base_path(env('UPLOAD_SINISTRE_FILE'));
+
+            if (!is_dir($externalUploadDir)) {
+                mkdir($externalUploadDir, 0777, true);
+            }
+
+            // Gestion des fichiers uploadés
+            if ($request->hasFile('docFile')) {
+                $contrat = $request->idcontrat;
+                // $rectoFile = null;
+                // $versoFile = null;
+                $sinistreFiles = [];
+
+                foreach ($request->file('docFile') as $index => $file) {
+                    $fileLibelle = $request->libelle[$index];
+                    // suppremer les espace, les caractères spéciaux et les mettre en majuscule la première lettre de chaque mot
+                    $fileType = ucwords(str_replace(' ', '', $fileLibelle));
+                    $fileType = preg_replace('/[^a-zA-Z0-9]/', '', $fileType);
+
+                    $fileName = Carbon::now()->format('Ymd_His') . '_' . $contrat . '_' . $fileType . '.' . $file->extension();
+                    $file->move($externalUploadDir . "$sinistre->code/docsSinistre/", $fileName);
+                    $sinistreFiles[] = [
+                        'idSinistre' => $sinistre->id,
+                        'libelle' => $fileLibelle,
+                        'path' => "storage/sinistre/$sinistre->code/docsSinistre/$fileName",
+                        'filename' => $fileName,
+                    ];
+                }
+
+                // Enregistrer tous les fichiers
+                foreach ($sinistreFiles as $fileData) {
+                    TblDocSinistre::create($fileData);
+                }
+            }
+            DB::commit();
+            $dataResponse = [
+                'type' => 'success',
+                'urlback' => 'back',
+                'message' => "Document ajouté avec succès!",
+                'code' => 200,
+            ];
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $dataResponse = [
+                'type' => 'error',
+                'urlback' => '',
+                'message' => "Erreur systeme! $th",
+                'code' => 500,
+            ];
+        }
+        return response()->json($dataResponse);
+    }
+
+    public function transmettreSinistre(string $code)
+    {
+        DB::beginTransaction();
+        try {
+            $sinistreTransmitted = TblSinistre::where('code', $code)->first();
+            $sessionKey = 'sinistre_docs_' . $sinistreTransmitted->id;
+            // Récupérer la liste depuis la session
+            $documentsSession = Session::get($sessionKey);
+            $documents = $documentsSession;
+
+
+            $documentsRequired = $sinistreTransmitted->docSinistre->toArray();
+
+            foreach ($documents as $doc) {
+                if (array_key_exists($doc['libelle'], $documentsRequired)) {
+                    $documentsRequired[$doc['libelle']] = $doc['libelle']; // Stocke la valeur si elle existe
+                }
+            }
+            // Vérifier si tous les documents requis sont disponibles
+            $conditionsInvalides = count($documentsRequired) !== count($documents);
+            if ($conditionsInvalides) {
+                $dataResponse = [
+                    'type' => 'error',
+                    'urlback' => '',
+                    'message' => "Veuillez fournir tous les documents!",
+                    'code' => 500,
+                ];
+                return response()->json($dataResponse);
+            } else {
+                $sinistreTransmitted->update([
+                    'etape' => 1
+                ]);
+            }
+            if ($sinistreTransmitted) {
+
+                $dataResponse = [
+                    'type' => 'success',
+                    'urlback' => route('sinistre.index'),
+                    'message' => "Transmis avec succès!",
+                    'code' => 200,
+                ];
+                DB::commit();
+            } else {
+                DB::rollback();
+                $dataResponse = [
+                    'type' => 'error',
+                    'urlback' => '',
+                    'message' => "Erreur lors de la transmission!",
+                    'code' => 500,
+                ];
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $dataResponse = [
+                'type' => 'error',
+                'urlback' => '',
+                'message' => "Erreur systeme! $th",
+                'code' => 500,
+            ];
+        }
+        return response()->json($dataResponse);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    // public function destroy(string $code)
+    // {
+    //     DB::beginTransaction();
+    //     try {
+    //         $isDeleted = TblSinistre::where('code', $code)->first();
+    //         $isDeletedDocs = TblDocSinistre::where('idSinistre', $isDeleted->id)->get();
+    //         if ($isDeleted) {
+    //             foreach ($isDeletedDocs as $doc) {
+    //                 // Supprime l'entrée de la base de données
+    //                 $doc->delete();
+    //             }
+    //             // Dossier stocké
+    //             $filePath = base_path(env('UPLOAD_SINISTRE_FILE')) . "$isDeleted->code";
+    //             if (file_exists($filePath)) {
+    //                 unlink($filePath);
+    //             }
+    //             $isDeleted->delete();
+    //             $dataResponse = [
+    //                 'type' => 'success',
+    //                 'urlback' => "back",
+    //                 'message' => "Prédéclaration de sinistre supprimé avec succès!",
+    //                 'code' => 200,
+    //             ];
+    //             DB::commit();
+    //         } else {
+    //             DB::rollback();
+    //             $dataResponse = [
+    //                 'type' => 'error',
+    //                 'urlback' => '',
+    //                 'message' => "Erreur lors de la suppression!",
+    //                 'code' => 500,
+    //             ];
+    //         }
+    //     } catch (\Throwable $th) {
+    //         DB::rollBack();
+    //         $dataResponse = [
+    //             'type' => 'error',
+    //             'urlback' => '',
+    //             'message' => "Erreur systeme! $th",
+    //             'code' => 500,
+    //         ];
+    //     }
+    //     return response()->json($dataResponse);
+    // }
+
+    public function destroy(string $code)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $isDeleted = TblSinistre::where('code', $code)->first();
+            $isDeletedDocs = TblDocSinistre::where('idSinistre', $isDeleted->id)->get();
+
+            if ($isDeleted) {
+                foreach ($isDeletedDocs as $doc) {
+                    // Supprimer l'entrée de la base de données
+                    $doc->delete();
+                }
+
+                // Dossier stocké
+                $filePath = base_path(env('UPLOAD_SINISTRE_FILE')) . $isDeleted->code;
+
+                if (file_exists($filePath)) {
+                    // Vérifier si c'est un fichier ou un dossier
+                    if (is_file($filePath)) {
+                        unlink($filePath);
+                    } elseif (is_dir($filePath)) {
+                        // Supprimer tout le contenu du dossier avant
+                        $files = glob($filePath . '/*');
+                        foreach ($files as $file) {
+                            if (is_file($file)) {
+                                unlink($file);
+                            } elseif (is_dir($file)) {
+                                // si jamais il y a des sous-dossiers
+                                File::deleteDirectory($file);
+                            }
+                        }
+                        // Enfin supprimer le dossier
+                        rmdir($filePath);
+                    }
+                }
+
+                $isDeleted->delete();
+
+                $dataResponse = [
+                    'type' => 'success',
+                    'urlback' => "back",
+                    'message' => "Prédéclaration de sinistre supprimée avec succès!",
+                    'code' => 200,
+                ];
+                DB::commit();
+            } else {
+                DB::rollback();
+                $dataResponse = [
+                    'type' => 'error',
+                    'urlback' => '',
+                    'message' => "Erreur lors de la suppression!",
+                    'code' => 500,
+                ];
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $dataResponse = [
+                'type' => 'error',
+                'urlback' => '',
+                'message' => "Erreur système! " . $th->getMessage(),
+                'code' => 500,
+            ];
+        }
+        return response()->json($dataResponse);
+    }
+
+
+    public function destroyDoc(string $id)
+    {
+        DB::beginTransaction();
+        try {
+            $doc = TblDocSinistre::where('id', $id)->first();
+            if ($doc) {
+                $sinistre = TblSinistre::where('id', $doc->idSinistre)->first();
+                // Chemin du fichier stocké
+                $filePath = base_path(env('UPLOAD_SINISTRE_FILE')) . "$sinistre->code/docsSinistre/$doc->filename";
+                // $filePathe = base_path(env('UPLOAD_SINISTRE_FILE')) . "$sinistre->code/ficheSinistre/$doc->filename";
+
+                // Vérifie si le fichier existe avant de le supprimer
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+                // Vérifie si le fichier existe avant de le supprimer
+                // if (file_exists($filePathe)) {
+                //     unlink($filePathe);
+                // }
+
+                // Supprime l'entrée de la base de données
+                $doc->delete();
+
+                // $ok = $this->updateSinistrePdf($sinistre);
+                // if (!$ok) {
+                //     DB::rollBack();
+                //     Log::info("Erreur lors de la mise à jour du PDF de la sinistre");
+                //     $dataResponse = [
+                //         'type' => 'error',
+                //         'urlback' => '',
+                //         'message' => "Erreur lors de la mise à jour du PDF de la sinistre",
+                //         'code' => 500,
+                //     ];
+                // }
+            }
+            DB::commit();
+            $dataResponse = [
+                'type' => 'success',
+                'urlback' => 'back',
+                'message' => "Document supprimé avec succès!",
+                'code' => 200,
+            ];
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $dataResponse = [
+                'type' => 'error',
+                'urlback' => '',
+                'message' => "Erreur système! $th",
+                'code' => 500,
+            ];
+        }
+        return response()->json($dataResponse);
+    }
+
+    private function updateSinistrePdf($sinistre)
+    {
+        try {
+            $externalUploadDir = base_path(env('UPLOAD_SINISTRE_FILE'));
+            if (!is_dir($externalUploadDir)) {
+                mkdir($externalUploadDir, 0777, true);
+            }
+            $imageUrl = env('SIGN_API') . "api/get-signature/" . $sinistre->code . "/E-SINISTRE";
+
+            $imageSrc = '';
+            try {
+                $response = Http::timeout(5)->get($imageUrl);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+
+                    // Vérifie si 'error' existe et est à true
+                    if (isset($data['error']) && $data['error'] === true) {
+                        Log::info('Signature non trouvée pour la sinistre N°: ' . $sinistre->code);
+                    } else {
+
+                        $imageData = $response->body();
+                        $base64Image = base64_encode($imageData);
+                        $imageSrc = 'data:image/png;base64,' . $base64Image;
+                    }
+                } else {
+                    Log::error('Erreur HTTP lors de l\'appel de l\'API signature. Code de retour : ', $response->json());
+                }
+            } catch (\Exception $e) {
+                Log::error('Exception lors de la récupération de la signature : ' . $e->getMessage());
+            }
+
+            // Dossier pour enregistrer l'état de la prédeclaration
+            $qrcode = base64_encode(QrCode::format('svg')->size(80)->generate(url('sinistre/getInfoSinistre/' . $sinistre->id)));
+            $pdf = Pdf::loadView('users.espace_client.services.fiches.sinistre', compact('qrcode', 'sinistre', 'imageSrc'))
+                ->setPaper('a4', 'portrait')
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true,
+                    'margin-left' => 0,
+                    'margin-right' => 0,
+                    'margin-top' => 0,
+                    'margin-bottom' => 0,
+                ]);
+            // Dossier pour enregistrer l'état de la prédeclaration
+            $etatPrestationDir = $externalUploadDir . "$sinistre->code/ficheSinistre/";
+            if (!is_dir($etatPrestationDir)) {
+                mkdir($etatPrestationDir, 0777, true);
+            }
+
+            $fileName = 'ficheSinistre_' . $sinistre->code . '.pdf';
+            $filePath = $etatPrestationDir . $fileName;
+            $pdf->save($filePath);
+
+            $docName = TblDocSinistre::where(['idSinistre' => $sinistre->id, 'filename' => $fileName])->first();
+            if ($docName) {
+                $docName->delete();
+            }
+
+            // Enregistrer le fichier dans la base de données
+            TblDocSinistre::create([
+                'idSinistre' => $sinistre->id,
+                'libelle' => 'Fiche de déclaration de sinistre',
+                'path' => "storage/sinistre/$sinistre->code/ficheSinistre/$fileName",
+                'filename' => $fileName,
+            ]);
+
+            DB::commit();
+            Log::info("Fiche de déclaration de sinistre generée avec succès");
+            return [
+                'success' => true,
+            ];
+        } catch (\Exception $e) {
+            Log::error("Erreur lors de la génération du bulletin : ", ['error' => $e]);
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
     }
 }
