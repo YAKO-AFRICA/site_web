@@ -65,6 +65,7 @@
                                 @endforeach
                             </select>
                         </div>
+                        <input type="hidden" name="user_id" id="user_id" value="{{ Auth::guard('customer')->user()->id ?? 1 }}">
                     @else
                         <div class="col-md-6">
                             <label for="contratId" class="form-label">ID du contrat</label>
@@ -77,6 +78,8 @@
                                 required>
                             {{-- <p class="text-danger">*Veuillez entrer la date de naissance associée au contrat</p> --}}
                         </div>
+
+                        <input type="hidden" name="user_id" id="user_id" value="{{ Auth::guard('customer')->user()->id  ?? null }}">
                         
                     @endif
                 </div>

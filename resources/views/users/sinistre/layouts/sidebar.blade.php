@@ -85,7 +85,7 @@
         <li class="menu-label">Extras</li>
         @if(!Auth::guard('customer')->check())
             <li>
-                <a href="https://yakoafricassur.com/e-services/">
+                <a href="{{ route('home.assistance')}}">
                     <div class="parent-icon"><i class="fadeIn animated bx bx-archive-out"></i>
                     </div>
                     <div class="menu-title">Retour</div>

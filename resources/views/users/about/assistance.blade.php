@@ -62,7 +62,8 @@
                             </p>
                         </div>
                     </div>
-                    <a href="https://yakoafricassur.com/e-services/sinistre/declarationsinistre.php" class="btn">Declarer un sinitre</a>
+                    <a href="{{ route('sinistre.index') }}" class="btn">Prédéclarer un sinistre</a>
+                    {{-- <a href="https://yakoafricassur.com/e-services/sinistre/declarationsinistre.php" class="btn">Declarer un sinistre</a> --}}
                 </div>
             </div>
             <div class="mb-3 col-lg-4">

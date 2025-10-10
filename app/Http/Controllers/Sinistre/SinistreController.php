@@ -93,9 +93,7 @@ class SinistreController extends Controller
             }
 
 
-            $datenaissance = (!Auth::guard('customer')->check())
-                ? $DateNaissanceContrat
-                : Carbon::parse($request->input('datenaissanceSous'))->format('d/m/Y');
+            $datenaissance = ($request->input('user_id') != null) ? $DateNaissanceContrat : Carbon::parse($request->input('datenaissanceSous'))->format('d/m/Y');
 
             if ($DateNaissanceContrat !== $datenaissance) {
                 return response()->json([

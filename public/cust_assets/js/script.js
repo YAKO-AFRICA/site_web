@@ -3233,7 +3233,7 @@ const documents = [
     {
       "idfichier": 2,
       "CodeDoc": "ID_ASSURE",
-      "libelleFichier": "Pièces d'identification de l'assuré",
+      "libelleFichier": "Pièces d'identification de l'assuré concerné",
       "listDoc": [
         { "codeDoc": "CNI_ASSURE", "libelleDoc": "CNI de l'assuré" },
         { "codeDoc": "CARTE_CONSULAIRE_ASSURE", "libelleDoc": "Carte consulaire de l'assuré" },
@@ -3796,8 +3796,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const msgCarrenceSuccess = $('#msgCarrenceSuccess');
     msgCarrenceError.text("").hide();
     msgCarrenceSuccess.text("").hide();
-
-    console.log('beneficiaires : ',beneficiaires)
 
     // affichage des éléments en fonction de la nature du sinistre
     const natureSinistreDecesCheckbox = document.getElementById('natureDeces');
