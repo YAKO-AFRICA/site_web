@@ -154,7 +154,7 @@
 
                             <div class="col-12  d-none" id="divFiliations">
                                 <label for="filiations" class="form-label">
-                                    Quelle est votre lien avec l'assuré(e) ? <span class="star">*</span>
+                                    Quel est votre lien avec l'assuré(e) ? <span class="star">*</span>
                                 </label>
                                 <select class="form-select" name="filiations" id="filiations">
                                     @foreach ($filiations as $filiation)
@@ -1469,6 +1469,20 @@
                         resetFileInput(file);
                     });
                     divPreviewAreaCNIPersonneConcernee.innerHTML = '';
+                    divCNIAssure.classList.add('d-none');
+                    filleCNIAssure.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIAssure.innerHTML = '';
+
+                    divCNIBeneficiaire.classList.add('d-none');
+                    filleCNIBeneficiaire.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIBeneficiaire.innerHTML = '';
+                   
 
                     if (ageAssure < 18) {
                         divExtraitActeNaissance.classList.remove('d-none');
@@ -1539,6 +1553,7 @@
                         resetFileInput(file);
                     });
                     divPreviewAreaCarteProfessionnelle.innerHTML = '';
+                    
 
                     divRIB.classList.add('d-none');
                     filleRIB.forEach(file => {
