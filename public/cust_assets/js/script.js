@@ -1648,6 +1648,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         $('#lieurdv').text(lieu); // Nom du lieu
                         $('#jourRdv').text(jours.join(' - ')); // Liste des jours disponibles
                         inputDateRDV.disabled = false;
+                        inputDateRDV.value = "";
+                        $('#msgerror').text(''); // Ne pas afficher le message d'erreur
+                        $('#msgesucces').text(''); // Ne pas afficher le message de succès
                         if (spinner) {
                             spinner.style.display = 'none';
                         }

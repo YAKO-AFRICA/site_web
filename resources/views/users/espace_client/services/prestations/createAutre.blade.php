@@ -925,6 +925,100 @@
                 document.getElementById('nouveauModePaiement').appendChild(option);
             });
 
+            {{-- function verifierEtape(etapeId) {
+                const etape = document.querySelector(etapeId);
+                if (!etape) return;
+
+                const btnSignature = etape.querySelector("#signatureBtn");
+                const champsRequis = etape.querySelectorAll("input[required], select[required], textarea[required]");
+                let valide = true;
+
+                champsRequis.forEach(champ => {
+                    if ((champ.type === "radio" || champ.type === "checkbox")) {
+                        // Vérifie si au moins une option du groupe est cochée
+                        const groupChecked = etape.querySelector(`input[name="${champ.name}"]:checked`);
+                        if (!groupChecked) {
+                            valide = false;
+                        }
+                    } else if (!champ.value.trim()) {
+                        valide = false;
+                    }
+                });
+
+                // Affiche ou cache le bouton
+                if (valide) {
+                    btnSignature.classList.remove("d-none");
+                    // Ajouter une bordure verte sur les champs requis remplis et ajouter la bordure rouge sur les champs requis non remplis
+                    champsRequis.forEach(champ => {
+                        if (!champ.value.trim()) {
+                            champ.classList.add("is-valid");
+                        }else{
+                            champ.classList.remove("is-invalid");
+                        }
+                    });
+                } else {
+                    // Ajouter une bordure rouge sur les champs requis non remplis et ajouter la bordure verte sur les champs remplis
+                    champsRequis.forEach(champ => {
+                        if (!champ.value.trim()) {
+                            champ.classList.add("is-invalid");
+                        }else{
+                            champ.classList.remove("is-valid");
+                        }
+                    });
+                    btnSignature.classList.add("d-none");
+                }
+            } --}}
+            function verifierEtape(etapeId) {
+                const etape = document.querySelector(etapeId);
+                if (!etape) return;
+
+                const btnSignature = etape.querySelector("#signatureBtn");
+                const champsRequis = etape.querySelectorAll("input[required], select[required], textarea[required]");
+                let valide = true;
+
+                champsRequis.forEach(champ => {
+                    let champValide = true;
+
+                    if (champ.type === "radio" || champ.type === "checkbox") {
+                        // Vérifie si au moins une option de ce groupe est cochée
+                        const groupChecked = etape.querySelector(`input[name="${champ.name}"]:checked`);
+                        champValide = !!groupChecked;
+                    } else {
+                        champValide = champ.value.trim() !== "";
+                    }
+
+                    if (!champValide) {
+                        valide = false;
+                        champ.classList.remove("is-valid");
+                        champ.classList.add("is-invalid");
+                    } else {
+                        champ.classList.remove("is-invalid");
+                        champ.classList.add("is-valid");
+                    }
+                });
+
+                // Afficher ou masquer le bouton Signature
+                if (valide) {
+                    btnSignature.classList.remove("d-none");
+                } else {
+                    btnSignature.classList.add("d-none");
+                }
+            }
+
+
+            // Vérifie en live sur tous les champs d'une étape
+            function activerSurveillance(etapeId) {
+                const etape = document.querySelector(etapeId);
+                if (!etape) return;
+
+                const champs = etape.querySelectorAll("input, select, textarea");
+                champs.forEach(champ => {
+                    champ.addEventListener("input", () => verifierEtape(etapeId));
+                    champ.addEventListener("change", () => verifierEtape(etapeId));
+                });
+            }
+   
+
             // Fonction pour mettre à jour le champ hidden
             function updateHiddenField(content) {
                 const hiddenField = document.getElementById('msgClientHidden');
@@ -2259,6 +2353,12 @@
                     console.log('Contenu à soumettre:', document.getElementById('msgClientHidden').value);
                 });
             }
+
+             // Active la surveillance sur chaque étape
+            activerSurveillance("#PrestationAutre");
+
+            // Vérifie au chargement
+            verifierEtape("#PrestationAutre");
         });
     </script>
 
