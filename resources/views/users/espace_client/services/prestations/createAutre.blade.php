@@ -3485,29 +3485,37 @@
                     typePrestation,
                     aCompterDuInput,
                     nouveauModePaiementInput,
-                    dureeSuspensionInput,
                     aCompterDuSuspensionInput,
-                    modifDureeContratSouhaiteeInput,
                     nouvellePeriodiciteInput,
                     aCompterDuPeriodiciteInput,
-                    MontantOptionRemboursementInput,
                     nouvelleDateEffetInput,
                     acteurAModifierInput,
-                    nouvelleAdresseInput,
                     dateNaissanceCorrectInput,
-                    lieuNaissanceCorrectInput,
-                    nouveauContactTelephoniqueInput,
                     assureeAModifierInput,
                     filiationsInput,
                     nouveauCapitalEducPlusInput,
                     nouveauCapitalYKEInput,
                     nouveauCapitalDOIHOOInput,
-                    nouveauCapitalAutreYKInput,
                     nouvellePrimeCADENCEInput,
-                    nouvellePrimePFA_INDInput
                 ].forEach(input => {
                     if (input) {
                         input.addEventListener('change', () => {
+                            updateMotifInEditor(typePrestation?.value || '');
+                        });
+                    }
+                });
+                [
+                    dureeSuspensionInput,
+                    modifDureeContratSouhaiteeInput,
+                    MontantOptionRemboursementInput,
+                    nouvelleAdresseInput,
+                    lieuNaissanceCorrectInput,
+                    nouveauContactTelephoniqueInput,
+                    nouveauCapitalAutreYKInput,
+                    nouvellePrimePFA_INDInput
+                ].forEach(input => {
+                    if (input) {
+                        input.addEventListener('input', () => {
                             updateMotifInEditor(typePrestation?.value || '');
                         });
                     }
