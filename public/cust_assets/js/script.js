@@ -4795,5 +4795,97 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+// typePrestation.addEventListener('change', function() {
+//     updateMotifInEditor(
+//         typePrestation.value || ''
+//     );
+// });
+
+// aCompterDuInput.addEventListener('change', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+
+// nouveauModePaiementInput.addEventListener('change', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+// dureeSuspensionInput.addEventListener('input', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+// aCompterDuSuspensionInput.addEventListener('change', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+// modifDureeContratSouhaiteeInput.addEventListener('input', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+
+// nouvellePeriodiciteInput.addEventListener('input', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+// aCompterDuPeriodiciteInput.addEventListener('change', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+
+// MontantOptionRemboursementInput.addEventListener('input', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+
+// nouvelleDateEffetInput.addEventListener('change', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+// assureeAModifierInput.addEventListener('change', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+// acteurAModifierInput.addEventListener('change', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+// filiationsInput.addEventListener('change', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+// lieuNaissanceCorrectInput.addEventListener('input', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+// nouveauContactTelephoniqueInput.addEventListener('input', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+// nouvelleAdresseInput.addEventListener('input', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+// dateNaissanceCorrectInput.addEventListener('change', function() {
+//     updateMotifInEditor(
+//         typePrestation?.value || ''
+//     );
+// });
+
+
 
 

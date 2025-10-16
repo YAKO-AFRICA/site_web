@@ -237,9 +237,37 @@ class DemandePrestationController extends Controller
         }
         $peuSuspendreContrat = true;
         $peuModifDureeContrat = true;
+        $peuReduireCapital = true;
+        $peuReduirePrime = true;
         $contratDetails = session('contractDetails', null);
+        $NbrencConfirmer = session('NbrencConfirmer', 0);
         $dernierEncaissement = session('dernierEncaissement', null);
         $payeur = session('payeur', null);
+
+        // $TotalEncaissement = (float) $NbrencConfirmer * $prime;
+        // $NbreCotisationMois = ((float) $contratDetails['DureeCotisationAns'] * 12);
+
+        switch ($contratDetails['periodicite']) {
+            case "M":
+                $NbreCotisationMois = $NbrencConfirmer;
+                break;
+            case "T":
+                $NbreCotisationMois = $NbrencConfirmer * 3; 
+                break;
+            case "S":
+                $NbreCotisationMois = $NbrencConfirmer * 6; 
+                break;
+            case "A":
+                $NbreCotisationMois = $NbrencConfirmer * 12; 
+                break;
+            case "U":
+                $NbreCotisationMois = $NbrencConfirmer; 
+                break;
+            default:
+                $NbreCotisationMois = 0; 
+                break;
+        }
+
 
         $acteurs = session('contratActeur');
         $assurees = session('contratActeurAssure');
@@ -254,6 +282,11 @@ class DemandePrestationController extends Controller
         }
         if (in_array($contratDetails['codeProduit'], $codeProduitEPAGNE) || in_array($contratDetails['codeProduit'], $codeProduitYAKO)) {
             $peuModifDureeContrat = false;
+        }
+
+        if (in_array($contratDetails['codeProduit'], $codeProduitYAKO) && $NbreCotisationMois < 12) {
+            $peuReduireCapital = false;
+            $peuReduirePrime = false;
         }
 
         $typePrestation = TblTypePrestation::where('id', $id)->first();
@@ -281,7 +314,7 @@ class DemandePrestationController extends Controller
             $typeOperation = $response->json();
         }
         $this->clearPrestationSessions();
-        return view('users.espace_client.services.prestations.createAutre', compact('typePrestation', 'typeOperation', 'contratDetails', 'dernierEncaissement', 'token', 'tok', 'payeur','acteurs','assurees','acteurPayeur','beneficiaires','filiations','NbreEmission','peuSuspendreContrat','peuModifDureeContrat'));
+        return view('users.espace_client.services.prestations.createAutre', compact('typePrestation', 'typeOperation', 'contratDetails', 'dernierEncaissement', 'token', 'tok', 'payeur','acteurs','assurees','acteurPayeur','beneficiaires','filiations','NbreEmission','peuSuspendreContrat','peuModifDureeContrat','peuReduireCapital','peuReduirePrime'));
     }
 
     private function clearPrestationSessions()

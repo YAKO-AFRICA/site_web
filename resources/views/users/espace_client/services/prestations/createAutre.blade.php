@@ -80,7 +80,7 @@
                                 <select class="form-select" name="typeprestation" id="single-select-fie" required>
                                     <option selected value="" disabled>Sélectionnez l’objet de votre requête</option>
                                     @foreach ($typeOperation as $operation)
-                                        <option value="{{ $operation['MonLibelle'] }}" {{ ($NbreEmission > 1 && $operation['MonLibelle'] == "Changement de date d'effet") || $operation['MonLibelle'] == "Annulation de la garantie Remboursement" || $operation['MonLibelle'] == "Transformation" || (!$peuSuspendreContrat && $operation['MonLibelle'] == "Suspension") || (!$peuModifDureeContrat && $operation['MonLibelle'] == "Modification de la durée du contrat") ? 'disabled' :  '' }}>{{ $operation['MonLibelle'] }}
+                                        <option value="{{ $operation['MonLibelle'] }}" {{ ($NbreEmission > 1 && $operation['MonLibelle'] == "Changement de date d'effet") || $operation['MonLibelle'] == "Annulation de la garantie Remboursement" || $operation['MonLibelle'] == "Transformation" || (!$peuSuspendreContrat && $operation['MonLibelle'] == "Suspension") || (!$peuModifDureeContrat && $operation['MonLibelle'] == "Modification de la durée du contrat") || $operation['MonLibelle'] == "Modification de prime (diminution, augmentation)" || $operation['MonLibelle'] == "Modification prime SURETE" || $operation['MonLibelle'] == "Réduction de capital de référence" || (!$peuReduirePrime && $operation['MonLibelle'] == "Réduction de prime") || (!$peuReduireCapital && $operation['MonLibelle'] == "Réduction de capital") ? 'disabled' :  '' }}>{{ $operation['MonLibelle'] }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -102,8 +102,101 @@
                                 <input type="date" min="{{ date('Y-m-d') }}" class="form-control"
                                     value="{{ date('Y-m-d') }}" id="aCompterDu" name="aCompterDu">
                             </div>
+                        </div>
+                        <div class="row g-3 mb-3 d-none" id="divReductionPrimeEtCapital">
+                            <div class="col-md-12 d-none" id="divNouveauCapitalEducPlus">
+                                <label for="nouveauCapitalEducPlus" class="form-label">
+                                    Nouveau capital souhaité <span class="star">*</span>
+                                </label>
+                                <select class="form-select" name="nouveauCapitalEducPlus" id="nouveauCapitalEducPlus">
+                                    <option selected value="" disabled>Sélectionnez le capital</option>
+                                    {{-- de 1 000 000 FCFA à 10 000 000 FCFA --}}
+                                    @for ($i = 1000000; $i <= 10000000; $i += 1000000)
+                                        <option value="{{ $i }}">{{ number_format($i, 0, ',', ' ') }}</option>
+                                    @endfor
+                                </select> 
+                            </div>
+                            <div class="col-md-12 d-none" id="divNouveauCapitalYKE">
+                                <label for="nouveauCapitalYKE" class="form-label">
+                                    Nouveau capital souhaité <span class="star">*</span>
+                                </label>
+                                <select class="form-select" name="nouveauCapitalYKE" id="nouveauCapitalYKE">
+                                    <option selected value="" disabled>Sélectionnez le capital</option>
+                                    <option value="500000">500 000</option>
+                                    <option value="750000">750 000</option>
+                                    <option value="1000000">1 000 000</option>
+                                    <option value="1250000">1 250 000</option>
+                                    <option value="1500000">1 500 000</option>
+                                    <option value="2000000">2 000 000</option>
+                                </select> 
+                            </div>
+                            <div class="col-md-12 d-none" id="divNouveauCapitalDOIHOO">
+                                <label for="nouveauCapitalDOIHOO" class="form-label">
+                                    Nouveau capital souhaité <span class="star">*</span>
+                                </label>
+                                <select class="form-select" name="nouveauCapitalDOIHOO" id="nouveauCapitalDOIHOO">
+                                    <option selected value="" disabled>Sélectionnez le capital</option>
+                                    {{-- de 1 000 000 FCFA à 3 000 000 FCFA --}}
+                                    @for ($i = 1000000; $i <= 3000000; $i += 1000000)
+                                        <option value="{{ $i }}">{{ number_format($i, 0, ',', ' ') }}</option>
+                                    @endfor
+                                </select> 
+                            </div>
+                            <div class="col-md-12 d-none" id="divNouveauCapitalAutreYK">
+                                <label for="nouveauCapitalAutreYK" class="form-label">
+                                    Nouveau capital souhaité (en FCFA minimum 450 000 FCFA) <span class="star">*</span>
+                                </label>
+                                <input type="number" class="form-control" value="450000" min="450000" id="nouveauCapitalAutreYK" name="nouveauCapitalAutreYK">
+                            </div>
+
+                            <div class="col-md-12 d-none" id="divNouvellePrimeCADENCE">
+                                <label for="nouvellePrimeCADENCE" class="form-label">
+                                    Nouvelle prime souhaitée <span class="star">*</span>
+                                </label>
+                                <select class="form-select" name="nouvellePrimeCADENCE" id="nouvellePrimeCADENCE">
+                                    <option selected value="" disabled>Sélectionnez la prime</option>
+                                    {{-- de 15 000 FCFA à 30 000 FCFA --}}
+                                    @for ($i = 15000; $i <= 30000; $i += 15000)
+                                        <option value="{{ $i }}">{{ number_format($i, 0, ',', ' ') }}</option>
+                                    @endfor
+                                    <option value="40000">40 000</option>
+                                    <option value="50000">50 000</option>
+                                    <option value="75000">75 000</option>
+                                    <option value="100000">100 000</option>
+                                </select> 
+                            </div>
+                            <div class="col-md-12 d-none" id="divNouvellePrimePFA_IND">
+                                <label for="nouvellePrimePFA_IND" class="form-label">
+                                    Nouvelle prime souhaitée (en FCFA minimum 16 000 FCFA) <span class="star">*</span>
+                                </label>
+                                <input type="number" class="form-control" value="16000" min="16000" id="nouvellePrimePFA_IND" name="nouvellePrimePFA_IND">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3 d-none" id="divNouvellePeriodicite">
+                            <div class="col-md-6">
+                                <label for="nouvellePeriodicite" class="form-label">
+                                    Nouvelle périodicité souhaitée <span class="star">*</span>
+                                </label>
+                                <select class="form-select" name="nouvellePeriodicite" id="nouvellePeriodicite">
+                                    <option selected value="" disabled>Sélectionnez la périodicité</option>
+                                    <option value="Mensuelle">Mensuelle</option>
+                                    <option value="Trimestrielle">Trimestrielle</option>
+                                    <option value="Semestrielle">Semestrielle</option>
+                                    <option value="Annuelle">Annuelle</option>
+                                    <option value="Paiement unique">Paiement unique</option>
+                                </select> 
+                            </div>
+                            <div class="col-md-6">
+                                <label for="aCompterDuPeriodicite" class="form-label">
+                                    À compter du <span class="star">*</span>
+                                </label>
+                                <input type="date" min="{{ date('Y-m-d') }}" class="form-control"
+                                    value="{{ date('Y-m-d') }}" id="aCompterDuPeriodicite" name="aCompterDuPeriodicite">
+                            </div>
 
                         </div>
+
                         <div class="row g-3 mb-3 d-none" id="divSuspension">
                             <div class="col-md-6">
                                 <label for="dureeSuspension" class="form-label">
@@ -127,6 +220,14 @@
                                     Durée du contrat souhaitée (en année minimum 10 ans) <span class="star">*</span>
                                 </label>
                                 <input type="number" class="form-control" min="10" id="modifDureeContratSouhaitee" value="10" name="modifDureeContratSouhaitee">
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3 d-none" id="divAjonctionOptionRemboursement">
+                            <div class="col-md-12">
+                                <label for="MontantOptionRemboursement" class="form-label">
+                                    Montant souhaité de l'option de remboursement (en FCFA minimum 2 500 FCFA) <span class="star">*</span>
+                                </label>
+                                <input type="number" class="form-control" min="2500" id="MontantOptionRemboursement" value="2500" name="MontantOptionRemboursement">
                             </div>
                         </div>
 
@@ -830,8 +931,17 @@
             const divModificationDuree = formulaire?.querySelector('#divModificationDuree');
             const modifDureeContratSouhaiteeInput = formulaire?.querySelector('#modifDureeContratSouhaitee');
 
+            const divNouvellePeriodicite = formulaire?.querySelector('#divNouvellePeriodicite');
+            const nouvellePeriodiciteInput = formulaire?.querySelector('#nouvellePeriodicite');
+            const aCompterDuPeriodiciteInput = formulaire?.querySelector('#aCompterDuPeriodicite');
+
+            const divAjonctionOptionRemboursement = formulaire?.querySelector('#divAjonctionOptionRemboursement');
+            const MontantOptionRemboursementInput = formulaire?.querySelector('#MontantOptionRemboursement');
+
             const divNouveauContactTelephonique = formulaire?.querySelector('#divNouveauContactTelephonique');
             const nouveauContactTelephoniqueInput = formulaire?.querySelector('#nouveauContactTelephonique');
+
+            const divReductionPrimeEtCapital = formulaire?.querySelector('#divReductionPrimeEtCapital');
 
             const divAssureeAModifier = formulaire?.querySelector('#divAssureeAModifier');
             const divLieuNaissanceCorrect = formulaire?.querySelector('#divLieuNaissanceCorrect');
@@ -843,6 +953,21 @@
             const dateNaissanceCorrectInput = formulaire?.querySelector('#dateNaissanceCorrect');
             const acteurAModifierInput = formulaire?.querySelector('#acteurAModifier');
             const filiationsInput = formulaire?.querySelector('#filiations');
+
+
+            const divNouveauCapitalEducPlus = formulaire?.querySelector('#divNouveauCapitalEducPlus');
+            const divNouveauCapitalYKE = formulaire?.querySelector('#divNouveauCapitalYKE');
+            const divNouveauCapitalDOIHOO = formulaire?.querySelector('#divNouveauCapitalDOIHOO');
+            const divNouveauCapitalAutreYK = formulaire?.querySelector('#divNouveauCapitalAutreYK');
+            const divNouvellePrimeCADENCE = formulaire?.querySelector('#divNouvellePrimeCADENCE');
+            const divNouvellePrimePFA_IND = formulaire?.querySelector('#divNouvellePrimePFA_IND');
+
+            const nouveauCapitalEducPlusInput = formulaire?.querySelector('#nouveauCapitalEducPlus');
+            const nouveauCapitalYKEInput = formulaire?.querySelector('#nouveauCapitalYKE');
+            const nouveauCapitalDOIHOOInput = formulaire?.querySelector('#nouveauCapitalDOIHOO');
+            const nouveauCapitalAutreYKInput = formulaire?.querySelector('#nouveauCapitalAutreYK');
+            const nouvellePrimeCADENCEInput = formulaire?.querySelector('#nouvellePrimeCADENCE');
+            const nouvellePrimePFA_INDInput = formulaire?.querySelector('#nouvellePrimePFA_IND');
 
             const OPSfileText = formulaire?.querySelector('#OPSfile');
 
@@ -1064,12 +1189,34 @@
                 let modePaiementSouhaite = '';
                 let NumCompte = '';
                 let societe = '';
+                let periodicite = '';
 
                 let dateNaissanceAssure = new Date(dateNaissanceCorrectInput?.value)
 
                 let ageAssure = new Date().getFullYear() - dateNaissanceAssure.getFullYear();
 
                 blockDocument.classList.remove('d-none');
+
+                switch (contratDetails?.periodicite) {
+                    case 'M':
+                        periodicite = 'Mensuelle';
+                        break;
+                    case 'T':
+                        periodicite = 'Trimestrielle';
+                        break;
+                    case 'S':
+                        periodicite = 'Semestrielle';
+                        break;
+                    case 'A':
+                        periodicite = 'Annuelle';
+                        break;
+                    case 'U':
+                        periodicite = 'Paiement unique';
+                        break;
+                    default:
+                        periodicite = '—';
+                        break;
+                }
 
                 switch (dernierEncaissement?.RegltCodePaiement) {
                     case 'SOURCE':
@@ -1192,37 +1339,31 @@
                 }
                 let content = '';
                 if (CodeTypeOperation == '7') {
-                    divNouveauModePaiement.classList.remove('d-none');
-                    nouveauModePaiementInput.required = true;
-                    aCompterDuInput.required = true;
-                    divNouvelleAdresse.classList.add('d-none');
-                    nouvelleAdresseInput.required = false;
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
 
-                    divNouvelleDateEffet.classList.add('d-none');
-                    nouvelleDateEffetInput.required = false;
-
-                    divSuspension.classList.add('d-none');
-                    dureeSuspensionInput.required = false;
-                    aCompterDuSuspensionInput.required = false;
-
-                    divModificationDuree.classList.add('d-none');
-                    modifDureeContratSouhaiteeInput.required = false;
-
-                    divNouveauContactTelephonique.classList.add('d-none');
-                    nouveauContactTelephoniqueInput.required = false;
-
-                    divAssureeAModifier.classList.add('d-none');
-                    divLieuNaissanceCorrect.classList.add('d-none');
-                    divDateNaissanceCorrect.classList.add('d-none');
-                    assureeAModifierInput.required = false;
-                    lieuNaissanceCorrectInput.required = false;
-                    dateNaissanceCorrectInput.required = false;
-
-                    divActeurAModifier.classList.add('d-none');
-                    acteurAModifierInput.required = false;
-
-                    divFiliations.classList.add('d-none');
-                    filiationsInput.required = false;
+                    // Masquer les champs de capital et prime
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
+                    afficherBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
 
                     divCNISouscripteur.classList.remove('d-none');
                     filleCNISouscripteur.forEach(file => {
@@ -1235,6 +1376,7 @@
                             file.required = true;
                         });
                         OPSfileText.classList.remove('d-none');
+                        afficherBloc(OPSfileText);
                     }else{
                         divOPS.classList.add('d-none');
                         filleOPS.forEach(file => {
@@ -1242,7 +1384,7 @@
                             resetFileInput(file);
                         });
                         divPreviewAreaOPS.innerHTML = '';
-                        OPSfileText.classList.add('d-none');
+                        masquerBloc(OPSfileText);
                     }
 
                     divFicheIdentification.classList.add('d-none');
@@ -1373,7 +1515,7 @@
                         <ul>
                             <li>${modePaiementSouhaite}</li>
                         </ul>
-                        <p>A compter du ${formatDate(aCompterDuInput?.value)}</p>
+                        <p>À compter du ${formatDate(aCompterDuInput?.value)}</p>
                         <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
                     `;
                 } else if (CodeTypeOperation == '6') {
@@ -1475,37 +1617,34 @@
                         </ul>
                         <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
                     `;
-                    divNouvelleDateEffet.classList.remove('d-none');
-                    nouvelleDateEffetInput.required = true;
-                    divNouvelleAdresse.classList.add('d-none');
-                    nouvelleAdresseInput.required = false;
 
-                    divNouveauModePaiement.classList.add('d-none');
-                    aCompterDuInput.required = false;
-                    nouveauModePaiementInput.required = false;
 
-                    divNouveauContactTelephonique.classList.add('d-none');
-                    nouveauContactTelephoniqueInput.required = false;
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
 
-                    divSuspension.classList.add('d-none');
-                    dureeSuspensionInput.required = false;
-                    aCompterDuSuspensionInput.required = false;
+                    // Masquer les champs de capital et prime
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
+                    afficherBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
 
-                    divModificationDuree.classList.add('d-none');
-                    modifDureeContratSouhaiteeInput.required = false;
-
-                    divAssureeAModifier.classList.add('d-none');
-                    divLieuNaissanceCorrect.classList.add('d-none');
-                    divDateNaissanceCorrect.classList.add('d-none');
-                    assureeAModifierInput.required = false;
-                    lieuNaissanceCorrectInput.required = false;
-                    dateNaissanceCorrectInput.required = false;
-
-                    divActeurAModifier.classList.add('d-none');
-                    acteurAModifierInput.required = false;
-
-                    divFiliations.classList.add('d-none');
-                    filiationsInput.required = false;
                 } else if (CodeTypeOperation == '3') {
                     divCNISouscripteur.classList.remove('d-none');
                     filleCNISouscripteur.forEach(file => {
@@ -1601,38 +1740,34 @@
                         </ul>
                         <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
                     `;
-                    divNouveauContactTelephonique.classList.remove('d-none');
-                    nouveauContactTelephoniqueInput.required = true;
 
-                    divNouvelleAdresse.classList.add('d-none');
-                    nouvelleAdresseInput.required = false;
 
-                    divSuspension.classList.add('d-none');
-                    dureeSuspensionInput.required = false;
-                    aCompterDuSuspensionInput.required = false;
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
 
-                    divModificationDuree.classList.add('d-none');
-                    modifDureeContratSouhaiteeInput.required = false;
-
-                    divNouveauModePaiement.classList.add('d-none');
-                    nouveauModePaiementInput.required = false;
-                    aCompterDuInput.required = false;
-
-                    divNouvelleDateEffet.classList.add('d-none');
-                    nouvelleDateEffetInput.required = false;
-
-                    divAssureeAModifier.classList.add('d-none');
-                    divLieuNaissanceCorrect.classList.add('d-none');
-                    divDateNaissanceCorrect.classList.add('d-none');
-                    assureeAModifierInput.required = false;
-                    lieuNaissanceCorrectInput.required = false;
-                    dateNaissanceCorrectInput.required = false;
-
-                    divActeurAModifier.classList.add('d-none');
-                    acteurAModifierInput.required = false;
-
-                    divFiliations.classList.add('d-none');
-                    filiationsInput.required = false;
+                    // Masquer les champs de capital et prime
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
+                    afficherBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
 
                 } else if (CodeTypeOperation == '4' || CodeTypeOperation == '5' || CodeTypeOperation == 'AV1' ||
                     CodeTypeOperation == 'AV2' || CodeTypeOperation == 'AV4' || CodeTypeOperation == 'AV6' ||
@@ -1819,90 +1954,59 @@
                         </p>
                     `;
 
-                    divNouveauContactTelephonique.classList.add('d-none');
-                    nouveauContactTelephoniqueInput.required = false;
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
 
-                    divNouvelleAdresse.classList.add('d-none');
-                    nouvelleAdresseInput.required = false;
+                    // Masquer les champs de capital et prime
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
 
-                    divSuspension.classList.add('d-none');
-                    dureeSuspensionInput.required = false;
-                    aCompterDuSuspensionInput.required = false;
-
-                    divModificationDuree.classList.add('d-none');
-                    modifDureeContratSouhaiteeInput.required = false;
-
-                    divNouvelleDateEffet.classList.add('d-none');
-                    nouvelleDateEffetInput.required = false;
-
-                    divNouveauModePaiement.classList.add('d-none');
-                    aCompterDuInput.required = false;
-                    nouveauModePaiementInput.required = false;
-
-                    divAssureeAModifier.classList.add('d-none');
-                    assureeAModifierInput.required = false;
-
-                    divActeurAModifier.classList.add('d-none');
-                    acteurAModifierInput.required = false;
-
-                    divFiliations.classList.add('d-none');
-                    filiationsInput.required = false;
-
-                    divDateNaissanceCorrect.classList.add('d-none');
-                    dateNaissanceCorrectInput.required = false;
-
-                    divLieuNaissanceCorrect.classList.add('d-none');
-                    lieuNaissanceCorrectInput.required = false;
 
                     if (CodeTypeOperation == '4' || CodeTypeOperation == 'AV16') {
-                        divAssureeAModifier.classList.remove('d-none');
-                        assureeAModifierInput.required = true;
-
-                        divDateNaissanceCorrect.classList.remove('d-none');
-                        dateNaissanceCorrectInput.required = true;
+                        afficherBloc(divAssureeAModifier, assureeAModifierInput);
+                        afficherBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
                     } else if (CodeTypeOperation == '5' || CodeTypeOperation == 'AV6') {
                         if (CodeTypeOperation == 'AV6') {
-                            divActeurAModifier.classList.remove('d-none');
-                            acteurAModifierInput.required = true;
-
-                            divAssureeAModifier.classList.add('d-none');
-                            assureeAModifierInput.required = false;
+                            afficherBloc(divActeurAModifier, acteurAModifierInput);
+                            masquerBloc(divAssureeAModifier, assureeAModifierInput);
                         } else if (CodeTypeOperation == '5') {
-                            divAssureeAModifier.classList.remove('d-none');
-                            assureeAModifierInput.required = true;
+                            afficherBloc(divAssureeAModifier, assureeAModifierInput);
 
-                            divActeurAModifier.classList.add('d-none');
-                            acteurAModifierInput.required = false;
+                            masquerBloc(divActeurAModifier, acteurAModifierInput);
                         }
 
-                        divLieuNaissanceCorrect.classList.remove('d-none');
-                        lieuNaissanceCorrectInput.required = true;
-
-                        divDateNaissanceCorrect.classList.remove('d-none');
-                        dateNaissanceCorrectInput.required = true;
+                        afficherBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                        afficherBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
                     } else if (CodeTypeOperation == 'AV1' || CodeTypeOperation == 'AV2') {
-                        divActeurAModifier.classList.remove('d-none');
-                        acteurAModifierInput.required = true;
-
-                        divAssureeAModifier.classList.add('d-none');
-                        assureeAModifierInput.required = false;
-
-                        divDateNaissanceCorrect.classList.remove('d-none');
-                        dateNaissanceCorrectInput.required = true;
+                        afficherBloc(divActeurAModifier, acteurAModifierInput);
+                        masquerBloc(divAssureeAModifier, assureeAModifierInput);
+                        afficherBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
                     } else if (CodeTypeOperation == 'AV7') {
-                        divActeurAModifier.classList.remove('d-none');
-                        acteurAModifierInput.required = true;
-
-                        divFiliations.classList.remove('d-none');
-                        filiationsInput.required = true;
-
-                        divDateNaissanceCorrect.classList.remove('d-none');
-                        dateNaissanceCorrectInput.required = true;
+                        afficherBloc(divActeurAModifier, acteurAModifierInput);
+                        afficherBloc(divFiliations, filiationsInput);
+                        afficherBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
                     } else if (CodeTypeOperation == 'AV10' || CodeTypeOperation == 'AV4') {
-                        divFiliations.classList.remove('d-none');
-                        filiationsInput.required = true;
-                        divDateNaissanceCorrect.classList.remove('d-none');
-                        dateNaissanceCorrectInput.required = true;
+                        afficherBloc(divFiliations, filiationsInput);
+                        afficherBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
                     }
                 } else if (CodeTypeOperation == 'AV15') {
                     divCNISouscripteur.classList.remove('d-none');
@@ -1979,6 +2083,21 @@
                     });
                     divPreviewAreaCNIpayeurPrime.innerHTML = '';
 
+
+                    divCNIAssure.classList.add('d-none');
+                    filleCNIAssure.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIAssure.innerHTML = '';
+
+                    divExtraitActeNaissance.classList.add('d-none');
+                    filleExtraitActeNaissance.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeNaissance.innerHTML = '';
+
                     content = `
                         <p>Monsieur,</p>
                         <p style="text-align: justify;">
@@ -1991,40 +2110,34 @@
                         </p>
                     `;
 
-                    divAssureeAModifier.classList.remove('d-none');
-                    assureeAModifierInput.required = true;
 
-                    divNouvelleAdresse.classList.add('d-none');
-                    nouvelleAdresseInput.required = false;
 
-                    divSuspension.classList.add('d-none');
-                    dureeSuspensionInput.required = false;
-                    aCompterDuSuspensionInput.required = false;
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
 
-                    divModificationDuree.classList.add('d-none');
-                    modifDureeContratSouhaiteeInput.required = false;
+                    // Masquer les champs de capital et prime
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
 
-                    divNouveauContactTelephonique.classList.add('d-none');
-                    nouveauContactTelephoniqueInput.required = false;
-
-                    divNouvelleDateEffet.classList.add('d-none');
-                    nouvelleDateEffetInput.required = false;
-
-                    divNouveauModePaiement.classList.add('d-none');
-                    aCompterDuInput.required = false;
-                    nouveauModePaiementInput.required = false;
-
-                    divActeurAModifier.classList.add('d-none');
-                    acteurAModifierInput.required = false;
-
-                    divFiliations.classList.add('d-none');
-                    filiationsInput.required = false;
-
-                    divDateNaissanceCorrect.classList.add('d-none');
-                    dateNaissanceCorrectInput.required = false;
-
-                    divLieuNaissanceCorrect.classList.add('d-none');
-                    lieuNaissanceCorrectInput.required = false;
+                    afficherBloc(divAssureeAModifier, assureeAModifierInput);
 
                 } else if (CodeTypeOperation == '39') {
                     divCNISouscripteur.classList.remove('d-none');
@@ -2095,6 +2208,20 @@
                     });
                     divPreviewAreaCNIBeneficiaire.innerHTML = '';
 
+                    divCNIAssure.classList.add('d-none');
+                    filleCNIAssure.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIAssure.innerHTML = '';
+
+                    divExtraitActeNaissance.classList.add('d-none');
+                    filleExtraitActeNaissance.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeNaissance.innerHTML = '';
+
                     content = `
                         <p>Monsieur,</p>
                         <p style="text-align: justify;">
@@ -2107,40 +2234,32 @@
                         </p>
                     `;
 
-                    divAssureeAModifier.classList.add('d-none');
-                    assureeAModifierInput.required = false;
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
 
-                    divNouvelleAdresse.classList.add('d-none');
-                    nouvelleAdresseInput.required = false;
+                    // Masquer les champs de capital et prime
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
 
-                    divSuspension.classList.add('d-none');
-                    dureeSuspensionInput.required = false;
-                    aCompterDuSuspensionInput.required = false;
-
-                    divModificationDuree.classList.add('d-none');
-                    modifDureeContratSouhaiteeInput.required = false;
-
-                    divNouveauContactTelephonique.classList.add('d-none');
-                    nouveauContactTelephoniqueInput.required = false;
-
-                    divNouvelleDateEffet.classList.add('d-none');
-                    nouvelleDateEffetInput.required = false;
-
-                    divNouveauModePaiement.classList.add('d-none');
-                    aCompterDuInput.required = false;
-                    nouveauModePaiementInput.required = false;
-
-                    divActeurAModifier.classList.add('d-none');
-                    acteurAModifierInput.required = false;
-
-                    divFiliations.classList.add('d-none');
-                    filiationsInput.required = false;
-
-                    divDateNaissanceCorrect.classList.add('d-none');
-                    dateNaissanceCorrectInput.required = false;
-
-                    divLieuNaissanceCorrect.classList.add('d-none');
-                    lieuNaissanceCorrectInput.required = false;
                 } else if (CodeTypeOperation == '45') {
                     divCNISouscripteur.classList.remove('d-none');
                     //recuperer tous les inputs de type file du bloc divCNISouscripteur
@@ -2214,6 +2333,20 @@
                     });
                     divPreviewAreaCNIBeneficiaire.innerHTML = '';
 
+                    divCNIAssure.classList.add('d-none');
+                    filleCNIAssure.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIAssure.innerHTML = '';
+
+                    divExtraitActeNaissance.classList.add('d-none');
+                    filleExtraitActeNaissance.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeNaissance.innerHTML = '';
+
                     content = `
                         <p>Monsieur,</p>
                         <p style="text-align: justify;">
@@ -2225,40 +2358,31 @@
                         </p>
                     `;
 
-                    divAssureeAModifier.classList.add('d-none');
-                    assureeAModifierInput.required = false;
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
 
-                    divNouvelleAdresse.classList.add('d-none');
-                    nouvelleAdresseInput.required = false;
-
-                    divSuspension.classList.add('d-none');
-                    dureeSuspensionInput.required = false;
-                    aCompterDuSuspensionInput.required = false;
-
-                    divModificationDuree.classList.add('d-none');
-                    modifDureeContratSouhaiteeInput.required = false;
-
-                    divNouveauContactTelephonique.classList.add('d-none');
-                    nouveauContactTelephoniqueInput.required = false;
-
-                    divNouvelleDateEffet.classList.add('d-none');
-                    nouvelleDateEffetInput.required = false;
-
-                    divNouveauModePaiement.classList.add('d-none');
-                    aCompterDuInput.required = false;
-                    nouveauModePaiementInput.required = false;
-
-                    divActeurAModifier.classList.add('d-none');
-                    acteurAModifierInput.required = false;
-
-                    divFiliations.classList.add('d-none');
-                    filiationsInput.required = false;
-
-                    divDateNaissanceCorrect.classList.add('d-none');
-                    dateNaissanceCorrectInput.required = false;
-
-                    divLieuNaissanceCorrect.classList.add('d-none');
-                    lieuNaissanceCorrectInput.required = false;
+                    // Masquer les champs de capital et prime
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
                 } else if (CodeTypeOperation == '2') {
                     divCNISouscripteur.classList.remove('d-none');
                     //recuperer tous les inputs de type file du bloc divCNISouscripteur
@@ -2334,6 +2458,20 @@
                     });
                     divPreviewAreaCNIBeneficiaire.innerHTML = '';
 
+                    divCNIAssure.classList.add('d-none');
+                    filleCNIAssure.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIAssure.innerHTML = '';
+
+                    divExtraitActeNaissance.classList.add('d-none');
+                    filleExtraitActeNaissance.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeNaissance.innerHTML = '';
+
                     content = `
                         <p>Monsieur,</p>
                         <p>Je viens par la présente demander un <strong>${selectedValue || '...'}</strong> de mon contrat <strong>${contrat}</strong>.</p>
@@ -2344,40 +2482,31 @@
                         <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
                     `;
 
-                    divAssureeAModifier.classList.add('d-none');
-                    assureeAModifierInput.required = false;
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
 
-                    divNouvelleAdresse.classList.remove('d-none');
-                    nouvelleAdresseInput.required = true;
+                    afficherBloc(divNouvelleAdresse, nouvelleAdresseInput);
 
-                    divSuspension.classList.add('d-none');
-                    dureeSuspensionInput.required = false;
-                    aCompterDuSuspensionInput.required = false;
-
-                    divModificationDuree.classList.add('d-none');
-                    modifDureeContratSouhaiteeInput.required = false;
-
-                    divNouveauContactTelephonique.classList.add('d-none');
-                    nouveauContactTelephoniqueInput.required = false;
-
-                    divNouvelleDateEffet.classList.add('d-none');
-                    nouvelleDateEffetInput.required = false;
-
-                    divNouveauModePaiement.classList.add('d-none');
-                    aCompterDuInput.required = false;
-                    nouveauModePaiementInput.required = false;
-
-                    divActeurAModifier.classList.add('d-none');
-                    acteurAModifierInput.required = false;
-
-                    divFiliations.classList.add('d-none');
-                    filiationsInput.required = false;
-
-                    divDateNaissanceCorrect.classList.add('d-none');
-                    dateNaissanceCorrectInput.required = false;
-
-                    divLieuNaissanceCorrect.classList.add('d-none');
-                    lieuNaissanceCorrectInput.required = false;
                 } else if (CodeTypeOperation == 'AV5') {
                     divCNISouscripteur.classList.remove('d-none');
                     //recuperer tous les inputs de type file du bloc divCNISouscripteur
@@ -2453,6 +2582,20 @@
                     });
                     divPreviewAreaCNIBeneficiaire.innerHTML = '';
 
+                    divCNIAssure.classList.add('d-none');
+                    filleCNIAssure.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIAssure.innerHTML = '';
+
+                    divExtraitActeNaissance.classList.add('d-none');
+                    filleExtraitActeNaissance.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeNaissance.innerHTML = '';
+
                     content = `
                         <p>Monsieur,</p>
                         <p>Je viens par la présente demander une <strong>${selectedValue || '...'} </strong> <strong>${contrat}</strong>.</p>
@@ -2467,40 +2610,540 @@
                         <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
                     `;
 
-                    divAssureeAModifier.classList.add('d-none');
-                    assureeAModifierInput.required = false;
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
+                    afficherBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                } else if (CodeTypeOperation == 'AV11') {
+                    divCNISouscripteur.classList.remove('d-none');
+                    //recuperer tous les inputs de type file du bloc divCNISouscripteur
+                    filleCNISouscripteur.forEach(file => {
+                        file.required = true;
+                    });
 
-                    divNouvelleAdresse.classList.add('d-none');
-                    nouvelleAdresseInput.required = false;
+                    divConditionsParticulières.classList.add('d-none');
+                    filleConditionsParticulières.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaConditionsParticulières.innerHTML = '';
 
-                    divSuspension.classList.add('d-none');
-                    dureeSuspensionInput.required = false;
-                    aCompterDuSuspensionInput.required = false;
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
 
-                    divModificationDuree.classList.remove('d-none');
-                    modifDureeContratSouhaiteeInput.required = true;
+                    divCerticatDeces.classList.add('d-none');
+                    filleCerticatDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCerticatDeces.innerHTML = '';
 
-                    divNouveauContactTelephonique.classList.add('d-none');
-                    nouveauContactTelephoniqueInput.required = false;
+                    divExtraitActeDeces.classList.add('d-none');
+                    filleExtraitActeDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeDeces.innerHTML = '';
 
-                    divNouvelleDateEffet.classList.add('d-none');
-                    nouvelleDateEffetInput.required = false;
+                    divCNIpayeurPrime.classList.add('d-none');
+                    filleCNIpayeurPrime.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIpayeurPrime.innerHTML = '';
 
-                    divNouveauModePaiement.classList.add('d-none');
-                    aCompterDuInput.required = false;
-                    nouveauModePaiementInput.required = false;
+                    divCNIPersonneConcernee.classList.add('d-none');
+                    filleCNIPersonneConcernee.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIPersonneConcernee.innerHTML = '';
 
-                    divActeurAModifier.classList.add('d-none');
-                    acteurAModifierInput.required = false;
+                    divCarteProfessionnelle.classList.add('d-none');
+                    filleCarteProfessionnelle.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCarteProfessionnelle.innerHTML = '';
 
-                    divFiliations.classList.add('d-none');
-                    filiationsInput.required = false;
+                    divRIB.classList.add('d-none');
+                    filleRIB.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divFicheIdentification.classList.add('d-none');
+                    filleFicheIdentification.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaFicheIdentification.innerHTML = '';
 
-                    divDateNaissanceCorrect.classList.add('d-none');
-                    dateNaissanceCorrectInput.required = false;
+                    divCNIBeneficiaire.classList.add('d-none');
+                    filleCNIBeneficiaire.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIBeneficiaire.innerHTML = '';
 
-                    divLieuNaissanceCorrect.classList.add('d-none');
-                    lieuNaissanceCorrectInput.required = false;
+                    divCNIAssure.classList.add('d-none');
+                    filleCNIAssure.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIAssure.innerHTML = '';
+
+                    divExtraitActeNaissance.classList.add('d-none');
+                    filleExtraitActeNaissance.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeNaissance.innerHTML = '';
+
+                    content = `
+                        <p>Monsieur,</p>
+                        <p>Je viens par la présente demander une <strong>${selectedValue || '...'} </strong> du contrat <strong>${contrat}</strong>.</p>
+                        <p><strong><u>Periodicité actuelle :</u></strong></p>
+                        <ul>
+                            <li>${periodicite}</li>
+                        </ul>
+                        <p><strong><u>Nouvelle periodicité souhaitée :</u></strong></p>
+                        <ul>
+                            <li>${nouvellePeriodiciteInput?.value}</li>
+                        </ul>
+                        <p>À compter du ${formatDate(aCompterDuPeriodiciteInput?.value)}</p>
+                        <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
+                    `;
+
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
+
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
+
+                    afficherBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                } else if (CodeTypeOperation == 'AV12') {
+                    divCNISouscripteur.classList.remove('d-none');
+                    //recuperer tous les inputs de type file du bloc divCNISouscripteur
+                    filleCNISouscripteur.forEach(file => {
+                        file.required = true;
+                    });
+
+                    divConditionsParticulières.classList.add('d-none');
+                    filleConditionsParticulières.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaConditionsParticulières.innerHTML = '';
+
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
+
+                    divCerticatDeces.classList.add('d-none');
+                    filleCerticatDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCerticatDeces.innerHTML = '';
+
+                    divExtraitActeDeces.classList.add('d-none');
+                    filleExtraitActeDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeDeces.innerHTML = '';
+
+                    divCNIpayeurPrime.classList.add('d-none');
+                    filleCNIpayeurPrime.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIpayeurPrime.innerHTML = '';
+
+                    divCNIPersonneConcernee.classList.add('d-none');
+                    filleCNIPersonneConcernee.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIPersonneConcernee.innerHTML = '';
+
+                    divCarteProfessionnelle.classList.add('d-none');
+                    filleCarteProfessionnelle.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCarteProfessionnelle.innerHTML = '';
+
+                    divRIB.classList.add('d-none');
+                    filleRIB.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divFicheIdentification.classList.add('d-none');
+                    filleFicheIdentification.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaFicheIdentification.innerHTML = '';
+
+                    divCNIBeneficiaire.classList.add('d-none');
+                    filleCNIBeneficiaire.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIBeneficiaire.innerHTML = '';
+
+                    divCNIAssure.classList.add('d-none');
+                    filleCNIAssure.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIAssure.innerHTML = '';
+
+                    divExtraitActeNaissance.classList.add('d-none');
+                    filleExtraitActeNaissance.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeNaissance.innerHTML = '';
+
+                    content = `
+                        <p>Monsieur,</p>
+                        <p>Je viens par la présente demander une <strong>${selectedValue || '...'} </strong> sur mon contrat <strong>${contrat}</strong>.</p>
+                        <p><strong><u>Montant souhaité :</u></strong></p>
+                        <ul>
+                            <li>${parseInt(MontantOptionRemboursementInput?.value).toLocaleString('fr-FR') || '25 000'} FCFA</li>
+                        </ul>
+                        <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
+                    `;
+
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
+
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
+
+                    afficherBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+
+                } else if (CodeTypeOperation == '28' || CodeTypeOperation == '29') {
+                    divCNISouscripteur.classList.remove('d-none');
+                    //recuperer tous les inputs de type file du bloc divCNISouscripteur
+                    filleCNISouscripteur.forEach(file => {
+                        file.required = true;
+                    });
+                    divConditionsParticulières.classList.add('d-none');
+                    filleConditionsParticulières.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaConditionsParticulières.innerHTML = '';
+
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
+
+                    divCerticatDeces.classList.add('d-none');
+                    filleCerticatDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCerticatDeces.innerHTML = '';
+
+                    divExtraitActeDeces.classList.add('d-none');
+                    filleExtraitActeDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeDeces.innerHTML = '';
+
+                    divCNIpayeurPrime.classList.add('d-none');
+                    filleCNIpayeurPrime.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIpayeurPrime.innerHTML = '';
+
+                    divCNIPersonneConcernee.classList.add('d-none');
+                    filleCNIPersonneConcernee.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIPersonneConcernee.innerHTML = '';
+
+                    divCarteProfessionnelle.classList.add('d-none');
+                    filleCarteProfessionnelle.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCarteProfessionnelle.innerHTML = '';
+
+                    divRIB.classList.add('d-none');
+                    filleRIB.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divFicheIdentification.classList.add('d-none');
+                    filleFicheIdentification.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaFicheIdentification.innerHTML = '';
+
+                    divCNIBeneficiaire.classList.add('d-none');
+                    filleCNIBeneficiaire.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIBeneficiaire.innerHTML = '';
+
+
+                    divCNIAssure.classList.add('d-none');
+                    filleCNIAssure.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIAssure.innerHTML = '';
+
+                    divExtraitActeNaissance.classList.add('d-none');
+                    filleExtraitActeNaissance.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeNaissance.innerHTML = '';
+
+                    let nouveauCapitalValeur = 0;
+                    let nouvellePrimeValeur = 0;
+                    let nouveauCapital = '0';
+                    let nouvellePrime = '0';
+
+                     // Gestion dynamique selon le produit
+                    switch (contratDetails?.codeProduit) {
+                        case 'DOIHOO':
+                            divNouveauCapitalDOIHOO.classList.remove('d-none');
+                            divNouveauCapitalEducPlus.classList.add('d-none');
+                            divNouveauCapitalYKE.classList.add('d-none');
+                            divNouveauCapitalAutreYK.classList.add('d-none');
+                            divNouvellePrimeCADENCE.classList.add('d-none');
+                            divNouvellePrimePFA_IND.classList.add('d-none');
+
+                            nouveauCapitalEducPlusInput.required = false;
+                            nouveauCapitalYKEInput.required = false;
+                            nouveauCapitalDOIHOOInput.required = true;
+                            nouveauCapitalAutreYKInput.required = false;
+                            nouvellePrimeCADENCEInput.required = false;
+                            nouvellePrimePFA_INDInput.required = false;
+
+                            nouveauCapitalValeur = parseInt(nouveauCapitalDOIHOOInput?.value);
+                            nouveauCapital = !isNaN(nouveauCapitalValeur) ? nouveauCapitalValeur.toLocaleString('fr-FR') : '1 000 000';
+                            break;
+
+                        case 'YKE_2008':
+                        case 'YKE_2018':
+                            divNouveauCapitalYKE.classList.remove('d-none');
+                            divNouveauCapitalEducPlus.classList.add('d-none');
+                            divNouveauCapitalAutreYK.classList.add('d-none');
+                            divNouvellePrimeCADENCE.classList.add('d-none');
+                            divNouvellePrimePFA_IND.classList.add('d-none');
+
+                            nouveauCapitalEducPlusInput.required = false;
+                            nouveauCapitalYKEInput.required = true;
+                            nouveauCapitalDOIHOOInput.required = false;
+                            nouveauCapitalAutreYKInput.required = false;
+                            nouvellePrimeCADENCEInput.required = false;
+                            nouvellePrimePFA_INDInput.required = false;
+
+                            nouveauCapitalValeur = parseInt(nouveauCapitalYKEInput?.value);
+                            nouveauCapital = !isNaN(nouveauCapitalValeur) ? nouveauCapitalValeur.toLocaleString('fr-FR') : '500 000';
+                            break;
+
+                        case 'YKS_2008':
+                        case 'YKS_2018':
+                        case 'YKF_2008':
+                        case 'YKF_2018':
+                        case 'YKR_2021':
+                        case 'YKL_2004':
+                            divNouveauCapitalAutreYK.classList.remove('d-none');
+                            divNouveauCapitalYKE.classList.add('d-none');
+                            divNouveauCapitalEducPlus.classList.add('d-none');
+                            divNouvellePrimeCADENCE.classList.add('d-none');
+                            divNouvellePrimePFA_IND.classList.add('d-none');
+
+                            nouveauCapitalEducPlusInput.required = false;
+                            nouveauCapitalYKEInput.required = false;
+                            nouveauCapitalDOIHOOInput.required = false;
+                            nouveauCapitalAutreYKInput.required = true;
+                            nouvellePrimeCADENCEInput.required = false;
+                            nouvellePrimePFA_INDInput.required = false;
+
+                            nouveauCapitalValeur = parseInt(nouveauCapitalAutreYKInput?.value);
+                            nouveauCapital = !isNaN(nouveauCapitalValeur) ? nouveauCapitalValeur.toLocaleString('fr-FR') : '450 000';
+                            break;
+
+                        case 'CADENCE':
+                            divNouvellePrimeCADENCE.classList.remove('d-none');
+                            divNouveauCapitalYKE.classList.add('d-none');
+                            divNouveauCapitalEducPlus.classList.add('d-none');
+                            divNouveauCapitalAutreYK.classList.add('d-none');
+                            divNouvellePrimePFA_IND.classList.add('d-none');
+
+                            nouvellePrimeCADENCEInput.required = true;
+                            nouveauCapitalEducPlusInput.required = false;
+                            nouveauCapitalYKEInput.required = false;
+                            nouveauCapitalDOIHOOInput.required = false;
+                            nouveauCapitalAutreYKInput.required = false;
+                            nouvellePrimePFA_INDInput.required = false;
+
+                            nouvellePrimeValeur = parseInt(nouvellePrimeCADENCEInput?.value);
+                            nouvellePrime = !isNaN(nouvellePrimeValeur) ? nouvellePrimeValeur.toLocaleString('fr-FR') : '15 000';
+                            break;
+
+                        case 'PFA_IND':
+                            divNouvellePrimePFA_IND.classList.remove('d-none');
+                            divNouveauCapitalYKE.classList.add('d-none');
+                            divNouveauCapitalEducPlus.classList.add('d-none');
+                            divNouveauCapitalAutreYK.classList.add('d-none');
+                            divNouvellePrimeCADENCE.classList.add('d-none');
+
+                            nouvellePrimePFA_INDInput.required = true;
+                            nouveauCapitalEducPlusInput.required = false;
+                            nouveauCapitalYKEInput.required = false;
+                            nouveauCapitalDOIHOOInput.required = false;
+                            nouveauCapitalAutreYKInput.required = false;
+                            nouvellePrimeCADENCEInput.required = false;
+
+                            nouvellePrimeValeur = parseInt(nouvellePrimePFA_INDInput?.value);
+                            nouvellePrime = !isNaN(nouvellePrimeValeur) ? nouvellePrimeValeur.toLocaleString('fr-FR') : '16 000';
+                            break;
+
+                        default:
+                            // Tout masquer si aucun produit correspondant
+                            [
+                                divNouvellePrimePFA_IND,
+                                divNouvellePrimeCADENCE,
+                                divNouveauCapitalYKE,
+                                divNouveauCapitalEducPlus,
+                                divNouveauCapitalAutreYK
+                            ].forEach(div => div.classList.add('d-none'));
+
+                            [
+                                nouveauCapitalEducPlusInput,
+                                nouveauCapitalYKEInput,
+                                nouveauCapitalDOIHOOInput,
+                                nouveauCapitalAutreYKInput,
+                                nouvellePrimeCADENCEInput,
+                                nouvellePrimePFA_INDInput
+                            ].forEach(input => { if (input) input.required = false });
+
+                            nouveauCapital = '0';
+                            nouvellePrime = '0';
+                            break;
+                    }
+                    // Contenu initial de la lettre
+                    content = `
+                        <p>Monsieur,</p>
+                        <p>Je viens par la présente demander une <strong>${selectedValue || '...'}</strong> sur mon contrat <strong>${contrat}</strong>.</p>
+                        ${
+                            ['DOIHOO', 'YKE_2008', 'YKE_2018', 'YKF_2008', 'YKF_2018', 'YKS_2008', 'YKS_2018', 'YKR_2021', 'YKL_2004'].includes(contratDetails?.codeProduit)
+                            ? `
+                            <p><strong><u>Capital actuel :</u></strong></p>
+                            <ul><li>${parseInt(contratDetails?.CapitalSouscrit).toLocaleString('fr-FR') || '0'} FCFA</li></ul>
+
+                            <p><strong><u>Nouveau capital souhaité :</u></strong></p>
+                            <ul><li>${nouveauCapital} FCFA</li></ul>`
+                            : `
+                            <p><strong><u>Prime actuelle :</u></strong></p>
+                            <ul>
+                                <li>${parseInt(contratDetails?.TotalPrime).toLocaleString('fr-FR') || '0'} FCFA</li>
+                            </ul>
+                            <p><strong><u>Nouvelle prime souhaitée :</u></strong></p>
+                            <ul>
+                                <li>${nouvellePrime} FCFA</li>
+                            </ul>`
+                        }
+                        <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
+                    `;
+
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+
+                    afficherBloc(divReductionPrimeEtCapital);
                 } else if (CodeTypeOperation == 'SUS') {
                     divCNISouscripteur.classList.remove('d-none');
                     //recuperer tous les inputs de type file du bloc divCNISouscripteur
@@ -2576,46 +3219,53 @@
                     });
                     divPreviewAreaCNIBeneficiaire.innerHTML = '';
 
+                    divCNIAssure.classList.add('d-none');
+                    filleCNIAssure.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIAssure.innerHTML = '';
+
+                    divExtraitActeNaissance.classList.add('d-none');
+                    filleExtraitActeNaissance.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeNaissance.innerHTML = '';
+
                     content = `
                         <p>Monsieur,</p>
-                        <p>Je viens par la présente demander une <strong>${selectedValue || '...'}</strong> de mon contrat <strong>${contrat}</strong> pour <strong>${dureeSuspensionInput?.value}</strong> mois à compter du <strong>${formatDate(aCompterDuSuspensionInput?.value)}</strong>.</p>
+                        <p>Je viens par la présente demander une <strong>${selectedValue || '...'}</strong> de mon contrat <strong>${contrat}</strong> pour <strong>${dureeSuspensionInput?.value || '1'} </strong> mois à compter du <strong>${formatDate(aCompterDuSuspensionInput?.value) || '...'} </strong>.</p>
                         <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
                     `;
 
-                    divAssureeAModifier.classList.add('d-none');
-                    assureeAModifierInput.required = false;
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
 
-                    divNouvelleAdresse.classList.add('d-none');
-                    nouvelleAdresseInput.required = false;
+                    // Masquer les champs de capital et prime
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
 
-                    divSuspension.classList.remove('d-none');
-                    dureeSuspensionInput.required = true;
-                    aCompterDuSuspensionInput.required = true;
-
-                    divModificationDuree.classList.add('d-none');
-                    modifDureeContratSouhaiteeInput.required = false;
-
-                    divNouveauContactTelephonique.classList.add('d-none');
-                    nouveauContactTelephoniqueInput.required = false;
-
-                    divNouvelleDateEffet.classList.add('d-none');
-                    nouvelleDateEffetInput.required = false;
-
-                    divNouveauModePaiement.classList.add('d-none');
-                    aCompterDuInput.required = false;
-                    nouveauModePaiementInput.required = false;
-
-                    divActeurAModifier.classList.add('d-none');
-                    acteurAModifierInput.required = false;
-
-                    divFiliations.classList.add('d-none');
-                    filiationsInput.required = false;
-
-                    divDateNaissanceCorrect.classList.add('d-none');
-                    dateNaissanceCorrectInput.required = false;
-
-                    divLieuNaissanceCorrect.classList.add('d-none');
-                    lieuNaissanceCorrectInput.required = false;
+                    // Afficher uniquement le bloc suspension et activer les champs associés
+                    afficherBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
 
                 } else {
                     divCNISouscripteur.classList.remove('d-none');
@@ -2700,6 +3350,8 @@
                     });
                     divPreviewAreaCNIAssure.innerHTML = '';
 
+                    
+
                     divCNIBeneficiaire.classList.add('d-none');
                     filleCNIBeneficiaire.forEach(file => {
                         file.required = false;
@@ -2719,37 +3371,49 @@
                         <p>Je viens par la présente faire une demande de <strong>${selectedValue || '...'}</strong> de mon contrat <strong>${contrat}</strong>.</p>
                         <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
                     `;
-                    divNouvelleDateEffet.classList.add('d-none');
-                    divNouveauModePaiement.classList.add('d-none');
 
-                    divNouvelleAdresse.classList.add('d-none');
-                    nouvelleAdresseInput.required = false;
+                    masquerBloc(OPSfileText);
+                    masquerBloc(divAssureeAModifier, assureeAModifierInput);
+                    masquerBloc(divNouvelleAdresse, nouvelleAdresseInput);
+                    masquerBloc(divModificationDuree, modifDureeContratSouhaiteeInput);
+                    masquerBloc(divNouvellePeriodicite, nouvellePeriodiciteInput, aCompterDuPeriodiciteInput);
+                    masquerBloc(divAjonctionOptionRemboursement, MontantOptionRemboursementInput);
+                    masquerBloc(divReductionPrimeEtCapital);
+                    masquerBloc(divNouveauContactTelephonique, nouveauContactTelephoniqueInput);
+                    masquerBloc(divNouvelleDateEffet, nouvelleDateEffetInput);
+                    masquerBloc(divNouveauModePaiement, aCompterDuInput, nouveauModePaiementInput);
+                    masquerBloc(divActeurAModifier, acteurAModifierInput);
+                    masquerBloc(divFiliations, filiationsInput);
+                    masquerBloc(divDateNaissanceCorrect, dateNaissanceCorrectInput);
+                    masquerBloc(divLieuNaissanceCorrect, lieuNaissanceCorrectInput);
+                    masquerBloc(divSuspension, dureeSuspensionInput, aCompterDuSuspensionInput);
 
-                    divSuspension.classList.add('d-none');
-                    dureeSuspensionInput.required = false;
-                    aCompterDuSuspensionInput.required = false;
-
-                    divModificationDuree.classList.add('d-none');
-                    modifDureeContratSouhaiteeInput.required = false;
-
-                    divActeurAModifier.classList.add('d-none');
-                    divFiliations.classList.add('d-none');
-                    divNouveauContactTelephonique.classList.add('d-none');
-                    nouveauContactTelephoniqueInput.required = false;
-                    divAssureeAModifier.classList.add('d-none');
-                    divLieuNaissanceCorrect.classList.add('d-none');
-                    divDateNaissanceCorrect.classList.add('d-none');
-                    assureeAModifierInput.required = false;
-                    lieuNaissanceCorrectInput.required = false;
-                    dateNaissanceCorrectInput.required = false;
-                    aCompterDuInput.required = false;
-                    nouvelleDateEffetInput.required = false;
-                    nouveauModePaiementInput.required = false;
-                    acteurAModifierInput.required = false;
-                    filiationsInput.required = false;
+                    // Masquer les champs de capital et prime
+                    [
+                        nouveauCapitalEducPlusInput,
+                        nouveauCapitalYKEInput,
+                        nouveauCapitalDOIHOOInput,
+                        nouveauCapitalAutreYKInput,
+                        nouvellePrimeCADENCEInput,
+                        nouvellePrimePFA_INDInput
+                    ].forEach(input => input.required = false);
                 }
                 updateHiddenField(content);
                 return content;
+            }
+
+            function masquerBloc(divElement, ...inputs) {
+                divElement.classList.add('d-none');
+                inputs.forEach(input => {
+                    if (input) input.required = false;
+                });
+            }
+
+            function afficherBloc(divElement, ...inputs) {
+                divElement.classList.remove('d-none');
+                inputs.forEach(input => {
+                    if (input) input.required = true;
+                });
             }
 
             function resetFileInput(fileInput) {
@@ -2816,78 +3480,37 @@
             }
 
             if (typePrestation) {
-                typePrestation.addEventListener('change', function() {
-                    updateMotifInEditor(
-                        typePrestation.value || ''
-                    );
-                });
-
-                aCompterDuInput.addEventListener('change', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-
-                nouveauModePaiementInput.addEventListener('change', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-                dureeSuspensionInput.addEventListener('input', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-                aCompterDuSuspensionInput.addEventListener('change', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-                modifDureeContratSouhaiteeInput.addEventListener('input', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-                
-                nouvelleDateEffetInput.addEventListener('change', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-                assureeAModifierInput.addEventListener('change', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-                acteurAModifierInput.addEventListener('change', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-                filiationsInput.addEventListener('change', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-                lieuNaissanceCorrectInput.addEventListener('input', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-                nouveauContactTelephoniqueInput.addEventListener('input', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-                nouvelleAdresseInput.addEventListener('input', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
-                });
-                dateNaissanceCorrectInput.addEventListener('change', function() {
-                    updateMotifInEditor(
-                        typePrestation?.value || ''
-                    );
+                // Ajout sécurisé des écouteurs d'événements
+                [
+                    typePrestation,
+                    aCompterDuInput,
+                    nouveauModePaiementInput,
+                    dureeSuspensionInput,
+                    aCompterDuSuspensionInput,
+                    modifDureeContratSouhaiteeInput,
+                    nouvellePeriodiciteInput,
+                    aCompterDuPeriodiciteInput,
+                    MontantOptionRemboursementInput,
+                    nouvelleDateEffetInput,
+                    acteurAModifierInput,
+                    nouvelleAdresseInput,
+                    dateNaissanceCorrectInput,
+                    lieuNaissanceCorrectInput,
+                    nouveauContactTelephoniqueInput,
+                    assureeAModifierInput,
+                    filiationsInput,
+                    nouveauCapitalEducPlusInput,
+                    nouveauCapitalYKEInput,
+                    nouveauCapitalDOIHOOInput,
+                    nouveauCapitalAutreYKInput,
+                    nouvellePrimeCADENCEInput,
+                    nouvellePrimePFA_INDInput
+                ].forEach(input => {
+                    if (input) {
+                        input.addEventListener('change', () => {
+                            updateMotifInEditor(typePrestation?.value || '');
+                        });
+                    }
                 });
             }
             // Ajouter un gestionnaire pour le formulaire
@@ -2910,6 +3533,9 @@
             // Vérifie au chargement
             verifierEtape("#PrestationAutre");
         });
+
+
+         
     </script>
 
     <script>
