@@ -216,6 +216,7 @@
             </div>
         </div>
         <div class="col-12 col-lg-9">
+            
             <div id="stepper1" class="bs-stepper">
                 <div class="card">
                     <div class="card-header">
@@ -235,7 +236,7 @@
                                     <div class="bs-stepper-circle">2</div>
                                     <div class="">
                                         <h5 class="mb-0 steper-title">Information sur prestation</h5>
-                                        <p class="mb-0 steper-sub-title">Entrer les Information liée à la prestation</p>
+                                        <p class="mb-0 steper-sub-title">Informations liée à la prestation</p>
                                     </div>
                                 </div>
                             </div>
@@ -269,7 +270,7 @@
                                                         @endif
                                                     </dl>
                                                     <dl class="row col-md-8">
-                                                        @if ($prestation && $prestation->etape == 0)
+                                                        @if ($prestation && $prestation->etape == 0 || $prestation->etape == 3)
                                                             <form
                                                                 action="{{ route('customer.prestation.transmettrePrest', $prestation->code) }}"
                                                                 method="post" class="submitForm d-flex justify-content-end">
@@ -280,9 +281,9 @@
                                                             </form>
                                                         @endif
                                                     </dl>
-                                                    @if ($prestation->etape == 0)
+                                                    @if ($prestation->etape == 0 || $prestation->etape == 3)
                                                         <dl class="row">
-                                                            <small class="text-danger">Veuillez Cliquez sur le bouton <b>RETRANSMETTRE</b> pour retransmettre la prestation </small></small>
+                                                            <small class="text-danger">Veuillez Cliquez sur le bouton <b>RETRANSMETTRE</b> pour retransmettre la prestation après toutes vos modifications </small></small>
                                                         </dl>
                                                     @endif
                                                 </div>

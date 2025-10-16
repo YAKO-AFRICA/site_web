@@ -150,11 +150,11 @@
                 background: url('data:image/jpg;base64,{{ base64_encode(file_get_contents(public_path('cust_assets/images/bg-logo.png'))) }}') no-repeat center; 
                 background-size: contain; opacity: 0.1; z-index: 1;">
             </div>
-            <label for="cachet"
+            {{-- <label for="cachet"
                 style="position: absolute; top: 55px; left: 200px; max-height: 120px; max-width: 130px; z-index: -2;">
                 <img src="data:image/jpg;base64,{{ base64_encode(file_get_contents(public_path('cust_assets/images/cachet-yako.jpeg'))) }}"
                     alt="Yako Africa Logo" style="height: 120px; width: 130px" class="logo">
-            </label>
+            </label> --}}
             <div class="content" style="padding: 0px 20px; margin-top: 14px;">
                 <section class="section-identification">
                     <div style="margin: 7px 0; width: 100%;">

@@ -235,6 +235,8 @@ class DemandePrestationController extends Controller
         if (!session()->has('contractDetails')) {
             return redirect()->route('customer.prestation');
         }
+        $peuSuspendreContrat = true;
+        $peuModifDureeContrat = true;
         $contratDetails = session('contractDetails', null);
         $dernierEncaissement = session('dernierEncaissement', null);
         $payeur = session('payeur', null);
@@ -243,6 +245,16 @@ class DemandePrestationController extends Controller
         $assurees = session('contratActeurAssure');
         $acteurPayeur = session('contratActeurPayeur');
         $beneficiaires = session('contratActeurBeneficiaire');
+        $NbreEmission = intval($contratDetails['NbreEmission']);
+        // dd($NbreEmission);
+        $codeProduitYAKO = ['YKE_2008','YKE_2018','YKS_2008','YKS_2018','YKF_2008','YKF_2018','YKR_2021','YKL_2004'];
+        $codeProduitEPAGNE = ["DOIHOO"];
+        if (in_array($contratDetails['codeProduit'], $codeProduitYAKO)) {
+            $peuSuspendreContrat = false;
+        }
+        if (in_array($contratDetails['codeProduit'], $codeProduitEPAGNE) || in_array($contratDetails['codeProduit'], $codeProduitYAKO)) {
+            $peuModifDureeContrat = false;
+        }
 
         $typePrestation = TblTypePrestation::where('id', $id)->first();
         $tok = Str::random(80);
@@ -269,7 +281,7 @@ class DemandePrestationController extends Controller
             $typeOperation = $response->json();
         }
         $this->clearPrestationSessions();
-        return view('users.espace_client.services.prestations.createAutre', compact('typePrestation', 'typeOperation', 'contratDetails', 'dernierEncaissement', 'token', 'tok', 'payeur','acteurs','assurees','acteurPayeur','beneficiaires','filiations'));
+        return view('users.espace_client.services.prestations.createAutre', compact('typePrestation', 'typeOperation', 'contratDetails', 'dernierEncaissement', 'token', 'tok', 'payeur','acteurs','assurees','acteurPayeur','beneficiaires','filiations','NbreEmission','peuSuspendreContrat','peuModifDureeContrat'));
     }
 
     private function clearPrestationSessions()
@@ -1575,10 +1587,13 @@ class DemandePrestationController extends Controller
             } else {
                 $isTransmitted->update([
                     'etape' => 1
-                ]);
+                ]);   
             }
             if ($isTransmitted) {
-
+                $motifsRejet = TblMotifrejetbyprestat::where('codeprestation', $code)->get();
+                foreach ($motifsRejet as $motif) {
+                    $motif->delete();
+                }
                 $dataResponse = [
                     'type' => 'success',
                     'urlback' => route('customer.mesPrestations'),

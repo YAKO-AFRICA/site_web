@@ -80,7 +80,7 @@
                                 <select class="form-select" name="typeprestation" id="single-select-fie" required>
                                     <option selected value="" disabled>Sélectionnez l’objet de votre requête</option>
                                     @foreach ($typeOperation as $operation)
-                                        <option value="{{ $operation['MonLibelle'] }}">{{ $operation['MonLibelle'] }}
+                                        <option value="{{ $operation['MonLibelle'] }}" {{ ($NbreEmission > 1 && $operation['MonLibelle'] == "Changement de date d'effet") || $operation['MonLibelle'] == "Annulation de la garantie Remboursement" || $operation['MonLibelle'] == "Transformation" || (!$peuSuspendreContrat && $operation['MonLibelle'] == "Suspension") || (!$peuModifDureeContrat && $operation['MonLibelle'] == "Modification de la durée du contrat") ? 'disabled' :  '' }}>{{ $operation['MonLibelle'] }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -93,7 +93,7 @@
                                 </label>
                                 <select class="form-select" name="nouveauModePaiement" id="nouveauModePaiement">
                                     {{-- affichage dynamique des options --}}
-                                </select>
+                                </select> 
                             </div>
                             <div class="col-md-6">
                                 <label for="aCompterDu" class="form-label">
@@ -104,6 +104,41 @@
                             </div>
 
                         </div>
+                        <div class="row g-3 mb-3 d-none" id="divSuspension">
+                            <div class="col-md-6">
+                                <label for="dureeSuspension" class="form-label">
+                                    Durée de la suspension (en mois minimum 1 mois et maximum 6 mois) <span class="star">*</span>
+                                </label>
+                                <input type="number" class="form-control" min="1" max="6" id="dureeSuspension" value="1" name="dureeSuspension">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="aCompterDuSuspension" class="form-label">
+                                    À compter du <span class="star">*</span>
+                                </label>
+                                <input type="date" min="{{ date('Y-m-d') }}" class="form-control"
+                                    value="{{ date('Y-m-d') }}" id="aCompterDuSuspension" name="aCompterDuSuspension">
+                            </div>
+
+                        </div>
+
+                        <div class="row g-3 mb-3 d-none" id="divModificationDuree">
+                            <div class="col-md-12">
+                                <label for="modifDureeContratSouhaitee" class="form-label">
+                                    Durée du contrat souhaitée (en année minimum 10 ans) <span class="star">*</span>
+                                </label>
+                                <input type="number" class="form-control" min="10" id="modifDureeContratSouhaitee" value="10" name="modifDureeContratSouhaitee">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3 d-none" id="divNouvelleAdresse">
+                            <div class="col-md-12">
+                                <label for="nouvelleAdresse" class="form-label">
+                                    Quelle est votre nouvelle adresse <span class="star">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="nouvelleAdresse" name="nouvelleAdresse">
+                            </div>
+                        </div>
+                        <p id="OPSfile" class="d-none">Merci de bien vouloir cliquer <a href="{{ asset('cust_assets/images/docs/ops.pdf') }}" download>ici pour télécharger, remplir, signer et téléverser la fiche d'autorisation de prélèvement sur salaire </a></p>
                         <div class="row g-3 mb-3 d-none" id="divNouvelleDateEffet">
                             <div class="col-12">
                                 <label for="nouvelleDateEffet" class="form-label">
@@ -296,6 +331,27 @@
                                         </div>
                                     </div>
 
+                                    {{-- OPS --}}
+                                    <div class="col-12 d-none" id="divOPS">
+                                        <div class="mb-3">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <label class="form-label">Fiche d'autorisation de Prélèvement sur Salarie <strong><small class="text-danger">(dûment rempli et signé)</small></strong></label>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="input-group">
+                                                        <input id="OPS-file-uploa" class="form-control"
+                                                            type="file" name="libelle[]"
+                                                            accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                            onchange="previewFilesPrestAutre(event, 'OPS')">
+                                                        <input type="hidden" name="type[]" value="OPS">
+                                                        <input type="hidden" name="filename[]" value="Ordre de prélèvement sur salaire">
+                                                    </div>
+                                                    <div id="OPS" class="mt-3 preview-area"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     {{-- RIB --}}
                                     <div class="col-12 d-none" id="divRIB">
                                         <div class="mb-3">
@@ -751,6 +807,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const formulaire = document.getElementById('PrestationAutre');
             const typeOperation = @json($typeOperation);
+            const contratDetails = @json($contratDetails);
             const payeur = @json($payeur);
             const dernierEncaissement = @json($dernierEncaissement);
             const typePrestation = formulaire?.querySelector('[name="typeprestation"]');
@@ -760,8 +817,18 @@
             const aCompterDuInput = formulaire?.querySelector('[name="aCompterDu"]');
             const nouveauModePaiementInput = formulaire?.querySelector('#nouveauModePaiement');
 
+            const divNouvelleAdresse = formulaire?.querySelector('#divNouvelleAdresse');
+            const nouvelleAdresseInput = formulaire?.querySelector('#nouvelleAdresse');
+
             const divNouvelleDateEffet = formulaire?.querySelector('#divNouvelleDateEffet');
             const nouvelleDateEffetInput = formulaire?.querySelector('#nouvelleDateEffet');
+
+            const divSuspension = formulaire?.querySelector('#divSuspension');
+            const dureeSuspensionInput = formulaire?.querySelector('#dureeSuspension');
+            const aCompterDuSuspensionInput = formulaire?.querySelector('#aCompterDuSuspension');
+
+            const divModificationDuree = formulaire?.querySelector('#divModificationDuree');
+            const modifDureeContratSouhaiteeInput = formulaire?.querySelector('#modifDureeContratSouhaitee');
 
             const divNouveauContactTelephonique = formulaire?.querySelector('#divNouveauContactTelephonique');
             const nouveauContactTelephoniqueInput = formulaire?.querySelector('#nouveauContactTelephonique');
@@ -777,8 +844,11 @@
             const acteurAModifierInput = formulaire?.querySelector('#acteurAModifier');
             const filiationsInput = formulaire?.querySelector('#filiations');
 
+            const OPSfileText = formulaire?.querySelector('#OPSfile');
+
 
             const divCNISouscripteur = formulaire?.querySelector('#divCNISouscripteur');
+            const divOPS = formulaire?.querySelector('#divOPS');
             const divCNIPersonneConcernee = formulaire?.querySelector('#divCNIPersonneConcernee');
             const divRIB = formulaire?.querySelector('#divRIB');
             const divConditionsParticulières = formulaire?.querySelector('#divConditionsParticulières');
@@ -806,6 +876,7 @@
             const divPreviewAreaConditionsParticulières = divConditionsParticulières?.querySelector(
             '.preview-area');
             const divPreviewAreaFicheIdentification = divFicheIdentification?.querySelector('.preview-area');
+            const divPreviewAreaOPS = divOPS?.querySelector('.preview-area');
 
 
             const filleCNISouscripteur = divCNISouscripteur?.querySelectorAll('input[type="file"]');
@@ -820,6 +891,7 @@
             const filleCNIpayeurPrime = divCNIpayeurPrime?.querySelectorAll('input[type="file"]');
             const filleConditionsParticulières = divConditionsParticulières?.querySelectorAll('input[type="file"]');
             const filleFicheIdentification = divFicheIdentification?.querySelectorAll('input[type="file"]');
+            const filleOPS = divOPS?.querySelectorAll('input[type="file"]');
 
             const formatDate = (dateString) => {
                 if (!dateString) return '-';
@@ -833,7 +905,7 @@
             const modePaiementSelect = [{
                     "idModePaiement": 1,
                     "CodePaiement": "SOURCE",
-                    "libelle": "Prélèvement sur salaire à la source"
+                    "libelle": "Prélèvement sur salaire au trésor public"
                 },
                 {
                     "idModePaiement": 2,
@@ -899,12 +971,6 @@
 
                 },
                 {
-                    "idModePaiement": 13,
-                    "CodePaiement": "PB",
-                    "libelle": "PARTICIPATION AUX BENEFICES"
-
-                },
-                {
                     "idModePaiement": 14,
                     "CodePaiement": "DEF",
                     "libelle": "DEFENSE"
@@ -916,6 +982,13 @@
                     "libelle": "VIREMENT ELECTRONIQUE"
 
                 }
+
+                {{-- {
+                    "idModePaiement": 13,
+                    "CodePaiement": "PB",
+                    "libelle": "PARTICIPATION AUX BENEFICES"
+
+                }, --}}
             ];
 
             modePaiementSelect.forEach(mode => {
@@ -925,49 +998,6 @@
                 document.getElementById('nouveauModePaiement').appendChild(option);
             });
 
-            {{-- function verifierEtape(etapeId) {
-                const etape = document.querySelector(etapeId);
-                if (!etape) return;
-
-                const btnSignature = etape.querySelector("#signatureBtn");
-                const champsRequis = etape.querySelectorAll("input[required], select[required], textarea[required]");
-                let valide = true;
-
-                champsRequis.forEach(champ => {
-                    if ((champ.type === "radio" || champ.type === "checkbox")) {
-                        // Vérifie si au moins une option du groupe est cochée
-                        const groupChecked = etape.querySelector(`input[name="${champ.name}"]:checked`);
-                        if (!groupChecked) {
-                            valide = false;
-                        }
-                    } else if (!champ.value.trim()) {
-                        valide = false;
-                    }
-                });
-
-                // Affiche ou cache le bouton
-                if (valide) {
-                    btnSignature.classList.remove("d-none");
-                    // Ajouter une bordure verte sur les champs requis remplis et ajouter la bordure rouge sur les champs requis non remplis
-                    champsRequis.forEach(champ => {
-                        if (!champ.value.trim()) {
-                            champ.classList.add("is-valid");
-                        }else{
-                            champ.classList.remove("is-invalid");
-                        }
-                    });
-                } else {
-                    // Ajouter une bordure rouge sur les champs requis non remplis et ajouter la bordure verte sur les champs remplis
-                    champsRequis.forEach(champ => {
-                        if (!champ.value.trim()) {
-                            champ.classList.add("is-invalid");
-                        }else{
-                            champ.classList.remove("is-valid");
-                        }
-                    });
-                    btnSignature.classList.add("d-none");
-                }
-            } --}}
             function verifierEtape(etapeId) {
                 const etape = document.querySelector(etapeId);
                 if (!etape) return;
@@ -1043,7 +1073,7 @@
 
                 switch (dernierEncaissement?.RegltCodePaiement) {
                     case 'SOURCE':
-                        modePaiement = 'Prélèvement sur salaire à la source';
+                        modePaiement = 'Prélèvement sur salaire au trésor public';
                         if (payeur.length > 0) {
                             NumCompte = payeur[0].NumCompte;
                         }
@@ -1103,7 +1133,7 @@
 
                 switch (nouveauModePaiementInput?.value) {
                     case 'SOURCE':
-                        modePaiementSouhaite = 'Prélèvement sur salaire à la source';
+                        modePaiementSouhaite = 'Prélèvement sur salaire au trésor public';
                         if (payeur.length > 0) {
                             NumCompte = payeur[0].NumCompte;
                         }
@@ -1165,9 +1195,18 @@
                     divNouveauModePaiement.classList.remove('d-none');
                     nouveauModePaiementInput.required = true;
                     aCompterDuInput.required = true;
+                    divNouvelleAdresse.classList.add('d-none');
+                    nouvelleAdresseInput.required = false;
 
                     divNouvelleDateEffet.classList.add('d-none');
                     nouvelleDateEffetInput.required = false;
+
+                    divSuspension.classList.add('d-none');
+                    dureeSuspensionInput.required = false;
+                    aCompterDuSuspensionInput.required = false;
+
+                    divModificationDuree.classList.add('d-none');
+                    modifDureeContratSouhaiteeInput.required = false;
 
                     divNouveauContactTelephonique.classList.add('d-none');
                     nouveauContactTelephoniqueInput.required = false;
@@ -1189,6 +1228,22 @@
                     filleCNISouscripteur.forEach(file => {
                         file.required = true;
                     });
+
+                    if (nouveauModePaiementInput.value == 'SOURCE' || nouveauModePaiementInput.value == 'SOCIETE' || nouveauModePaiementInput.value == 'DEF') {
+                        divOPS.classList.remove('d-none');
+                        filleOPS.forEach(file => {
+                            file.required = true;
+                        });
+                        OPSfileText.classList.remove('d-none');
+                    }else{
+                        divOPS.classList.add('d-none');
+                        filleOPS.forEach(file => {
+                            file.required = false;
+                            resetFileInput(file);
+                        });
+                        divPreviewAreaOPS.innerHTML = '';
+                        OPSfileText.classList.add('d-none');
+                    }
 
                     divFicheIdentification.classList.add('d-none');
                     filleFicheIdentification.forEach(file => {
@@ -1327,6 +1382,13 @@
                         file.required = true;
                     });
 
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
+
                     divCarteProfessionnelle.classList.add('d-none');
                     filleCarteProfessionnelle.forEach(file => {
                         file.required = false;
@@ -1415,6 +1477,8 @@
                     `;
                     divNouvelleDateEffet.classList.remove('d-none');
                     nouvelleDateEffetInput.required = true;
+                    divNouvelleAdresse.classList.add('d-none');
+                    nouvelleAdresseInput.required = false;
 
                     divNouveauModePaiement.classList.add('d-none');
                     aCompterDuInput.required = false;
@@ -1422,6 +1486,13 @@
 
                     divNouveauContactTelephonique.classList.add('d-none');
                     nouveauContactTelephoniqueInput.required = false;
+
+                    divSuspension.classList.add('d-none');
+                    dureeSuspensionInput.required = false;
+                    aCompterDuSuspensionInput.required = false;
+
+                    divModificationDuree.classList.add('d-none');
+                    modifDureeContratSouhaiteeInput.required = false;
 
                     divAssureeAModifier.classList.add('d-none');
                     divLieuNaissanceCorrect.classList.add('d-none');
@@ -1440,6 +1511,12 @@
                     filleCNISouscripteur.forEach(file => {
                         file.required = true;
                     });
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
                     divCNIPersonneConcernee.classList.add('d-none');
                     filleCNIPersonneConcernee.forEach(file => {
                         file.required = false;
@@ -1527,6 +1604,16 @@
                     divNouveauContactTelephonique.classList.remove('d-none');
                     nouveauContactTelephoniqueInput.required = true;
 
+                    divNouvelleAdresse.classList.add('d-none');
+                    nouvelleAdresseInput.required = false;
+
+                    divSuspension.classList.add('d-none');
+                    dureeSuspensionInput.required = false;
+                    aCompterDuSuspensionInput.required = false;
+
+                    divModificationDuree.classList.add('d-none');
+                    modifDureeContratSouhaiteeInput.required = false;
+
                     divNouveauModePaiement.classList.add('d-none');
                     nouveauModePaiementInput.required = false;
                     aCompterDuInput.required = false;
@@ -1556,6 +1643,12 @@
                         resetFileInput(file);
                     });
                     divPreviewAreaCNISouscripteur.innerHTML = '';
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
 
                     divCNIPersonneConcernee.classList.add('d-none');
                     filleCNIPersonneConcernee.forEach(file => {
@@ -1729,6 +1822,16 @@
                     divNouveauContactTelephonique.classList.add('d-none');
                     nouveauContactTelephoniqueInput.required = false;
 
+                    divNouvelleAdresse.classList.add('d-none');
+                    nouvelleAdresseInput.required = false;
+
+                    divSuspension.classList.add('d-none');
+                    dureeSuspensionInput.required = false;
+                    aCompterDuSuspensionInput.required = false;
+
+                    divModificationDuree.classList.add('d-none');
+                    modifDureeContratSouhaiteeInput.required = false;
+
                     divNouvelleDateEffet.classList.add('d-none');
                     nouvelleDateEffetInput.required = false;
 
@@ -1815,6 +1918,13 @@
                     });
                     divPreviewAreaCNIPersonneConcernee.innerHTML = '';
 
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
+
                     divCarteProfessionnelle.classList.add('d-none');
                     filleCarteProfessionnelle.forEach(file => {
                         file.required = false;
@@ -1884,6 +1994,16 @@
                     divAssureeAModifier.classList.remove('d-none');
                     assureeAModifierInput.required = true;
 
+                    divNouvelleAdresse.classList.add('d-none');
+                    nouvelleAdresseInput.required = false;
+
+                    divSuspension.classList.add('d-none');
+                    dureeSuspensionInput.required = false;
+                    aCompterDuSuspensionInput.required = false;
+
+                    divModificationDuree.classList.add('d-none');
+                    modifDureeContratSouhaiteeInput.required = false;
+
                     divNouveauContactTelephonique.classList.add('d-none');
                     nouveauContactTelephoniqueInput.required = false;
 
@@ -1925,6 +2045,13 @@
                     filleCNIpayeurPrime.forEach(file => {
                         file.required = true;
                     });
+
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
 
                     divCNIPersonneConcernee.classList.add('d-none');
                     filleCNIPersonneConcernee.forEach(file => {
@@ -1983,6 +2110,16 @@
                     divAssureeAModifier.classList.add('d-none');
                     assureeAModifierInput.required = false;
 
+                    divNouvelleAdresse.classList.add('d-none');
+                    nouvelleAdresseInput.required = false;
+
+                    divSuspension.classList.add('d-none');
+                    dureeSuspensionInput.required = false;
+                    aCompterDuSuspensionInput.required = false;
+
+                    divModificationDuree.classList.add('d-none');
+                    modifDureeContratSouhaiteeInput.required = false;
+
                     divNouveauContactTelephonique.classList.add('d-none');
                     nouveauContactTelephoniqueInput.required = false;
 
@@ -2015,6 +2152,13 @@
                     filleConditionsParticulières.forEach(file => {
                         file.required = true;
                     });
+
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
 
                     divCerticatDeces.classList.add('d-none');
                     filleCerticatDeces.forEach(file => {
@@ -2084,6 +2228,373 @@
                     divAssureeAModifier.classList.add('d-none');
                     assureeAModifierInput.required = false;
 
+                    divNouvelleAdresse.classList.add('d-none');
+                    nouvelleAdresseInput.required = false;
+
+                    divSuspension.classList.add('d-none');
+                    dureeSuspensionInput.required = false;
+                    aCompterDuSuspensionInput.required = false;
+
+                    divModificationDuree.classList.add('d-none');
+                    modifDureeContratSouhaiteeInput.required = false;
+
+                    divNouveauContactTelephonique.classList.add('d-none');
+                    nouveauContactTelephoniqueInput.required = false;
+
+                    divNouvelleDateEffet.classList.add('d-none');
+                    nouvelleDateEffetInput.required = false;
+
+                    divNouveauModePaiement.classList.add('d-none');
+                    aCompterDuInput.required = false;
+                    nouveauModePaiementInput.required = false;
+
+                    divActeurAModifier.classList.add('d-none');
+                    acteurAModifierInput.required = false;
+
+                    divFiliations.classList.add('d-none');
+                    filiationsInput.required = false;
+
+                    divDateNaissanceCorrect.classList.add('d-none');
+                    dateNaissanceCorrectInput.required = false;
+
+                    divLieuNaissanceCorrect.classList.add('d-none');
+                    lieuNaissanceCorrectInput.required = false;
+                } else if (CodeTypeOperation == '2') {
+                    divCNISouscripteur.classList.remove('d-none');
+                    //recuperer tous les inputs de type file du bloc divCNISouscripteur
+                    filleCNISouscripteur.forEach(file => {
+                        file.required = true;
+                    });
+
+                    divConditionsParticulières.classList.add('d-none');
+                    filleConditionsParticulières.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaConditionsParticulières.innerHTML = '';
+
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
+
+                    divCerticatDeces.classList.add('d-none');
+                    filleCerticatDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCerticatDeces.innerHTML = '';
+
+                    divExtraitActeDeces.classList.add('d-none');
+                    filleExtraitActeDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeDeces.innerHTML = '';
+
+                    divCNIpayeurPrime.classList.add('d-none');
+                    filleCNIpayeurPrime.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIpayeurPrime.innerHTML = '';
+
+                    divCNIPersonneConcernee.classList.add('d-none');
+                    filleCNIPersonneConcernee.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIPersonneConcernee.innerHTML = '';
+
+                    divCarteProfessionnelle.classList.add('d-none');
+                    filleCarteProfessionnelle.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCarteProfessionnelle.innerHTML = '';
+
+                    divRIB.classList.add('d-none');
+                    filleRIB.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divFicheIdentification.classList.add('d-none');
+                    filleFicheIdentification.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaFicheIdentification.innerHTML = '';
+
+                    divCNIBeneficiaire.classList.add('d-none');
+                    filleCNIBeneficiaire.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIBeneficiaire.innerHTML = '';
+
+                    content = `
+                        <p>Monsieur,</p>
+                        <p>Je viens par la présente demander un <strong>${selectedValue || '...'}</strong> de mon contrat <strong>${contrat}</strong>.</p>
+                        <p><strong><u>Nouvelle adresse souhaitée :</u></strong></p>
+                        <ul>
+                            <li>${nouvelleAdresseInput?.value}</li>
+                        </ul>
+                        <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
+                    `;
+
+                    divAssureeAModifier.classList.add('d-none');
+                    assureeAModifierInput.required = false;
+
+                    divNouvelleAdresse.classList.remove('d-none');
+                    nouvelleAdresseInput.required = true;
+
+                    divSuspension.classList.add('d-none');
+                    dureeSuspensionInput.required = false;
+                    aCompterDuSuspensionInput.required = false;
+
+                    divModificationDuree.classList.add('d-none');
+                    modifDureeContratSouhaiteeInput.required = false;
+
+                    divNouveauContactTelephonique.classList.add('d-none');
+                    nouveauContactTelephoniqueInput.required = false;
+
+                    divNouvelleDateEffet.classList.add('d-none');
+                    nouvelleDateEffetInput.required = false;
+
+                    divNouveauModePaiement.classList.add('d-none');
+                    aCompterDuInput.required = false;
+                    nouveauModePaiementInput.required = false;
+
+                    divActeurAModifier.classList.add('d-none');
+                    acteurAModifierInput.required = false;
+
+                    divFiliations.classList.add('d-none');
+                    filiationsInput.required = false;
+
+                    divDateNaissanceCorrect.classList.add('d-none');
+                    dateNaissanceCorrectInput.required = false;
+
+                    divLieuNaissanceCorrect.classList.add('d-none');
+                    lieuNaissanceCorrectInput.required = false;
+                } else if (CodeTypeOperation == 'AV5') {
+                    divCNISouscripteur.classList.remove('d-none');
+                    //recuperer tous les inputs de type file du bloc divCNISouscripteur
+                    filleCNISouscripteur.forEach(file => {
+                        file.required = true;
+                    });
+
+                    divConditionsParticulières.classList.add('d-none');
+                    filleConditionsParticulières.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaConditionsParticulières.innerHTML = '';
+
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
+
+                    divCerticatDeces.classList.add('d-none');
+                    filleCerticatDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCerticatDeces.innerHTML = '';
+
+                    divExtraitActeDeces.classList.add('d-none');
+                    filleExtraitActeDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeDeces.innerHTML = '';
+
+                    divCNIpayeurPrime.classList.add('d-none');
+                    filleCNIpayeurPrime.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIpayeurPrime.innerHTML = '';
+
+                    divCNIPersonneConcernee.classList.add('d-none');
+                    filleCNIPersonneConcernee.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIPersonneConcernee.innerHTML = '';
+
+                    divCarteProfessionnelle.classList.add('d-none');
+                    filleCarteProfessionnelle.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCarteProfessionnelle.innerHTML = '';
+
+                    divRIB.classList.add('d-none');
+                    filleRIB.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divFicheIdentification.classList.add('d-none');
+                    filleFicheIdentification.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaFicheIdentification.innerHTML = '';
+
+                    divCNIBeneficiaire.classList.add('d-none');
+                    filleCNIBeneficiaire.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIBeneficiaire.innerHTML = '';
+
+                    content = `
+                        <p>Monsieur,</p>
+                        <p>Je viens par la présente demander une <strong>${selectedValue || '...'} </strong> <strong>${contrat}</strong>.</p>
+                        <p><strong><u>Durée actuelle du contrat :</u></strong></p>
+                        <ul>
+                            <li>${contratDetails?.DureeCotisationAns} ans</li>
+                        </ul>
+                        <p><strong><u>Nouvelle durée souhaitée :</u></strong></p>
+                        <ul>
+                            <li>${modifDureeContratSouhaiteeInput?.value} ans</li>
+                        </ul>
+                        <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
+                    `;
+
+                    divAssureeAModifier.classList.add('d-none');
+                    assureeAModifierInput.required = false;
+
+                    divNouvelleAdresse.classList.add('d-none');
+                    nouvelleAdresseInput.required = false;
+
+                    divSuspension.classList.add('d-none');
+                    dureeSuspensionInput.required = false;
+                    aCompterDuSuspensionInput.required = false;
+
+                    divModificationDuree.classList.remove('d-none');
+                    modifDureeContratSouhaiteeInput.required = true;
+
+                    divNouveauContactTelephonique.classList.add('d-none');
+                    nouveauContactTelephoniqueInput.required = false;
+
+                    divNouvelleDateEffet.classList.add('d-none');
+                    nouvelleDateEffetInput.required = false;
+
+                    divNouveauModePaiement.classList.add('d-none');
+                    aCompterDuInput.required = false;
+                    nouveauModePaiementInput.required = false;
+
+                    divActeurAModifier.classList.add('d-none');
+                    acteurAModifierInput.required = false;
+
+                    divFiliations.classList.add('d-none');
+                    filiationsInput.required = false;
+
+                    divDateNaissanceCorrect.classList.add('d-none');
+                    dateNaissanceCorrectInput.required = false;
+
+                    divLieuNaissanceCorrect.classList.add('d-none');
+                    lieuNaissanceCorrectInput.required = false;
+                } else if (CodeTypeOperation == 'SUS') {
+                    divCNISouscripteur.classList.remove('d-none');
+                    //recuperer tous les inputs de type file du bloc divCNISouscripteur
+                    filleCNISouscripteur.forEach(file => {
+                        file.required = true;
+                    });
+
+                    divConditionsParticulières.classList.add('d-none');
+                    filleConditionsParticulières.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaConditionsParticulières.innerHTML = '';
+
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
+
+                    divCerticatDeces.classList.add('d-none');
+                    filleCerticatDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCerticatDeces.innerHTML = '';
+
+                    divExtraitActeDeces.classList.add('d-none');
+                    filleExtraitActeDeces.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaExtraitActeDeces.innerHTML = '';
+
+                    divCNIpayeurPrime.classList.add('d-none');
+                    filleCNIpayeurPrime.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIpayeurPrime.innerHTML = '';
+
+                    divCNIPersonneConcernee.classList.add('d-none');
+                    filleCNIPersonneConcernee.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIPersonneConcernee.innerHTML = '';
+
+                    divCarteProfessionnelle.classList.add('d-none');
+                    filleCarteProfessionnelle.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCarteProfessionnelle.innerHTML = '';
+
+                    divRIB.classList.add('d-none');
+                    filleRIB.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divFicheIdentification.classList.add('d-none');
+                    filleFicheIdentification.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaFicheIdentification.innerHTML = '';
+
+                    divCNIBeneficiaire.classList.add('d-none');
+                    filleCNIBeneficiaire.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaCNIBeneficiaire.innerHTML = '';
+
+                    content = `
+                        <p>Monsieur,</p>
+                        <p>Je viens par la présente demander une <strong>${selectedValue || '...'}</strong> de mon contrat <strong>${contrat}</strong> pour <strong>${dureeSuspensionInput?.value}</strong> mois à compter du <strong>${formatDate(aCompterDuSuspensionInput?.value)}</strong>.</p>
+                        <p>Dans l’attente d’une suite favorable.<br>Veuillez recevoir Monsieur le Directeur, l’expression de mes salutations les plus sincères.</p>
+                    `;
+
+                    divAssureeAModifier.classList.add('d-none');
+                    assureeAModifierInput.required = false;
+
+                    divNouvelleAdresse.classList.add('d-none');
+                    nouvelleAdresseInput.required = false;
+
+                    divSuspension.classList.remove('d-none');
+                    dureeSuspensionInput.required = true;
+                    aCompterDuSuspensionInput.required = true;
+
+                    divModificationDuree.classList.add('d-none');
+                    modifDureeContratSouhaiteeInput.required = false;
+
                     divNouveauContactTelephonique.classList.add('d-none');
                     nouveauContactTelephoniqueInput.required = false;
 
@@ -2112,6 +2623,13 @@
                     filleCNISouscripteur.forEach(file => {
                         file.required = true;
                     });
+
+                    divOPS.classList.add('d-none');
+                    filleOPS.forEach(file => {
+                        file.required = false;
+                        resetFileInput(file);
+                    });
+                    divPreviewAreaOPS.innerHTML = '';
 
                     divCNIPersonneConcernee.classList.add('d-none');
                     filleCNIPersonneConcernee.forEach(file => {
@@ -2203,6 +2721,17 @@
                     `;
                     divNouvelleDateEffet.classList.add('d-none');
                     divNouveauModePaiement.classList.add('d-none');
+
+                    divNouvelleAdresse.classList.add('d-none');
+                    nouvelleAdresseInput.required = false;
+
+                    divSuspension.classList.add('d-none');
+                    dureeSuspensionInput.required = false;
+                    aCompterDuSuspensionInput.required = false;
+
+                    divModificationDuree.classList.add('d-none');
+                    modifDureeContratSouhaiteeInput.required = false;
+
                     divActeurAModifier.classList.add('d-none');
                     divFiliations.classList.add('d-none');
                     divNouveauContactTelephonique.classList.add('d-none');
@@ -2304,6 +2833,22 @@
                         typePrestation?.value || ''
                     );
                 });
+                dureeSuspensionInput.addEventListener('input', function() {
+                    updateMotifInEditor(
+                        typePrestation?.value || ''
+                    );
+                });
+                aCompterDuSuspensionInput.addEventListener('change', function() {
+                    updateMotifInEditor(
+                        typePrestation?.value || ''
+                    );
+                });
+                modifDureeContratSouhaiteeInput.addEventListener('input', function() {
+                    updateMotifInEditor(
+                        typePrestation?.value || ''
+                    );
+                });
+                
                 nouvelleDateEffetInput.addEventListener('change', function() {
                     updateMotifInEditor(
                         typePrestation?.value || ''
@@ -2330,6 +2875,11 @@
                     );
                 });
                 nouveauContactTelephoniqueInput.addEventListener('input', function() {
+                    updateMotifInEditor(
+                        typePrestation?.value || ''
+                    );
+                });
+                nouvelleAdresseInput.addEventListener('input', function() {
                     updateMotifInEditor(
                         typePrestation?.value || ''
                     );

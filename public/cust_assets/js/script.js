@@ -3392,7 +3392,7 @@ const documents = [
       "MobileMoney_Paiement": false,
       "Virement_Bancaire": false,
       "EPARGNE": true,
-      "OBSEQUE": true,
+      "OBSEQUE": false,
       "MIXTE": true,
       "Requis": [
         {
@@ -3944,7 +3944,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         
             if (TypeContratObseque.includes(typeContrat)) {
-                documentsToShow = documentsToShow.filter(doc => doc.OBSEQUE || doc.Deces);
+                documentsToShow = documentsToShow.filter(doc => doc.Deces && doc.OBSEQUE);
                 // console.log("Après filtre OBSEQUE :", documentsToShow);
             }
         
@@ -4495,7 +4495,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const declarationTardiveChecked = document.querySelector('input[name="declarationTardive"]:checked')?.value ?? null;
         const corpsConserveChecked = document.querySelector('input[name="corpsConserve"]:checked')?.value ?? null;
         const paiementMethodChecked = form.querySelector('input[name="moyenPaiement"]:checked')?.value ?? null;
-        console.log('paiementMethodChecked', paiementMethodChecked);
         
         if (isDecesChecked) {
             getToShowDocuments("Deces", accidentelChecked, corpsConserveChecked, declarationTardiveChecked, typeContrat, CodeFiliatioAssure, paiementMethodChecked);
