@@ -156,7 +156,6 @@
                         }else{
                             
                             const pdfUrl = data.url;
-                            console.log(pdfUrl);
                             previewContainer.innerHTML = `
                                 <iframe src="${pdfUrl}" width="100%" height="600px" style="border: 1px solid #ddd;"></iframe>
                             `;

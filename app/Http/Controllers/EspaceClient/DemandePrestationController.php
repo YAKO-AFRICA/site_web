@@ -1744,7 +1744,6 @@ class DemandePrestationController extends Controller
         return response()->json($dataResponse);
     }
 
-
     private function updatePrestationPdf($prestation)
     {
         try {

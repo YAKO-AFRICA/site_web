@@ -1,5 +1,6 @@
 <?php
 
+use setasign\Fpdi\Fpdi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -404,5 +405,18 @@ Auth::routes();
 
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+
+// Route::get('/test-fpdi', function () {
+//     $pdf = new Fpdi();
+//     $pdf->AddPage();
+//     $pdf->SetFont('Helvetica', '', 14);
+//     $pdf->Text(50, 50, '✅ FPDI + FPDF fonctionnent !');
+//     $filePath = storage_path('app/test-fpdi.pdf');
+//     $pdf->Output($filePath, 'F');
+
+//     return response()->file($filePath);
+// });
 
 

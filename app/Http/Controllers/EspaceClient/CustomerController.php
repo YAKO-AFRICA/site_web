@@ -4,6 +4,7 @@ namespace App\Http\Controllers\EspaceClient;
 
 use Carbon\Carbon;
 use App\Models\Membre;
+use setasign\Fpdi\Fpdi;
 use App\Models\TblCustomer;
 use Illuminate\Http\Request;
 use App\Models\MembreContrat;
@@ -230,6 +231,7 @@ class CustomerController extends Controller
         try {
             $idcontrat = $request->input('contrat');
             $externalUploadDir = base_path(env('GET_CUSTOMER_CP'));
+            $externalCGPRODDir = base_path(env('GET_DOC_CGPROD'));
 
             $response = Http::withOptions([
                 'timeout' => 60,  // Augmenter le délai d'attente
@@ -240,6 +242,7 @@ class CustomerController extends Controller
             if ($response->successful()) {
                 $data = $response->json();
                 $dateEffetReelle = $data['details'][0]['DateEffetReel'];
+                $codeProduit = $data['details'][0]['codeProduit'];
                 $dateEffetReelle = Carbon::createFromFormat('d/m/Y', $dateEffetReelle)->format('d-m-Y');
 
                 // recuperer l'annee de la date d'effet reelle
@@ -252,11 +255,14 @@ class CustomerController extends Controller
                 if (!is_dir($externalUploadDir)) {
                     mkdir($externalUploadDir, 0777, true);
                 }
+                if (!is_dir($externalCGPRODDir)) {
+                    mkdir($externalCGPRODDir, 0777, true);
+                }
+                
+                $CPfileName = "A{$annee}/M{$mois}/CP_{$idcontrat}.pdf";
+                $CPfilePath = $externalUploadDir  . DIRECTORY_SEPARATOR . $CPfileName;
 
-                $fileName = 'A' . $annee . '/M' . $mois . '/' . 'CP_' . $idcontrat . '.pdf';
-                $filePath = $externalUploadDir  . DIRECTORY_SEPARATOR . $fileName;
-
-                if (!file_exists($filePath)) {
+                if (!file_exists($CPfilePath)) {
                     return response()->json([
                         'type' => 'error',
                         'signification' => 'Le fichier demandé est introuvable.',
@@ -265,8 +271,40 @@ class CustomerController extends Controller
                     ], 404);
                 }
 
+                
+                $CGProdFile = "CG_{$codeProduit}.pdf";
+                $CGProdFilePath = $externalCGPRODDir  . DIRECTORY_SEPARATOR . $CGProdFile;
+
+                // Initialiser FPDI pour fusionner les fichiers CPfilePath et CGProdFile 
+                $finalPdf = new Fpdi();
+
+                // Ajouter toutes les pages du bulletin
+                $CPPageCount = $finalPdf->setSourceFile($CPfilePath);
+                for ($pageNo = 1; $pageNo <= $CPPageCount; $pageNo++) {
+                    $finalPdf->AddPage();
+                    $tplIdx = $finalPdf->importPage($pageNo);
+                    $finalPdf->useTemplate($tplIdx);
+                }
+            
+                // Ajouter toutes les pages du fichier CGU
+                $CGProdPageCount = $finalPdf->setSourceFile($CGProdFilePath);
+                for ($pageNo = 1; $pageNo <= $CGProdPageCount; $pageNo++) {
+                    $finalPdf->AddPage();
+                    $tplIdx = $finalPdf->importPage($pageNo);
+                    $finalPdf->useTemplate($tplIdx);
+                }
+                
+                // Nom du fichier final
+                $FilePath = "A{$annee}/M{$mois}/DocumentsContractuels_{$idcontrat}";
+                if (!is_dir($externalUploadDir . DIRECTORY_SEPARATOR . $FilePath)) {
+                    mkdir($externalUploadDir . DIRECTORY_SEPARATOR . $FilePath, 0777, true);
+                }
+                $fileName = "CP-CG_{$idcontrat}.pdf";
+                $finalFilePath = $externalUploadDir  . DIRECTORY_SEPARATOR . $FilePath . DIRECTORY_SEPARATOR . $fileName;
+                $finalPdf->Output($finalFilePath, 'F');
+
                 // Construire l'URL absolue du fichier PDF
-                $fileUrl = url('get-police/' . $fileName);
+                $fileUrl = url('get-police/' . $FilePath . DIRECTORY_SEPARATOR . $fileName);
 
                 return response()->json([
                     'type' => 'success',
@@ -275,6 +313,7 @@ class CustomerController extends Controller
                     'url' => $fileUrl,
                     'code' => 200,
                 ], 200);
+                
             } else {
                 return response()->json([
                     'type' => 'error',
@@ -291,6 +330,72 @@ class CustomerController extends Controller
             ], 500);
         }
     }
+    // public function getPolice(Request $request)
+    // {
+    //     try {
+    //         $idcontrat = $request->input('contrat');
+    //         $externalUploadDir = base_path(env('GET_CUSTOMER_CP'));
+
+    //         $response = Http::withOptions([
+    //             'timeout' => 60,  // Augmenter le délai d'attente
+    //         ])->post(config('services.api.encaissement_bis'), [
+    //             'idContrat' => $idcontrat,
+    //         ]);
+
+    //         if ($response->successful()) {
+    //             $data = $response->json();
+    //             $dateEffetReelle = $data['details'][0]['DateEffetReel'];
+    //             $dateEffetReelle = Carbon::createFromFormat('d/m/Y', $dateEffetReelle)->format('d-m-Y');
+
+    //             // recuperer l'annee de la date d'effet reelle
+    //             $annee = Carbon::createFromFormat('d-m-Y', $dateEffetReelle)->format('Y');
+
+    //             // recuperer le mois de la date d'effet reelle en format de deux chiffres et retirer le zéro si le mois est inferieur a 10
+    //             $mois =  Carbon::createFromFormat('d-m-Y', $dateEffetReelle)->format('m');
+    //             $mois = ltrim($mois, '0');
+
+    //             if (!is_dir($externalUploadDir)) {
+    //                 mkdir($externalUploadDir, 0777, true);
+    //             }
+
+    //             $fileName = 'A' . $annee . '/M' . $mois . '/' . 'CP_' . $idcontrat . '.pdf';
+    //             $filePath = $externalUploadDir  . DIRECTORY_SEPARATOR . $fileName;
+
+    //             if (!file_exists($filePath)) {
+    //                 return response()->json([
+    //                     'type' => 'error',
+    //                     'signification' => 'Le fichier demandé est introuvable.',
+    //                     'message' => 'Désolé ! La police du contrat N° ' . $idcontrat . ' n\'est pas encore disponible !',
+    //                     'code' => 404,
+    //                 ], 404);
+    //             }
+
+    //             // Construire l'URL absolue du fichier PDF
+    //             $fileUrl = url('get-police/' . $fileName);
+
+    //             return response()->json([
+    //                 'type' => 'success',
+    //                 'signification' => 'Fichier trouvé.',
+    //                 'message' => 'Fichier trouvé.',
+    //                 'url' => $fileUrl,
+    //                 'code' => 200,
+    //             ], 200);
+    //         } else {
+    //             return response()->json([
+    //                 'type' => 'error',
+    //                 'signification' => 'Impossible de récupérer les informations du contrat.',
+    //                 'message' => 'Impossible de récupérer les informations du contrat.',
+    //                 'code' => 400,
+    //             ], 400);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'type' => 'error',
+    //             'message' => 'Une erreur s\'est produite : ' . $e->getMessage(),
+    //             'code' => 500,
+    //         ], 500);
+    //     }
+    // }
 
 
 
