@@ -282,7 +282,7 @@
                                             </div>
 										</form> --}}
 
-                                        <div class="table-responsive" style="margin: 20px 0; height: 200px; overflow-y: scroll;">
+                                        {{-- <div class="table-responsive" style="margin: 20px 0; height: 200px; overflow-y: scroll;">
                                             @if(session('import_results.details'))
                                                 <div class="mt-3">
                                                     <h5>Détails de l'import :</h5>
@@ -315,7 +315,7 @@
                                                         class="btn-prime btn-prime-two d-block w-100">importer</button>
                                                 </div>
                                             </div>
-                                        </form>
+                                        </form> --}}
 
 
                                     </div>
