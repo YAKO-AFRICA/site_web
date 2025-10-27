@@ -44,7 +44,7 @@
                 
                 @include('users.espace_client.services.prestations.modals.descriptionModal', ['id' => $typePrestation->id])
                 @endforeach
-                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 mb-3">
+                {{-- <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 mb-3">
                     <a href="{{ route('customer.prestation.autre', $typePrestationAutre->id) }}" class="prestation">
                         <div class="card border rounded-4 text-center shadow-none bg-light-success">
                             <div class="card-body">
@@ -52,7 +52,7 @@
                             </div>
                         </div>
                     </a>
-                </div>
+                </div> --}}
 
             </div><!--end row-->
         </div>
