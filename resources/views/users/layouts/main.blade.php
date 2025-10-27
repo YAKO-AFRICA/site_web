@@ -79,8 +79,8 @@
       @yield('content')
         <!-- brand-area -->
 
-        <!-- Icône WhatsApp -->
-<a href="https://wa.me/+2250584408080" title="Nous contactez sur WhatsApp" class="whatsapp_float" target="_blank">
+        <!-- Icône WhatsApp 0565871780 -->
+<a href="https://wa.me/+2250565871780" title="Nous contactez sur WhatsApp" class="whatsapp_float" target="_blank">
     <i class="fab fa-whatsapp whatsapp-icon"></i>
 </a>
 <a href="https://yakoafricassur.com/e-services/download_apk.php" class="mt-3 app_float shadow" title="Télécharger notre application Mobile Ynov">
