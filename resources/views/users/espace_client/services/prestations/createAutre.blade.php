@@ -1926,10 +1926,10 @@
                             Je viens par la présente demander une/un 
                             <strong>${selectedValue || '...'}</strong> 
                             ${
-                                CodeTypeOperation == '4'
+                                CodeTypeOperation == '4' || CodeTypeOperation == '5' || CodeTypeOperation == 'AV16' 
                                     ? `<strong>${assureeAModifierInput?.value || '...'}</strong>`
                                     : (CodeTypeOperation == 'AV1' || CodeTypeOperation == 'AV2' || CodeTypeOperation == 'AV6' || CodeTypeOperation == 'AV7')
-                                        ? `pour <strong>${acteurAModifierInput?.value || '...'}</strong>`
+                                        ? `de <strong>${acteurAModifierInput?.value || '...'}</strong>`
                                         : ''
                             }
                             sur mon contrat <strong>${contrat}</strong>.
