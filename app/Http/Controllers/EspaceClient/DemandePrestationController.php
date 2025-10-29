@@ -1137,7 +1137,6 @@ class DemandePrestationController extends Controller
         }
     }
 
-
     /**
      * Display the specified resource.
      */
