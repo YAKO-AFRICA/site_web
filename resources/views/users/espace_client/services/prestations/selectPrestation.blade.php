@@ -48,13 +48,14 @@
                     <a href="{{ route('customer.prestation.autre', $typePrestationAutre->id) }}" class="prestation">
                         <div class="card border rounded-4 text-center shadow-none bg-light-success">
                             <div class="card-body">
-                                <p class="mb-0 fs-5 text-success">{{ $typePrestationAutre->libelle ?? 'Non renseigné' }}</p>
+                                <p class="mb-0 fs-5 text-success">{{ $typePrestationAutre->libelle ?? 'Autre' }}</p>
                             </div>
                         </div>
                     </a>
                 </div>
 
-            </div><!--end row-->
+            </div>
+            <!--end row-->
         </div>
     </div>
 @endsection
