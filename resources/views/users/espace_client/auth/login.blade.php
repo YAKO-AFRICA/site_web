@@ -464,7 +464,6 @@
 
                         if (data.status === 'found') {
                             let customer = data.customer;
-                            console.log("customer", customer);
                             let prospere = data.prospere;
                             if (customer) {
 

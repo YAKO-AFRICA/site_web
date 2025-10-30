@@ -960,6 +960,7 @@ class CustomerLoginController extends Controller
     public function updateCompte(Request $request)
     {
         $customer = TblCustomer::where('login', $request->update_login)->orWhere('old_login', $request->update_login)->first();
+        $prospere = TblCreationCompte::where('login', $customer->login)->first();
         $membre = Membre::where('login', $request->update_login)->first();
 
         if ($customer) {
@@ -982,6 +983,11 @@ class CustomerLoginController extends Controller
                 $membre->lieuresidence = $request->lieuresidence;
                 $membre->estajour = 1;
                 $membre->save();
+            }
+            if ($prospere) {
+                $prospere->login = $request->login;
+                $prospere->password = Hash::make($request->password);
+                $prospere->save();
             }
             $recipientEmail = $request->email;
             $emailSubject = "Mise à jour de votre compte à Ynov";
@@ -1111,6 +1117,8 @@ class CustomerLoginController extends Controller
             ]
         );
         $customer = TblCustomer::where('remember_token', $token)->first();
+
+        $prospere = TblCreationCompte::where('login', $customer->login)->first();
         $membre = Membre::where('idmembre', $customer->idmembre)->first();
 
         if ($customer) {
@@ -1125,6 +1133,10 @@ class CustomerLoginController extends Controller
                 $membre->pass = $input['password'];
                 // $membre->password = Hash::make($input['password']);
                 $membre->save();
+            }
+            if ($prospere) {
+                $prospere->password = Hash::make($input['password']);
+                $prospere->save();
             }
             // Authentifier l'utilisateur
             // Auth::guard('customer')->login($customer);
