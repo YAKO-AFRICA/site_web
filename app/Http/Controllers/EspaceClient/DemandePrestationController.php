@@ -1667,6 +1667,10 @@ class DemandePrestationController extends Controller
                 foreach ($isDeletedDocs as $doc) {
                     $this->destroyDoc($doc->id);
                 }
+                $motifsRejet = TblMotifrejetbyprestat::where('codeprestation', $code)->get();
+                foreach ($motifsRejet as $motif) {
+                    $motif->delete();
+                }
                 $isDeleted->delete();
                 $dataResponse = [
                     'type' => 'success',

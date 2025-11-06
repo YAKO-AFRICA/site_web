@@ -151,11 +151,11 @@
 
                             <div class="col-md-12 d-none" id="divNouvellePrimeCADENCE">
                                 <label for="nouvellePrimeCADENCE" class="form-label">
-                                    Nouvelle prime souhaitée <span class="star">*</span>
+                                    Nouvelle prime souhaitée (en FCFA minimum 15 000 FCFA) <span class="star">*</span>
                                 </label>
-                                <select class="form-select" name="nouvellePrimeCADENCE" id="nouvellePrimeCADENCE">
+                                <input type="number" class="form-control" value="15000" min="15000" id="nouvellePrimeCADENCE" name="nouvellePrimeCADENCE">
+                                {{-- <select class="form-select" name="nouvellePrimeCADENCE" id="nouvellePrimeCADENCE">
                                     <option selected value="" disabled>Sélectionnez la prime</option>
-                                    {{-- de 15 000 FCFA à 30 000 FCFA --}}
                                     @for ($i = 15000; $i <= 30000; $i += 15000)
                                         <option value="{{ $i }}">{{ number_format($i, 0, ',', ' ') }}</option>
                                     @endfor
@@ -163,7 +163,7 @@
                                     <option value="50000">50 000</option>
                                     <option value="75000">75 000</option>
                                     <option value="100000">100 000</option>
-                                </select> 
+                                </select>  --}}
                             </div>
                             <div class="col-md-12 d-none" id="divNouvellePrimePFA_IND">
                                 <label for="nouvellePrimePFA_IND" class="form-label">
@@ -184,7 +184,6 @@
                                     <option value="Trimestrielle">Trimestrielle</option>
                                     <option value="Semestrielle">Semestrielle</option>
                                     <option value="Annuelle">Annuelle</option>
-                                    <option value="Paiement unique">Paiement unique</option>
                                 </select> 
                             </div>
                             <div class="col-md-6">
