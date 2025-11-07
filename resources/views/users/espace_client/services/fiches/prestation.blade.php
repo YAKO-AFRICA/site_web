@@ -228,7 +228,7 @@
                 background-size: contain; opacity: 0.1; z-index: 1;">
             </div>
              <label for="cachet" style="position: absolute; top: 55px; left: 200px; max-height: 120px; max-width: 130px; z-index: -2;">
-                <img src="data:image/jpg;base64,{{ base64_encode(file_get_contents(public_path('cust_assets/images/cachet-yako.jpeg'))) }}" alt="Yako Africa Logo" style="height: 120px; width: 130px" class="logo">
+                {{-- <img src="data:image/jpg;base64,{{ base64_encode(file_get_contents(public_path('cust_assets/images/cachet-yako.jpeg'))) }}" alt="Yako Africa Logo" style="height: 120px; width: 130px" class="logo"> --}}
             </label>
             <div class="content" style="padding: 0px 20px;">
                 <section class="section-identification">
@@ -581,15 +581,6 @@
                                 font-size: 14px;
                                 border-radius: 3px;
                                 background-color: #ffffff;" name="" value="{{ \Carbon\Carbon::parse($prestation->created_at)->translatedFormat('d F Y') ?? '.' }}" /> <br> <br>
-                            {{-- <input type="text" 
-                            style="
-                                width: 66%;
-                                margin-bottom: -7px;
-                                border: 1px solid #90C8A7;
-                                padding: 5px;
-                                font-size: 14px;
-                                border-radius: 3px;
-                                background-color: #ffffff;" name="" value="{{ $prestation->created_at->format('d/m/Y') ?? '.' }}" /> <br> <br> --}}
                             
                         </div>
                     </div>

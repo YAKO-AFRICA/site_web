@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Demande de prêt</title>
+    <title>Formulaire de demande de prestation</title>
     <style>
         font-face {
             font-family: 'Gotham-Book';
@@ -37,7 +37,7 @@
             width: 100%;
             height: 140px;
             /* justify-content: space-between; */
-            margin-bottom: 4mm;
+            margin: 10mm 0;
             font-size: 13px;
             /* line-height: 1.6; */
         }
@@ -46,6 +46,7 @@
             float: left;
             line-height: 1.7;
             font-size: 13px;
+            margin-top: 7mm;
         }
 
         .date {
@@ -53,11 +54,12 @@
             font-size: 13px;
             text-align: right;
             max-width: 70mm;
+            margin-top: 15mm;
         }
 
         .recipient {
             text-align: right;
-            margin-bottom: 5mm;
+            margin: 10mm 0;
             font-size: 13px;
             line-height: 1.3;
         }
@@ -65,13 +67,14 @@
         .objet {
             font-weight: bold;
             text-decoration: underline;
-            margin-bottom: 5mm;
+            margin: 10mm 0;
             font-size: 14px;
         }
 
         .body {
             font-size: 14px;
             line-height: 1.3;
+            margin: 10mm 0;
         }
 
         .body p {
@@ -135,8 +138,12 @@
 
             <!-- Destinataire -->
             <div class="recipient">
-                <strong>À MONSIEUR LE DIRECTEUR GENERAL</strong> <br>
-                DE YAKO AFRICA Assurances Vie
+                 <p style="text-align: right; margin-right: 5mm;"><strong>À</strong></p> 
+                <p style="text-align: right;">
+                MONSIEUR LE DIRECTEUR GENERAL 
+                <br>YAKO AFRICA Assurances Vie</p> 
+                
+                
             </div>
 
             <!-- Objet -->
@@ -160,20 +167,18 @@
 
             <div class="signature" style="width: 100%;">
                 <div class="closing-yako" style="width: 50%; float: left;">
-                    YAKO AFRICA Assurances Vie <br><br>
-                    <img src="data:image/jpg;base64,{{ base64_encode(file_get_contents(public_path('cust_assets/images/cachet-yako.jpeg'))) }}"
-                        alt="" style="width: 150px; height: 50px;">
+
                 </div>
-                <div class="closing" style="width: 50%; float: right;">
-                    L’intéressé <br><br>
-                    <small><i>Lu et approuvé</i> </small> <br>
+                <div class="closing" style="width: 50%; float: right; margin-right: 8mm;">
+                    <u>L’intéressé(e)</u> <br><br>
+                    <small><i>Lu et approuvé</i> </small> <br> <br>
                     <img src="data:image/jpg;base64,{{ base64_encode(file_get_contents(public_path('cust_assets/images/sign.jpeg'))) }}"
-                        alt="" style="width: 150px; height: 50px;">
+                        alt="" style="width: 170px;">
                 </div>
             </div>
             <!-- Pièces jointes -->
-            <div class="attachments" style="text-align: justify; margin-top: 150px;">
-                <span><strong>Pièces jointes :</strong></span>
+            <div class="attachments" style="text-align: justify; margin-top: 200px;">
+                <span><strong>Pièce(s) jointe(s) :</strong></span>
                 <ul>
                     <li><input type="checkbox" checked> Copie de la pièce d'identité</li>
                 </ul>

@@ -396,8 +396,8 @@ class DemandePrestationController extends Controller
         // $logoUrl = 'https://testsite.yakoafricassur.com/assets/img/logo/Logo_yako.png';
         // $pdf = Pdf::loadView('users.espace_client.services.fiches.qrcode', compact('qrCodeSvg', 'logoUrl'))
         // $pdf = Pdf::loadView('users.espace_client.services.fiches.prestationouttest', compact('qrcode'))
-        // $pdf = Pdf::loadView('users.espace_client.services.fiches.courriertest')
-        $pdf = Pdf::loadView('users.espace_client.services.fiches.sinistretest', compact('qrcode'))
+        $pdf = Pdf::loadView('users.espace_client.services.fiches.courriertest')
+        // $pdf = Pdf::loadView('users.espace_client.services.fiches.sinistretest', compact('qrcode'))
             ->setPaper('a4', 'portrait')
             ->setOptions([
                 'isHtml5ParserEnabled' => true,
