@@ -653,7 +653,7 @@
                                                             <div class="input-group">
                                                                 <input id="CNIrecto-file-uploa" class="form-control"
                                                                     type="file" name="libelle[]"
-                                                                    accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                                    accept=".jpg, .png, image/jpeg, image/png"
                                                                     onchange="previewFilesPrestAutre(event, 'CNIrectoAssure')">
                                                                 <input type="hidden" name="type[]"
                                                                     value="CNIrectoAssure">
@@ -668,7 +668,7 @@
                                                             <div class="input-group">
                                                                 <input id="CNIverso-file-uploa" class="form-control"
                                                                     type="file" name="libelle[]"
-                                                                    accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                                    accept=".jpg, .png, image/jpeg, image/png"
                                                                     onchange="previewFilesPrestAutre(event, 'CNIversoAssure')">
                                                                 <input type="hidden" name="type[]"
                                                                     value="CNIversoAssure">
@@ -701,7 +701,7 @@
                                                             <div class="input-group">
                                                                 <input id="CNIrecto-file-uploa" class="form-control"
                                                                     type="file" name="libelle[]"
-                                                                    accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                                    accept=".jpg, .png, image/jpeg, image/png"
                                                                     onchange="previewFilesPrestAutre(event, 'CNIrecto')">
                                                                 <input type="hidden" name="type[]" value="CNIrecto">
                                                                 <input type="hidden" name="filename[]"
@@ -715,7 +715,7 @@
                                                             <div class="input-group">
                                                                 <input id="CNIverso-file-uploa" class="form-control"
                                                                     type="file" name="libelle[]"
-                                                                    accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                                    accept=".jpg, .png, image/jpeg, image/png"
                                                                     onchange="previewFilesPrestAutre(event, 'CNIverso')">
                                                                 <input type="hidden" name="type[]" value="CNIverso">
                                                                 <input type="hidden" name="filename[]"
@@ -746,7 +746,7 @@
                                                             <div class="input-group">
                                                                 <input id="CNIrecto-file-uploa" class="form-control"
                                                                     type="file" name="libelle[]"
-                                                                    accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                                    accept=".jpg, .png, image/jpeg, image/png"
                                                                     onchange="previewFilesPrestAutre(event, 'CNIrectoBeneficiaire')">
                                                                 <input type="hidden" name="type[]"
                                                                     value="CNIrectoBeneficiaire">
@@ -762,7 +762,7 @@
                                                             <div class="input-group">
                                                                 <input id="CNIverso-file-uploa" class="form-control"
                                                                     type="file" name="libelle[]"
-                                                                    accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                                    accept=".jpg, .png, image/jpeg, image/png"
                                                                     onchange="previewFilesPrestAutre(event, 'CNIversoBeneficiaire')">
                                                                 <input type="hidden" name="type[]"
                                                                     value="CNIversoBeneficiaire">
@@ -795,7 +795,7 @@
                                                             <div class="input-group">
                                                                 <input id="CNIrecto-file-uploa" class="form-control"
                                                                     type="file" name="libelle[]"
-                                                                    accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                                    accept=".jpg, .png, image/jpeg, image/png"
                                                                     onchange="previewFilesPrestAutre(event, 'CNIrectoPayeurPrime')">
                                                                 <input type="hidden" name="type[]"
                                                                     value="CNIrectoPayeurPrime">
@@ -810,7 +810,7 @@
                                                             <div class="input-group">
                                                                 <input id="CNIverso-file-uploa" class="form-control"
                                                                     type="file" name="libelle[]"
-                                                                    accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                                    accept=".jpg, .png, image/jpeg, image/png"
                                                                     onchange="previewFilesPrestAutre(event, 'CNIversoPayeurPrime')">
                                                                 <input type="hidden" name="type[]"
                                                                     value="CNIversoPayeurPrime">
