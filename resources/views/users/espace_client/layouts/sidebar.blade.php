@@ -32,8 +32,8 @@
             </a>
         </li>
         <li>
-            {{-- <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#enMaintenanceModal"> --}}
-            <a href="{{ route('sinistre.index') }}">
+            <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#enMaintenanceModal">
+            {{-- <a href="{{ route('sinistre.index') }}"> --}}
                 <div class="parent-icon"><i class="fadeIn animated bx bx-archive-out"></i>
                 </div>
                 <div class="menu-title">Pré-déclaration de sinistre</div>
@@ -54,7 +54,7 @@
             </a>
         </li>
         <li>
-            <a href="https://yakoafricassur.com/e-services/paiement/paiement-prime.php">
+            <a href="https://yakoafricassur.com/e-services/paiement/paiement-prime.php" target="_blank">
                 <div class="parent-icon"><i class="bx bx-dollar-circle fs-5"></i>
                 </div>
                 <div class="menu-title">Payer ma prime</div>

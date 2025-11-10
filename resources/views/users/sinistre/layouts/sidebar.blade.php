@@ -65,7 +65,7 @@
             </a>
         </li>
         <li>
-            <a href="https://yakoafricassur.com/e-services/paiement/paiement-prime.php">
+            <a href="https://yakoafricassur.com/e-services/paiement/paiement-prime.php" target="_blank">
             {{-- <a href="http://espace-client.test/paiement-transit.php"> --}}
                 <div class="parent-icon"><i class="bx bx-dollar-circle fs-5"></i>
                 </div>
