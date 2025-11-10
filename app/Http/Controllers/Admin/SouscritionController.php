@@ -172,7 +172,7 @@ class SouscritionController extends Controller
                 if($request->type == 'Pré-souscription'){
                     Mail::to('cotations@yakoafricassur.com')->send($mail);
                 }else{
-                    Mail::to('reclamations@yakoafricassur.com')->send($mail);
+                    // Mail::to('reclamations@yakoafricassur.com')->send($mail);
                 }
                 $dataResponse = [
                     'type' => 'success',
