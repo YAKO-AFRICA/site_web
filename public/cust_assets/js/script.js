@@ -2855,22 +2855,40 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <td>${rdv.titre || '-'}</td>
                                 <td>${rdv.police || '-'}</td>
                                 <td>${rdv.motifrdv || '-'}</td>
-                                <td>${rdv.ville.libelleVilleBureau || '-'}</td>
+                                <td>${rdv.ville?.libelleVilleBureau || '-'}</td>
                                 <td>${rdv.daterdv || '-'}</td>
-                                <td>${rdv.tel || '-'}</td>
-                                <td>${rdv.email || '-'}</td>
+                                <td>${rdv.villeEffective?.libelleVilleBureau !=null ? rdv.villeEffective?.libelleVilleBureau : rdv.ville?.libelleVilleBureau || '-'}</td>
+                                <td>${rdv.daterdveff !=null ? formatDate(rdv.daterdveff) : rdv.daterdv || '-'}</td>
                                 <td>
                                     ${rdv.etat == '0' ? 
-                                        '<div class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>RDV non accepté</div>' :
+                                        `<div class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3">
+                                            <i class="bx bxs-circle me-1"></i>RDV non accepté
+                                        </div>` :
                                     rdv.etat == '1' ? 
-                                        '<div class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En attente d\'acceptation</div>' :
+                                        `<div class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3">
+                                            <i class="bx bxs-circle me-1"></i>En attente d'acceptation
+                                        </div>` :
                                     rdv.etat == '2' ? 
-                                        '<div class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>RDV accepté</div>' :
-                                        '<div class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Traitement Terminé</div>'
+                                        `<div class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3">
+                                            <i class="bx bxs-circle me-1"></i>RDV accepté et transmis au gestionnaire
+                                        </div>` :
+                                    rdv.etat == '3' ? 
+                                        `<div class="d-flex flex-column align-items-center justify-content-between">
+                                            <div class="badge rounded-pill text-success bg-light-success p-2 mb-2 text-uppercase px-3" style="height: 45%;">
+                                                <i class="bx bxs-circle me-1"></i>Traitement Terminé
+                                            </div>
+                                            <div class="badge rounded-pill text-white bg-secondary text-wrap text-center p-2 px-3" style="height: 45%;">
+                                                ${rdv.libelleTraitement || '-'}
+                                            </div>
+                                        </div>` :
+                                        `<div class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3">
+                                            <i class="bx bxs-circle me-1"></i>Traitement Terminé
+                                        </div>`
                                     }
                                 </td>
                                 <td>${rdv.dateajou || '-'}</td>
-                            </tr>`).join('');
+                            </tr>
+                        `).join('');
                         // Initialiser DataTables après l'ajout des lignes
                         dataTableInstance = $(tableRdv).DataTable({
                             order: [],
@@ -2893,14 +2911,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     } else {
                         tableRdvBody.innerHTML = `
                             <tr>
-                                <td colspan="9" class="text-center">Aucun rdv pris pour ce contrat.</td>
+                                <td colspan="10" class="text-center">Aucun rdv pris pour ce contrat.</td>
                             </tr>`;
                     }
 
                 } else {
                     tableRdvBody.innerHTML = `
                         <tr>
-                            <td colspan="9" class="text-center text-danger">Aucun rdv pris pour ce contrat</td>
+                            <td colspan="10" class="text-center text-danger">Aucun rdv pris pour ce contrat</td>
                         </tr>`;
                 }
 

@@ -53,4 +53,7 @@ class Tblrdv extends Model
     public function ville(){
         return $this->belongsTo(TblVilleReseau::class, 'idTblBureau', 'idVilleBureau');
     }
+    public function villeEffective(){
+        return $this->belongsTo(TblVilleReseau::class, 'villeEffective', 'idVilleBureau');
+    }
 }

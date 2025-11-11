@@ -40,15 +40,15 @@
                 <table id="example3" class="table mes-prestations table-striped table-bordered">
                     <thead class="table-light">
                         <tr>
-                            <th>Code du rdv</th>
+                            <th>Code</th>
                             <th>Status du preneur</th>
                             <th>#ID du contrat</th>
-                            <th>Motif du rendez-vous</th>
-                            <th>Lieu du rendez-vous</th>
-                            <th>Date du rendez-vous</th>
-                            <th>Telephone associé</th>
-                            <th>Email associé</th>
-                            <th>Statut du rendez-vous</th>
+                            <th>Motif</th>
+                            <th>Lieu rdv souhaité</th>
+                            <th>Date rdv souhaité</th>
+                            <th>Lieu rdv effectif</th>
+                            <th>Date rdv effectif</th>
+                            <th>Statut</th>
                             <th>Date de création</th>
                         </tr>
                     </thead>
@@ -56,7 +56,7 @@
                         
                         {{-- Affichage des prestations demander en fonction du contrat selectionner ici --}}
                         <tr>
-                            <td colspan="9" class="text-center">Veuillez sélectionner un contrat pour voir la liste des RDV pris.</td>
+                            <td colspan="10" class="text-center">Veuillez sélectionner un contrat pour voir la liste des RDV pris.</td>
                         </tr>
                     </tbody>
                 </table>

@@ -1301,6 +1301,7 @@ class DemandePrestationController extends Controller
         try {
             $prestations = TblPrestation::where('idcontrat', $idcontrat)
             ->with('docPrestation')
+            ->where('etape', '!=', -1)
             ->orderBy('created_at', 'desc')
             ->get();
             if ($prestations->isEmpty()) {

@@ -175,7 +175,6 @@ class SouscritionController extends Controller
                     // Mail::to('reclamations@yakoafricassur.com')->send($mail);
                 }
 
-                // dd($data);
                 $dataResponse = [
                     'type' => 'success',
                     'urlback' => "back",
