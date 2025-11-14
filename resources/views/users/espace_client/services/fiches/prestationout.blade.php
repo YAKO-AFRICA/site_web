@@ -357,7 +357,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="nom" style="margin-right: 4px">Montant &nbsp;&nbsp;&nbsp;</label>
+                            <label for="nom" style="margin-right: 4px">Montant &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;</label>
                             <input type="text" style="
                                 margin-bottom: -7px;
                                 margin-top: 5px;
