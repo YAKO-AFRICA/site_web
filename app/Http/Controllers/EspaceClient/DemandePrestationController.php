@@ -59,6 +59,7 @@ class DemandePrestationController extends Controller
                 if ($prestation && $prestation->etape == -1) {
                     $typePrestation = TblTypePrestation::where('libelle', $prestation->typeprestation)->first();
                     session(['prestation' => $prestation]);
+                    session(['PrestationRdv' => $prestation]);
 
                     $response = Http::withOptions(['timeout' => 60])
                         ->post(config('services.api.encaissement_bis'), [
@@ -363,7 +364,7 @@ class DemandePrestationController extends Controller
         // detruis la session 
         session()->forget('contrat');
         session()->forget('prestation');
-        session()->forget('contratDetails');
+        // session()->forget('contratDetails');
         // $idcontrat = session('idcontrat');
 
         // $prestation = TblPrestation::where(['idcontrat'=> $idcontrat, 'typeprestation' => $typePrestation->libelle, 'etape' => 1])->first();
@@ -615,7 +616,7 @@ class DemandePrestationController extends Controller
             $idOtp = $otpVerif->id ?? null;
             // Vérifier si une prestation similaire existe déjà
 
-            $prestationUpdated = session('prestation', null);
+            $prestationUpdated = session('PrestationRdv', null);
 
             $moyenPaiement = $request->moyenPaiement;
             $etape = ($request->Singletype == 'AttestationPerteContrat') ? 0 : 1;
@@ -651,7 +652,7 @@ class DemandePrestationController extends Controller
                 ['etape', '=', -1],
                 // ['idclient', '=', $prestationUpdated->idclient],
             ])->first() : null;
-            Log::info($PrestationRdv);
+            // Log::info($PrestationRdv);
             Log::info('prestationUpdated');
 
             $PrestationInachevee = TblPrestation::where([
