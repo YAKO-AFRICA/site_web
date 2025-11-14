@@ -680,34 +680,35 @@ class DemandePrestationController extends Controller
             } else {
                 if ($PrestationRdv != null) {
                     Log::info('PrestationRdv');
-                    $PrestationRdv->code = RefgenerateCodePrest(TblPrestation::class, 'PREST-', 'code');
-                    $PrestationRdv->idOtp = $idOtp;
-                    $PrestationRdv->idcontrat = $request->idcontrat;
-                    $PrestationRdv->prestationlibelle = $request->typeprestation;
-                    $PrestationRdv->typeprestation = $request->typeprestation;
-                    $PrestationRdv->idclient = $request->idclient;
-                    $PrestationRdv->nom = $request->nom;
-                    $PrestationRdv->prenom = $request->prenom;
-                    $PrestationRdv->datenaissance = $request->datenaissance;
-                    $PrestationRdv->lieunaissance = $request->lieunaissance;
-                    $PrestationRdv->sexe = $request->sexe;
-                    $PrestationRdv->cel = $request->cel;
-                    $PrestationRdv->tel = $request->tel;
-                    $PrestationRdv->email = $request->email;
-                    $PrestationRdv->msgClient = $request->msgClient;
-                    $PrestationRdv->lieuresidence = $request->lieuresidence;
-                    $PrestationRdv->montantSouhaite = $montantSouhaite;
-                    $PrestationRdv->moyenPaiement = $moyenPaiement;
-                    $PrestationRdv->Operateur = $request->Operateur;
-                    $PrestationRdv->telPaiement = $TelPaiement;
-                    $PrestationRdv->codeBanque = $codeBanque;
-                    $PrestationRdv->codeGuichet = $codeGuichet;
-                    $PrestationRdv->numCompte = $numCompte;
-                    $PrestationRdv->cleRIB = $cleRIB;
-                    $PrestationRdv->IBAN = $IBAN;
-                    $PrestationRdv->saisiepar = $saisiepar;
-                    $PrestationRdv->save();
-
+                    $PrestationRdv->update([
+                        'etape' => 1,
+                        'code' => RefgenerateCodePrest(TblPrestation::class, 'PREST-', 'code'),
+                        'idOtp' => $idOtp,
+                        'idcontrat' => $request->idcontrat,
+                        'prestationlibelle' => $request->typeprestation,
+                        'typeprestation' => $request->typeprestation,
+                        'idclient' => $request->idclient,
+                        'nom' => $request->nom,
+                        'prenom' => $request->prenom,
+                        'datenaissance' => $request->datenaissance,
+                        'lieunaissance' => $request->lieunaissance,
+                        'sexe' => $request->sexe,
+                        'cel' => $request->cel,
+                        'tel' => $request->tel,
+                        'email' => $request->email,
+                        'msgClient' => $request->msgClient,
+                        'lieuresidence' => $request->lieuresidence,
+                        'montantSouhaite' => $montantSouhaite,
+                        'moyenPaiement' => $moyenPaiement,
+                        'Operateur' => $request->Operateur,
+                        'telPaiement' => $TelPaiement,
+                        'codeBanque' => $codeBanque,
+                        'codeGuichet' => $codeGuichet,
+                        'numCompte' => $numCompte,
+                        'cleRIB' => $cleRIB,
+                        'IBAN' => $IBAN,
+                        'saisiepar' => $saisiepar,
+                    ]);
                     // Vérification si la prestation a été créée
                     if (!$PrestationRdv) {
                         return response()->json([
@@ -863,7 +864,7 @@ class DemandePrestationController extends Controller
 
                 $sign = TblSignature::where('key_uuid', $request->tokGenerate)->first();
                 $sign->update([
-                    'reference_key' => $prestation->code
+                    'reference_key' => ($prestation) ? $prestation->code : $PrestationRdv->code
                 ]);
                 // DB::commit();
                 $prestationPdfUrl = ($prestation) ? $this->generatePrestationPdf($prestation) : $this->generatePrestationPdf($PrestationRdv);
