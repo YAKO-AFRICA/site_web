@@ -357,7 +357,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="nom" style="margin-right: 4px">Montant souhaité</label>
+                            <label for="nom" style="margin-right: 4px">Montant &nbsp;&nbsp;&nbsp;</label>
                             <input type="text" style="
                                 margin-bottom: -7px;
                                 margin-top: 5px;
@@ -573,7 +573,7 @@
                             font-size: 14px;
                             border-radius: 3px;
                             background-color: #ffffff;"
-                        value="." />
+                        value="{{ \Carbon\Carbon::parse($prestation->rdv->daterdveff)->translatedFormat('d F Y') ?? '.' }}" />
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 
                     <label for="prenom" style="margin-right: 2px;">Code RDV &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
@@ -586,7 +586,7 @@
                             font-size: 14px;
                             border-radius: 3px;
                             background-color: #ffffff;"
-                        value="." />
+                        value="{{ $prestation->rdv->codedmd ?? '.' }}" />
                 </div>
                 <div class="form-group" style="margin-top: 10px">
                     <label for="" style="margin-right: 2px;">Montants <br> des primes</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

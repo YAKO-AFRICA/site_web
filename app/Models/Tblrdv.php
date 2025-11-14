@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\TblPrestation;
 use App\Models\TblVilleReseau;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -55,5 +56,10 @@ class Tblrdv extends Model
     }
     public function villeEffective(){
         return $this->belongsTo(TblVilleReseau::class, 'villeEffective', 'idVilleBureau');
+    }
+
+    public function prestation()
+    {
+        return $this->belongsTo(TblPrestation::class, 'idCourrier', 'id');
     }
 }

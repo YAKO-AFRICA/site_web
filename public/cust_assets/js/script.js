@@ -1596,16 +1596,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const spinnerDaterdv = document.getElementById('spinnerDaterdv');
 
     inputDateRDV.disabled = true;
-    // selectLieuRDV.addEventListener('change', function() {
-    //   if (this.value !== '') {
-    //     inputDateRDV.disabled = false;
-    //     selectOptionsRdv.disabled = false;
-    //   } else {
-    //     inputDateRDV.disabled = true;
-    //     selectOptionsRdv.disabled = true;
-    //   }
-    // });
-
 
     $(document).ready(function () {
         var availableOptions = []; // Un tableau pour stocker les options de RDV disponibles
@@ -2721,6 +2711,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const newPrestationsData = await newPrestationsResponse.json();
                     if (newPrestationsData.status === 'success') {
                         newPrestations = newPrestationsData.data || [];
+                        console.log(newPrestations);
                     } else {
                         console.error('Réponse API nouvelles prestations inattendue:', newPrestationsData);
                         hasCriticalError = true;

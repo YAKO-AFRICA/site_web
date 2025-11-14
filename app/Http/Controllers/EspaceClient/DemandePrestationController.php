@@ -42,6 +42,153 @@ class DemandePrestationController extends Controller
         return redirect()->route('customer.selectPrestation');
     }
 
+
+    public function repriseDemande()
+    {
+        return view('users.espace_client.services.prestations.repriseDemande');
+    }
+
+    public function verifCodeDemande(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $code = $request->code;
+            $demande = Tblrdv::where('idrdv', $code)->first();
+            if ($demande && $demande->estPermit == 1) {
+                $prestation = TblPrestation::where('id', $demande->idCourrier)->first();
+                if ($prestation && $prestation->etape == -1) {
+                    $typePrestation = TblTypePrestation::where('libelle', $prestation->typeprestation)->first();
+                    session(['prestation' => $prestation]);
+
+                    $response = Http::withOptions(['timeout' => 60])
+                        ->post(config('services.api.encaissement_bis'), [
+                            'idContrat' => $prestation->idcontrat,
+                        ]);
+
+                    if ($response->successful()) {
+                        $data = $response->json();
+                        if (!empty($data['details']) && !empty($data['enc']['confirmer'])) {
+                            // Stocker les informations dans la session pour l'utiliser après redirection
+                            session(['contractDetails' => $data['details'][0]]);
+                            session(['encConfirmer' => $data['enc']['confirmer']]);
+                            session(['NbrencConfirmer' => count($data['enc']['confirmer'])]);
+                            $NbrencConfirmer = session('NbrencConfirmer', 0);
+                            $prime = (float) $data['details'][0]['TotalPrime'];
+                            // $TotalEncaissement = 0
+                            $TotalEncaissement = array_sum(array_map(function ($item) {
+                                return isset($item['RegltMontant']) ? (float) $item['RegltMontant'] : 0;
+                            }, $data['enc']['confirmer']));
+
+                            $DureeCotisationMois = ((float) $data['details'][0]['DureeCotisationAns'] * 12);
+
+                            switch ($data['details'][0]['periodicite']) {
+                                case "M":
+                                    $Duree = $DureeCotisationMois;
+                                    break;
+                                case "T":
+                                    $Duree = $DureeCotisationMois / 3; // Trimestriel = tous les 3 mois
+                                    break;
+                                case "S":
+                                    $Duree = $DureeCotisationMois / 6; // Semestriel = tous les 6 mois
+                                    break;
+                                case "A":
+                                    $Duree = $DureeCotisationMois / 12; // Annuel = tous les 12 mois
+                                    break;
+                                case "U":
+                                    $Duree = $NbrencConfirmer; // Annuel = tous les 12 mois
+                                    break;
+                                default:
+                                    $Duree = 0; // Gérer les cas non définis
+                                    break;
+                            }
+
+                            // calculer le cumul des Cotisation à Terme du contrat
+                            $cumulCotisationTerme = $Duree * $prime;
+                            // calculer 15% du cumul des Cotisation à Terme du contrat
+                            $contisationPourcentage = $cumulCotisationTerme * 0.15;
+                            session(['contisationPourcentage' => $contisationPourcentage]);
+                            session(['cumulCotisationTerme' => $cumulCotisationTerme]);
+                            session(['TotalEncaissement' => $TotalEncaissement]);
+                            // dd($data, $prime, $TotalEncaissement, $contisationPourcentage, $cumulCotisationTerme, $Duree); 
+                            if ($data['details'][0]['OnStdbyOff'] != "1") {
+                                return response()->json([
+                                    'type' => 'error',
+                                    'urlback' => '', // URL du PDF
+                                    'message' => 'Le contrat N°' . $prestation->idcontrat . ' est arreté ou en veille.',
+                                    'code' => 400,
+                                ]);
+                            } else {
+                                $dataResponse = [
+                                    'type' => 'success',
+                                    'urlback' => route('customer.prestation.create', ['id' => $typePrestation->id]),
+                                    //'message' => "Enregistré avec succes!",
+                                    'code' => 200,
+                                ];
+                            }
+                        } else {
+                            DB::rollback();
+                            return response()->json([
+                                'type' => 'error',
+                                'urlback' => '', // URL du PDF
+                                'message' => 'Aucun détail trouvé pour le contrat N°' . $prestation->idcontrat . '.',
+                                'code' => 400,
+                            ]);
+                        }
+                    } else {
+                        DB::rollback();
+                        return response()->json([
+                            'type' => 'error',
+                            'urlback' => '', // URL du PDF
+                            'message' => "Erreur : Impossible de récupérer les informations du contrat. N° " . $prestation->idcontrat,
+                            'code' => 400,
+                        ]);
+                    }
+                } elseif ($prestation && $prestation->etape == 0) {
+                    DB::rollback();
+                    $dataResponse = [
+                        'type' => 'error',
+                        'urlback' => route('customer.prestation.edit', $prestation->code),
+                        'message' => "La demande N° " . $code . " a déja été enregistré avec le code " . $prestation->code . ", mais elle n'a pas encore été transmise pour traitement, veuillez la transmettre !",
+                        'code' => 500,
+                    ];
+                } elseif ($prestation && $prestation->etape == 1) {
+                    DB::rollback();
+                    $dataResponse = [
+                        'type' => 'error',
+                        'urlback' => "",
+                        'message' => "La demande N° " . $code . " a déja été soumise pour traitement avec le code " . $prestation->code . " , veuillez patienter !",
+                        'code' => 500,
+                    ];
+                } else {
+                    DB::rollback();
+                    $dataResponse = [
+                        'type' => 'error',
+                        'urlback' => "",
+                        'message' => "La demande N° " . $code . " a déja été traitée : Code " . $prestation->code,
+                        'code' => 500,
+                    ];
+                }
+            } else {
+                DB::rollback();
+                $dataResponse = [
+                    'type' => 'error',
+                    'urlback' => "",
+                    'message' => "Aucune demande en attente n'a été trouvée pour ce code " . $code . " !",
+                    'code' => 500,
+                ];
+            }
+            return response()->json($dataResponse);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json([
+                'type' => 'error',
+                'urlback' => "",
+                'message' => "Une erreur est survenue : " . $th->getMessage(),
+                'code' => 500,
+            ]);
+        }
+    }
+
     public function fetchContractDetails(Request $request)
     {
         $idcontrat = $request->input('idcontrat') ?? $request->input('MonContrat');
@@ -497,12 +644,14 @@ class DemandePrestationController extends Controller
                 ['idclient', '=', $request->idclient],
                 ['etape', '=', 1],
             ])->first();
+
             $PrestationRdv = ($prestationUpdated != null) ? TblPrestation::where([
                 ['idcontrat', '=', $prestationUpdated->idcontrat],
                 ['typeprestation', '=', $prestationUpdated->typeprestation],
-                ['idclient', '=', $prestationUpdated->idclient],
                 ['etape', '=', -1],
+                // ['idclient', '=', $prestationUpdated->idclient],
             ])->first() : null;
+
             $PrestationInachevee = TblPrestation::where([
                 ['idcontrat', '=', $request->idcontrat],
                 ['typeprestation', '=', $request->typeprestation],
@@ -1141,151 +1290,7 @@ class DemandePrestationController extends Controller
      * Display the specified resource.
      */
 
-    public function repriseDemande()
-    {
-        return view('users.espace_client.services.prestations.repriseDemande');
-    }
-
-    public function verifCodeDemande(Request $request)
-    {
-        DB::beginTransaction();
-        try {
-            $code = $request->code;
-            $demande = Tblrdv::where('idrdv', $code)->first();
-            if ($demande && $demande->estPermit == 1) {
-                $prestation = TblPrestation::where('id', $demande->idCourrier)->first();
-                if ($prestation && $prestation->etape == -1) {
-                    $typePrestation = TblTypePrestation::where('libelle', $prestation->typeprestation)->first();
-                    session(['prestation' => $prestation]);
-
-                    $response = Http::withOptions(['timeout' => 60])
-                        ->post(config('services.api.encaissement_bis'), [
-                            'idContrat' => $prestation->idcontrat,
-                        ]);
-
-                    if ($response->successful()) {
-                        $data = $response->json();
-                        if (!empty($data['details']) && !empty($data['enc']['confirmer'])) {
-                            // Stocker les informations dans la session pour l'utiliser après redirection
-                            session(['contractDetails' => $data['details'][0]]);
-                            session(['encConfirmer' => $data['enc']['confirmer']]);
-                            session(['NbrencConfirmer' => count($data['enc']['confirmer'])]);
-                            $NbrencConfirmer = session('NbrencConfirmer', 0);
-                            $prime = (float) $data['details'][0]['TotalPrime'];
-                            // $TotalEncaissement = 0
-                            $TotalEncaissement = array_sum(array_map(function ($item) {
-                                return isset($item['RegltMontant']) ? (float) $item['RegltMontant'] : 0;
-                            }, $data['enc']['confirmer']));
-
-                            $DureeCotisationMois = ((float) $data['details'][0]['DureeCotisationAns'] * 12);
-
-                            switch ($data['details'][0]['periodicite']) {
-                                case "M":
-                                    $Duree = $DureeCotisationMois;
-                                    break;
-                                case "T":
-                                    $Duree = $DureeCotisationMois / 3; // Trimestriel = tous les 3 mois
-                                    break;
-                                case "S":
-                                    $Duree = $DureeCotisationMois / 6; // Semestriel = tous les 6 mois
-                                    break;
-                                case "A":
-                                    $Duree = $DureeCotisationMois / 12; // Annuel = tous les 12 mois
-                                    break;
-                                case "U":
-                                    $Duree = $NbrencConfirmer; // Annuel = tous les 12 mois
-                                    break;
-                                default:
-                                    $Duree = 0; // Gérer les cas non définis
-                                    break;
-                            }
-
-                            // calculer le cumul des Cotisation à Terme du contrat
-                            $cumulCotisationTerme = $Duree * $prime;
-                            // calculer 15% du cumul des Cotisation à Terme du contrat
-                            $contisationPourcentage = $cumulCotisationTerme * 0.15;
-                            session(['contisationPourcentage' => $contisationPourcentage]);
-                            session(['cumulCotisationTerme' => $cumulCotisationTerme]);
-                            session(['TotalEncaissement' => $TotalEncaissement]);
-                            // dd($data, $prime, $TotalEncaissement, $contisationPourcentage, $cumulCotisationTerme, $Duree); 
-                            if ($data['details'][0]['OnStdbyOff'] != "1") {
-                                return response()->json([
-                                    'type' => 'error',
-                                    'urlback' => '', // URL du PDF
-                                    'message' => 'Le contrat N°' . $prestation->idcontrat . ' est arreté ou en veille.',
-                                    'code' => 400,
-                                ]);
-                            } else {
-                                $dataResponse = [
-                                    'type' => 'success',
-                                    'urlback' => route('customer.prestation.create', ['id' => $typePrestation->id]),
-                                    //'message' => "Enregistré avec succes!",
-                                    'code' => 200,
-                                ];
-                            }
-                        } else {
-                            DB::rollback();
-                            return response()->json([
-                                'type' => 'error',
-                                'urlback' => '', // URL du PDF
-                                'message' => 'Aucun détail trouvé pour le contrat N°' . $prestation->idcontrat . '.',
-                                'code' => 400,
-                            ]);
-                        }
-                    } else {
-                        DB::rollback();
-                        return response()->json([
-                            'type' => 'error',
-                            'urlback' => '', // URL du PDF
-                            'message' => "Erreur : Impossible de récupérer les informations du contrat. N° " . $prestation->idcontrat,
-                            'code' => 400,
-                        ]);
-                    }
-                } elseif ($prestation && $prestation->etape == 0) {
-                    DB::rollback();
-                    $dataResponse = [
-                        'type' => 'error',
-                        'urlback' => route('customer.prestation.edit', $prestation->code),
-                        'message' => "La demande N° " . $code . " a déja été enregistré avec le code " . $prestation->code . ", mais elle n'a pas encore été transmise pour traitement, veuillez la transmettre !",
-                        'code' => 500,
-                    ];
-                } elseif ($prestation && $prestation->etape == 1) {
-                    DB::rollback();
-                    $dataResponse = [
-                        'type' => 'error',
-                        'urlback' => "",
-                        'message' => "La demande N° " . $code . " a déja été soumise pour traitement avec le code " . $prestation->code . " , veuillez patienter !",
-                        'code' => 500,
-                    ];
-                } else {
-                    DB::rollback();
-                    $dataResponse = [
-                        'type' => 'error',
-                        'urlback' => "",
-                        'message' => "La demande N° " . $code . " a déja été traitée : Code " . $prestation->code,
-                        'code' => 500,
-                    ];
-                }
-            } else {
-                DB::rollback();
-                $dataResponse = [
-                    'type' => 'error',
-                    'urlback' => "",
-                    'message' => "Aucune demande en attente n'a été trouvée pour ce code " . $code . " !",
-                    'code' => 500,
-                ];
-            }
-            return response()->json($dataResponse);
-        } catch (\Throwable $th) {
-            DB::rollback();
-            return response()->json([
-                'type' => 'error',
-                'urlback' => "",
-                'message' => "Une erreur est survenue : " . $th->getMessage(),
-                'code' => 500,
-            ]);
-        }
-    }
+    
 
     public function mesPrestations()
     {
@@ -1301,6 +1306,7 @@ class DemandePrestationController extends Controller
         try {
             $prestations = TblPrestation::where('idcontrat', $idcontrat)
             ->with('docPrestation')
+            ->with('rdv')
             ->where('etape', '!=', -1)
             ->orderBy('created_at', 'desc')
             ->get();

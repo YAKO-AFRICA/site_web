@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Membre;
 use App\Models\Tblotp;
+use App\Models\Tblrdv;
 use App\Models\TblDocPrestation;
 use App\Models\TblMotifrejetbyprestat;
 use Illuminate\Database\Eloquent\Model;
@@ -74,6 +75,12 @@ class TblPrestation extends Model
     public function motifrejet()
     {
         return $this->hasMany(TblMotifrejetbyprestat::class, 'codeprestation', 'code');
+    }
+
+    // une prestation est liée à un rdv et vis versa
+    public function rdv()
+    {
+        return $this->hasOne(Tblrdv::class, 'idCourrier', 'id');
     }
 
 }
