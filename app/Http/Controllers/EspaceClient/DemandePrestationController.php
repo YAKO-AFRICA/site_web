@@ -617,6 +617,7 @@ class DemandePrestationController extends Controller
             // Vérifier si une prestation similaire existe déjà
 
             $prestationUpdated = session('PrestationRdv', null);
+            $code = RefgenerateCodePrest(TblPrestation::class, 'PREST-', 'code');
 
             $moyenPaiement = $request->moyenPaiement;
             $etape = ($request->Singletype == 'AttestationPerteContrat') ? 0 : 1;
@@ -682,7 +683,7 @@ class DemandePrestationController extends Controller
                     Log::info('PrestationRdv');
                     $PrestationRdv->update([
                         'etape' => 1,
-                        'code' => RefgenerateCodePrest(TblPrestation::class, 'PREST-', 'code'),
+                        'code' => $code,
                         'idOtp' => $idOtp,
                         'idcontrat' => $request->idcontrat,
                         'prestationlibelle' => $request->typeprestation,
@@ -721,7 +722,7 @@ class DemandePrestationController extends Controller
                 } else {
                     // Création de la prestation
                     $prestation = TblPrestation::create([
-                        'code'              => RefgenerateCodePrest(TblPrestation::class, 'PREST-', 'code'),
+                        'code'              => $code,
                         'idOtp'             => $idOtp,
                         'idcontrat'         => $request->idcontrat,
                         'typeprestation'    => $request->typeprestation,
@@ -864,10 +865,10 @@ class DemandePrestationController extends Controller
 
                 $sign = TblSignature::where('key_uuid', $request->tokGenerate)->first();
                 $sign->update([
-                    'reference_key' => ($prestation) ? $prestation->code : $PrestationRdv->code
+                    'reference_key' => $code
                 ]);
                 // DB::commit();
-                $prestationPdfUrl = ($prestation) ? $this->generatePrestationPdf($prestation) : $this->generatePrestationPdf($PrestationRdv);
+                $prestationPdfUrl = ($PrestationRdv == null) ? $this->generatePrestationPdf($prestation) : $this->generatePrestationPdf($PrestationRdv);
                 if ($prestationPdfUrl['success'] == true) {
                     return response()->json([
                         'type' => 'success',
