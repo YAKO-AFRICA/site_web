@@ -651,6 +651,8 @@ class DemandePrestationController extends Controller
                 ['etape', '=', -1],
                 // ['idclient', '=', $prestationUpdated->idclient],
             ])->first() : null;
+            Log::info($PrestationRdv);
+            Log::info('prestationUpdated');
 
             $PrestationInachevee = TblPrestation::where([
                 ['idcontrat', '=', $request->idcontrat],
@@ -659,6 +661,7 @@ class DemandePrestationController extends Controller
                 ['etape', '=', 0],
             ])->first();
             if ($PrestationInachevee) {
+                Log::info('PrestationInachevee');
                 return response()->json([
                     'type' => 'error',
                     'urlback' => '',
@@ -666,6 +669,7 @@ class DemandePrestationController extends Controller
                     'code' => 500,
                 ]);
             } else if ($PrestationEnCours) {
+                Log::info('PrestationEnCours');
                 return response()->json([
                     'type' => 'error',
                     'urlback' => '',
@@ -673,7 +677,8 @@ class DemandePrestationController extends Controller
                     'code' => 500,
                 ]);
             } else {
-                if ($PrestationRdv) {
+                if ($PrestationRdv != null) {
+                    Log::info('PrestationRdv');
                     $PrestationRdv->code = RefgenerateCodePrest(TblPrestation::class, 'PREST-', 'code');
                     $PrestationRdv->idOtp = $idOtp;
                     $PrestationRdv->idcontrat = $request->idcontrat;
@@ -741,6 +746,7 @@ class DemandePrestationController extends Controller
                         'IBAN'              => $IBAN,
                         'saisiepar'         => $saisiepar,
                     ]);
+                    Log::info('prestation');
 
                     // Vérification si la prestation a été créée
                     if (!$prestation) {
