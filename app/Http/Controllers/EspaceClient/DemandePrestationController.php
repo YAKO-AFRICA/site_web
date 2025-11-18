@@ -266,8 +266,8 @@ class DemandePrestationController extends Controller
                         'contratActeurPayeur' => collect($data['allActeur'])->where('CodeRole', 'PAY') ?? [],
                         'contratActeurBeneficiaire' => collect($data['allActeur'])->where('CodeRole', 'BEN') ?? [],
                     ]);
-                    
-                    
+
+
                     // dd($data);
                     // dd($data, $prime, $TotalEncaissement, $contisationPourcentage, $cumulCotisationTerme, $Duree); 
                     if ($data['details'][0]['OnStdbyOff'] != "1") {
@@ -400,19 +400,19 @@ class DemandePrestationController extends Controller
                 $NbreCotisationMois = $NbrencConfirmer;
                 break;
             case "T":
-                $NbreCotisationMois = $NbrencConfirmer * 3; 
+                $NbreCotisationMois = $NbrencConfirmer * 3;
                 break;
             case "S":
-                $NbreCotisationMois = $NbrencConfirmer * 6; 
+                $NbreCotisationMois = $NbrencConfirmer * 6;
                 break;
             case "A":
-                $NbreCotisationMois = $NbrencConfirmer * 12; 
+                $NbreCotisationMois = $NbrencConfirmer * 12;
                 break;
             case "U":
-                $NbreCotisationMois = $NbrencConfirmer; 
+                $NbreCotisationMois = $NbrencConfirmer;
                 break;
             default:
-                $NbreCotisationMois = 0; 
+                $NbreCotisationMois = 0;
                 break;
         }
 
@@ -423,7 +423,7 @@ class DemandePrestationController extends Controller
         $beneficiaires = session('contratActeurBeneficiaire');
         $NbreEmission = intval($contratDetails['NbreEmission']);
         // dd($NbreEmission);
-        $codeProduitYAKO = ['YKE_2008','YKE_2018','YKS_2008','YKS_2018','YKF_2008','YKF_2018','YKR_2021','YKL_2004'];
+        $codeProduitYAKO = ['YKE_2008', 'YKE_2018', 'YKS_2008', 'YKS_2018', 'YKF_2008', 'YKF_2018', 'YKR_2021', 'YKL_2004'];
         $codeProduitEPAGNE = ["DOIHOO"];
         if (in_array($contratDetails['codeProduit'], $codeProduitYAKO)) {
             $peuSuspendreContrat = false;
@@ -462,7 +462,7 @@ class DemandePrestationController extends Controller
             $typeOperation = $response->json();
         }
         $this->clearPrestationSessions();
-        return view('users.espace_client.services.prestations.createAutre', compact('typePrestation', 'typeOperation', 'contratDetails', 'dernierEncaissement', 'token', 'tok', 'payeur','acteurs','assurees','acteurPayeur','beneficiaires','filiations','NbreEmission','peuSuspendreContrat','peuModifDureeContrat','peuReduireCapital','peuReduirePrime'));
+        return view('users.espace_client.services.prestations.createAutre', compact('typePrestation', 'typeOperation', 'contratDetails', 'dernierEncaissement', 'token', 'tok', 'payeur', 'acteurs', 'assurees', 'acteurPayeur', 'beneficiaires', 'filiations', 'NbreEmission', 'peuSuspendreContrat', 'peuModifDureeContrat', 'peuReduireCapital', 'peuReduirePrime'));
     }
 
     private function clearPrestationSessions()
@@ -545,7 +545,7 @@ class DemandePrestationController extends Controller
         // $pdf = Pdf::loadView('users.espace_client.services.fiches.qrcode', compact('qrCodeSvg', 'logoUrl'))
         // $pdf = Pdf::loadView('users.espace_client.services.fiches.prestationouttest', compact('qrcode'))
         $pdf = Pdf::loadView('users.espace_client.services.fiches.courriertest')
-        // $pdf = Pdf::loadView('users.espace_client.services.fiches.sinistretest', compact('qrcode'))
+            // $pdf = Pdf::loadView('users.espace_client.services.fiches.sinistretest', compact('qrcode'))
             ->setPaper('a4', 'portrait')
             ->setOptions([
                 'isHtml5ParserEnabled' => true,
@@ -718,7 +718,7 @@ class DemandePrestationController extends Controller
                             'message' => "Erreur lors de l'enregistrement de la prestation",
                             'code' => 500,
                         ]);
-                    }    
+                    }
                 } else {
                     // Création de la prestation
                     $prestation = TblPrestation::create([
@@ -761,7 +761,7 @@ class DemandePrestationController extends Controller
                         ]);
                     }
                 }
-                
+
 
 
                 // Chemin externe pour stocker les fichiers
@@ -795,7 +795,7 @@ class DemandePrestationController extends Controller
                                 $fileName = Carbon::now()->format('Ymd_His') . '_' . $contrat . '_' . $fileType . '.' . $file->extension();
                                 $file->move($externalUploadDir . 'docsPrestation/', $fileName);
                                 $prestationFiles[] = [
-                                    'idPrestation' => $prestation->id ?? $PrestationRdv->id,
+                                    'idPrestation' => ($PrestationRdv == null) ? $prestation->id : $PrestationRdv->id,
                                     'libelle' => $fileName,
                                     'path' => 'storage/prestations/docsPrestation/' . $fileName,
                                     'type' => $fileType,
@@ -819,7 +819,7 @@ class DemandePrestationController extends Controller
                                 $fileName = Carbon::now()->format('Ymd_His') . '_' . $contrat . '_' . $fileType . '.' . $file->extension();
                                 $file->move($externalUploadDir . 'docsPrestation/', $fileName);
                                 $prestationFiles[] = [
-                                    'idPrestation' => $prestation->id ?? $PrestationRdv->id,
+                                    'idPrestation' => ($PrestationRdv == null) ? $prestation->id : $PrestationRdv->id,
                                     'libelle' => $fileName,
                                     'path' => 'storage/prestations/docsPrestation/' . $fileName,
                                     'type' => $fileType,
@@ -850,7 +850,7 @@ class DemandePrestationController extends Controller
 
                         // Enregistrer dans la base de données
                         $prestationFiles[] = [
-                            'idPrestation' => $prestation->id ?? $PrestationRdv->id,
+                            'idPrestation' => ($PrestationRdv == null) ? $prestation->id : $PrestationRdv->id,
                             'libelle' => $mergedFileName,
                             'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
                             'type' => 'CNI',
@@ -942,17 +942,17 @@ class DemandePrestationController extends Controller
                         'margin-top' => 0,
                         'margin-bottom' => 0,
                     ]);
-            }else{
+            } else {
                 $pdf = Pdf::loadView('users.espace_client.services.fiches.prestationout', compact('qrcode', 'prestation', 'imageSrc'))
-                ->setPaper('a4', 'portrait')
-                ->setOptions([
-                    'isHtml5ParserEnabled' => true,
-                    'isRemoteEnabled' => true,
-                    'margin-left' => 0,
-                    'margin-right' => 0,
-                    'margin-top' => 0,
-                    'margin-bottom' => 0,
-                ]);
+                    ->setPaper('a4', 'portrait')
+                    ->setOptions([
+                        'isHtml5ParserEnabled' => true,
+                        'isRemoteEnabled' => true,
+                        'margin-left' => 0,
+                        'margin-right' => 0,
+                        'margin-top' => 0,
+                        'margin-bottom' => 0,
+                    ]);
             }
             // Dossier pour enregistrer l'état de la prestation
             $etatPrestationDir = $externalUploadDir . 'etatPrestations/';
@@ -990,7 +990,7 @@ class DemandePrestationController extends Controller
             ];
         }
     }
-    
+
     public function storePrestAutre(Request $request)
     {
         DB::beginTransaction();
@@ -1082,10 +1082,10 @@ class DemandePrestationController extends Controller
                         if (!$file) {
                             continue;
                         }
-                    
+
                         $fileType = $request->type[$index];
                         $filename = $request->filename[$index];
-                    
+
                         if ($fileType === 'CNIrecto') {
                             $rectoFile = $file;
                         } elseif ($fileType === 'CNIverso') {
@@ -1110,7 +1110,7 @@ class DemandePrestationController extends Controller
                             // Cas général
                             $libelle = Carbon::now()->format('Ymd_His') . '_' . $contrat . '_' . $fileType . '.' . $file->extension();
                             $file->move($externalUploadDir . 'docsPrestation/', $libelle);
-                    
+
                             $prestationFiles[] = [
                                 'idPrestation' => $prestation->id,
                                 'filename'     => $filename,
@@ -1120,7 +1120,7 @@ class DemandePrestationController extends Controller
                             ];
                         }
                     }
-                    
+
                     // Si les fichiers recto et verso sont présents, fusionner en un fichier PDF
                     if ($rectoFile && $versoFile) {
                         $mergedFileName = Carbon::now()->format('Ymd_His') . '_CNI_' . $contrat . '.pdf';
@@ -1148,7 +1148,7 @@ class DemandePrestationController extends Controller
                             'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
                             'type' => 'CNI',
                         ];
-                    }elseif ($rectoFileBeneficiaire && $versoFileBeneficiaire) {
+                    } elseif ($rectoFileBeneficiaire && $versoFileBeneficiaire) {
                         $mergedFileName = Carbon::now()->format('Ymd_His') . '_CNI_Beneficiaire_' . $contrat . '.pdf';
                         $mergedFilePath = $externalUploadDir . 'docsPrestation/' . $mergedFileName;
 
@@ -1174,7 +1174,7 @@ class DemandePrestationController extends Controller
                             'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
                             'type' => 'CNI',
                         ];
-                    }elseif ($rectoFilePayeurPrime && $versoFilePayeurPrime) {
+                    } elseif ($rectoFilePayeurPrime && $versoFilePayeurPrime) {
                         $mergedFileName = Carbon::now()->format('Ymd_His') . '_CNI_PayeurPrime_' . $contrat . '.pdf';
                         $mergedFilePath = $externalUploadDir . 'docsPrestation/' . $mergedFileName;
 
@@ -1200,7 +1200,7 @@ class DemandePrestationController extends Controller
                             'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
                             'type' => 'CNI',
                         ];
-                    }elseif ($rectoFileAssure && $versoFileAssure) {
+                    } elseif ($rectoFileAssure && $versoFileAssure) {
                         $mergedFileName = Carbon::now()->format('Ymd_His') . '_CNI_Assure_' . $contrat . '.pdf';
                         $mergedFilePath = $externalUploadDir . 'docsPrestation/' . $mergedFileName;
 
@@ -1226,7 +1226,7 @@ class DemandePrestationController extends Controller
                             'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
                             'type' => 'CNI',
                         ];
-                    }elseif ($rectoFileSouscripteur && $versoFileSouscripteur) {
+                    } elseif ($rectoFileSouscripteur && $versoFileSouscripteur) {
                         $mergedFileName = Carbon::now()->format('Ymd_His') . '_CNI_Souscripteur_' . $contrat . '.pdf';
                         $mergedFilePath = $externalUploadDir . 'docsPrestation/' . $mergedFileName;
 
@@ -1274,7 +1274,7 @@ class DemandePrestationController extends Controller
                         'message' => "Une erreur est survenue lors de la génération de la fiche de prestation! " . $prestationPdfUrl['message'],
                         'code' => 500,
                     ]);
-                }else{
+                } else {
                     return response()->json([
                         'type' => 'success',
                         'urlback' =>  $prestationPdfUrl['redirect_url'],
@@ -1299,7 +1299,7 @@ class DemandePrestationController extends Controller
      * Display the specified resource.
      */
 
-    
+
 
     public function mesPrestations()
     {
@@ -1314,11 +1314,11 @@ class DemandePrestationController extends Controller
 
         try {
             $prestations = TblPrestation::where('idcontrat', $idcontrat)
-            ->with('docPrestation')
-            ->with('rdv')
-            ->where('etape', '!=', -1)
-            ->orderBy('created_at', 'desc')
-            ->get();
+                ->with('docPrestation')
+                ->with('rdv')
+                ->where('etape', '!=', -1)
+                ->orderBy('created_at', 'desc')
+                ->get();
             if ($prestations->isEmpty()) {
                 return response()->json(['status' => 'success', 'data' => []]);
             }
@@ -1635,7 +1635,7 @@ class DemandePrestationController extends Controller
             } else {
                 $isTransmitted->update([
                     'etape' => 1
-                ]);   
+                ]);
             }
             if ($isTransmitted) {
                 $motifsRejet = TblMotifrejetbyprestat::where('codeprestation', $code)->get();
@@ -1837,17 +1837,17 @@ class DemandePrestationController extends Controller
                         'margin-top' => 0,
                         'margin-bottom' => 0,
                     ]);
-            }else{
+            } else {
                 $pdf = Pdf::loadView('users.espace_client.services.fiches.prestationout', compact('qrcode', 'prestation', 'imageSrc'))
-                ->setPaper('a4', 'portrait')
-                ->setOptions([
-                    'isHtml5ParserEnabled' => true,
-                    'isRemoteEnabled' => true,
-                    'margin-left' => 0,
-                    'margin-right' => 0,
-                    'margin-top' => 0,
-                    'margin-bottom' => 0,
-                ]);
+                    ->setPaper('a4', 'portrait')
+                    ->setOptions([
+                        'isHtml5ParserEnabled' => true,
+                        'isRemoteEnabled' => true,
+                        'margin-left' => 0,
+                        'margin-right' => 0,
+                        'margin-top' => 0,
+                        'margin-bottom' => 0,
+                    ]);
             }
 
             // Dossier pour enregistrer l'état de la prestation
