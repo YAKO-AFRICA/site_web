@@ -36,6 +36,25 @@ class SinistreController extends Controller
         return view('users.sinistre.newSinistre');
     }
 
+    public function getSinistreDoc(string $idSinistre)
+    {
+        try {
+            $DocSinistres = TblDocSinistre::where('idSinistre', $idSinistre)->get();
+            if ($DocSinistres->isEmpty()) {
+                return response()->json(['status' => 'success', 'data' => []]);
+            }
+            return response()->json([
+                'status' => 'success',
+                'data' => $DocSinistres,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Une erreur est survenue : ' . $th->getMessage(),
+            ], 500);
+        }
+    }
+
     public function historySinistre()
     {
         return view('users.sinistre.historySinistre');

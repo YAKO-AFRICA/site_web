@@ -40,6 +40,7 @@ Route::post('/getPrestations', [DemandePrestationController::class, 'getPrestati
 Route::post('/generate-etat-cotisation', [CustomerController::class, 'generateEtatCotisationApi']);
 Route::post('/get-cp', [CustomerController::class, 'getPolice']);
 Route::get('/getPrestationsDoc/{idPrestation}', [DemandePrestationController::class, 'getPrestationsDoc']);
+Route::get('/getSinistreDoc/{idSinistre}', [SinistreController::class, 'getSinistreDoc']);
 Route::get('/getDemandeCompteDoc/{idDemandeCompte}', [CustomerLoginController::class, 'getDemandeCompteDoc']);
 Route::post('/getRdv', [RdvController::class, 'getRdv'])->name('getRdv');
 Route::post('/send-otpByOrangeAPI', [OTPController::class, 'sendOtpByOrangeAPI']);
