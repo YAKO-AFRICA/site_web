@@ -53,6 +53,9 @@ Route::middleware('web')->group(function () {
 });
 
 
+Route::get('/send-mail', [CustomerController::class, 'sendMail']);
+
+
 // api sinistre
 
 Route::post('/check-contrat', [SinistreController::class, 'checkContrat']);

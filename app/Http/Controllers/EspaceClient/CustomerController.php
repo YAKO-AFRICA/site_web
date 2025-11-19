@@ -504,4 +504,49 @@ class CustomerController extends Controller
             ], 500);
         }
     }
+
+
+    public function sendMail()
+    {
+        $customer = TblCustomer::where('login', 'bruce.yapo@yakoafricassur.com')->first();
+        // dd($customer);
+        $membre = Membre::where('login', $customer->login)->first();
+        $recipientEmail = $membre->email;
+        // dd($recipientEmail);
+        $emailSubject = "Mise à jour de votre compte à Ynov";
+
+            // Message HTML correctement formatté
+            $message = '
+                <td data-color="text" data-size="size text" data-min="10" data-max="26" data-link-color="link text color" 
+                    data-link-style="font-weight:bold; text-decoration:underline; color:#40aceb;" align="justify" 
+                    style="font:bold 16px/25px Arial, Helvetica, sans-serif; color:#888; padding:0 0 23px;">
+                    Votre compte a bien été mise à jour, veuillez utiliser les informations suivantes pour vous connecter à votre compte Ynov :
+                    <ul>
+                        <li><strong><u>Nom d\'utilisateur (login)</u> : </strong> ' . $customer->login . '</li>
+                        <li><strong><u>Mot de passe (Par défaut) </u> : </strong> 123456</li>
+                    </ul>
+                    Cependant, pour plus de sécurité, vous devez impérativement modifier votre mot de passe en cliquant sur le lien suivant :
+                </td>';
+
+            $destinatorName = 'Cher(e) client(e) ' . $membre->nom . ' ' . $membre->prenom;
+
+            $mailData = [
+                'title' => $emailSubject,
+                'body' => $message,
+                'destinatorName' => $destinatorName,
+                'destinatorEmail' => $membre->email,
+                'btnText' => 'Cliquez ici',
+                'btnLink' => route('customer.loginForm'),
+            ];
+
+            // Envoi de l'email
+            $mail = new UserRegisteredMail($mailData, $emailSubject);
+            Mail::to($recipientEmail)->send($mail);
+            return response()->json([
+                'type' => 'success',
+                'message' => "Votre compte a été mis à jour avec success ! Veuillez verifier votre messagerie email ($recipientEmail) pour plus de details.",
+                'code' => 200,
+            ]);
+
+    }
 }

@@ -405,7 +405,7 @@
                         .then(response => {
                             console.log(' ');
                             console.log(response.data.message);
-                            window.location.reload();
+                            {{-- window.location.reload(); --}}
                             
                         })
                         .catch(error => {
