@@ -387,6 +387,127 @@ class DemandePrestationController extends Controller
     }
 
 
+    public function modifyInfosPerso($idcontrat)
+    {
+        session(['idcontrat' => $idcontrat]);
+        $typePrestationAutre = TblTypePrestation::where('impact', 'Autre')->where('etat', 'Actif')->first();
+        if (!$idcontrat) {
+            // retourner une erreur ou un message d'erreur approprié en json
+            return response()->json([
+                'type' => 'error',
+                'urlback' => '', // URL du PDF
+                'message' => "Aucun ID de contrat fourni.",
+                'code' => 400,
+            ]);
+        }
+
+        try {
+            $response = Http::withOptions(['timeout' => 60])
+                ->post(config('services.api.encaissement_bis'), [
+                    'idContrat' => $idcontrat,
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if (!empty($data['details']) && !empty($data['enc']['confirmer'])) {
+                    // Stocker les informations dans la session pour l'utiliser après redirection
+                    session(['contractDetails' => $data['details'][0]]);
+                    session(['encConfirmer' => $data['enc']['confirmer']]);
+                    session(['NbrencConfirmer' => count($data['enc']['confirmer'])]);
+                    $NbrencConfirmer = session('NbrencConfirmer', 0);
+                    $prime = (float) $data['details'][0]['TotalPrime'];
+                    // $TotalEncaissement = 0
+                    $TotalEncaissement = array_sum(array_map(function ($item) {
+                        return isset($item['RegltMontant']) ? (float) $item['RegltMontant'] : 0;
+                    }, $data['enc']['confirmer']));
+
+                    // $TotalEncaissement = (float) $NbrencConfirmer * $prime;
+                    $DureeCotisationMois = ((float) $data['details'][0]['DureeCotisationAns'] * 12);
+
+                    switch ($data['details'][0]['periodicite']) {
+                        case "M":
+                            $Duree = $DureeCotisationMois;
+                            break;
+                        case "T":
+                            $Duree = $DureeCotisationMois / 3; // Trimestriel = tous les 3 mois
+                            break;
+                        case "S":
+                            $Duree = $DureeCotisationMois / 6; // Semestriel = tous les 6 mois
+                            break;
+                        case "A":
+                            $Duree = $DureeCotisationMois / 12; // Annuel = tous les 12 mois
+                            break;
+                        case "U":
+                            $Duree = $NbrencConfirmer; // Annuel = tous les 12 mois
+                            break;
+                        default:
+                            $Duree = 0; // Gérer les cas non définis
+                            break;
+                    }
+
+                    // calculer le cumul des Cotisation à Terme du contrat
+                    $cumulCotisationTerme = $Duree * $prime;
+                    // calculer 15% du cumul des Cotisation à Terme du contrat
+                    $contisationPourcentage = $cumulCotisationTerme * 0.15;
+                    session(['contisationPourcentage' => $contisationPourcentage]);
+                    session(['cumulCotisationTerme' => $cumulCotisationTerme]);
+                    session(['TotalEncaissement' => $TotalEncaissement]);
+                    // afficher le dernier encaissement
+                    $dernierEncaissement = end($data['enc']['confirmer']);
+                    session(['dernierEncaissement' => $dernierEncaissement]);
+                    session(['payeur' => $data['payeur']]);
+
+                    session([
+                        'contratActeur' => $data['allActeur'] ?? [],
+                        'contratActeurAssure' => collect($data['allActeur'])->where('CodeRole', 'ASS') ?? [],
+                        'contratActeurPayeur' => collect($data['allActeur'])->where('CodeRole', 'PAY') ?? [],
+                        'contratActeurBeneficiaire' => collect($data['allActeur'])->where('CodeRole', 'BEN') ?? [],
+                    ]);
+
+
+                    // dd($data);
+                    // dd($data, $prime, $TotalEncaissement, $contisationPourcentage, $cumulCotisationTerme, $Duree); 
+                    if ($data['details'][0]['OnStdbyOff'] != "1") {
+                        return response()->json([
+                            'type' => 'error',
+                            'urlback' => '', // URL du PDF
+                            'message' => 'Ce contrat est arreté ou en veille.',
+                            'code' => 400,
+                        ]);
+                    } else {
+
+                        return response()->json([
+                            'type' => 'success',
+                            'urlback' => route('customer.prestation.autre', $typePrestationAutre->id),
+                            'message' => '',
+                            'code' => 200,
+                        ]);
+                    }
+                }
+
+                return response()->json([
+                    'type' => 'error',
+                    'urlback' => '', // URL du PDF
+                    'message' => 'Aucun détail trouvé pour ce contrat.',
+                    'code' => 400,
+                ]);
+            }
+
+            return response()->json([
+                'type' => 'error',
+                'urlback' => '', // URL du PDF
+                'message' => "Erreur : Impossible de récupérer les informations du contrat.",
+                'code' => 400,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'type' => 'error',
+                'urlback' => '', // URL du PDF
+                'message' => 'Une erreur s\'est produite : ' . $e->getMessage(),
+                'code' => 400,
+            ]);
+        }
+    }
     public function fetchContractDetails(Request $request)
     {
         $idcontrat = $request->input('idcontrat') ?? $request->input('MonContrat');

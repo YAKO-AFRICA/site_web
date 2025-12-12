@@ -352,6 +352,7 @@ Route::prefix('espace-client', 'PreventBackHistory')->name('customer.')->group(f
         // Route::post('prestation/mesPrestations', [DemandePrestationController::class, 'mesPrestations'])->name('mesPrestations');
         Route::get('prestation/create/{id}',[DemandePrestationController::class, 'create'])->name('prestation.create');
         Route::get('prestation/autre/{id}',[DemandePrestationController::class, 'createAutre'])->name('prestation.autre');
+        Route::post('prestation/modifyInfosPerso/{idcontrat}',[DemandePrestationController::class, 'modifyInfosPerso'])->name('prestation.modifyInfosPerso');
         Route::post('prestation/autre/add',[DemandePrestationController::class, 'storePrestAutre'])->name('prestation.storePrestAutre');
         Route::get('details-prestation/{code}',[DemandePrestationController::class, 'show'])->name('prestation.show');
         Route::post('prestation/add',[DemandePrestationController::class, 'store'])->name('prestation.store');
