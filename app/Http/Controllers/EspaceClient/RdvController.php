@@ -162,7 +162,7 @@ class RdvController extends Controller
                     'motifrdv'=>$request->motifrdv,
                     'police'=>$request->police,
                     'titre'=>$request->titre,
-                    'datenaissance'=>$request->datenaissance,
+                    'datenaissance'=> Carbon::parse($request->datenaissance)->format('d/m/Y'),
                     'lieuresidence'=>$request->lieuresidence,
                     'idTblBureau'=>$request->idTblBureau,
                     'createdAt' => Carbon::now()->format('d/m/Y H:i:s'),

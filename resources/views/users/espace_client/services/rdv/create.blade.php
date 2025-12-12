@@ -83,8 +83,8 @@
                                 </div>
                                 <div class="col-12 col-lg-6">
                                     <label for="datenaissance" class="form-label">Quelle est votre date de naissance ?</label>
-                                    <input type="text" class="form-control datepicker" id="datenaissance" name="datenaissance" 
-                                           value="{{ Auth::guard('customer')->user()->membre->datenaissance ?? '' }}" 
+                                    <input type="date" class="form-control datepicke" id="datenaissance" name="datenaissance" 
+                                           value="{{ \Carbon\Carbon::parse(Auth::guard('customer')->user()->membre->datenaissance)->format('Y-m-d') ?? '' }}" 
                                            placeholder="dd/mm/yyyy">
                                 </div>
                             </div>

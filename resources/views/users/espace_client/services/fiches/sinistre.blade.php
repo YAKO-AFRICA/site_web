@@ -187,7 +187,7 @@
                                     font-size: 14px;
                                     border-radius: 3px;
                                     background-color: #ffffff;"
-                                    id="nom" value="." />
+                                    id="nom" value="{{ $NomProduit ?? '.' }}" />
                             </p>
                         </div>
                     </div>

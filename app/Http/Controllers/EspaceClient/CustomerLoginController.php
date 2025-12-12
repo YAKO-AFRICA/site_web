@@ -603,7 +603,7 @@ class CustomerLoginController extends Controller
                                 'idcontrat' => $idcontrat,
                             ]);
                             $recipientEmail = $customer->email;
-                            $emailSubject = "ID contrat " . $idcontrat . "ajouté ";
+                            $emailSubject = "ID contrat " . $idcontrat . " ajouté ";
                             $message = '<td data-color="text" data-size="size text" data-min="10" data-max="26" data-link-color="link text color" data-link-style="font-weight:bold; text-decoration:underline; color:#40aceb;" align="justify" style="font:bold 16px/25px Arial, Helvetica, sans-serif; color:#888; padding:0 0 23px;">
                                     Le contrat ' . $idcontrat . ' a bien été ajouté à votre compte, vous pouvez désormais consulter les détails du contrat une fois connecter à votre compte Ynov.
 

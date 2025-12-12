@@ -239,6 +239,9 @@ class SinistreController extends Controller
         $acteurs = session('contratActeur');
         $assuree = session('contratActeurAssure');
         $beneficiaires = session('contratActeurBeneficiaire');
+        $produit = $details['produit'];
+        session(['NomProduit' => $produit]);
+        // dd($details,$produit);
 
         // dd($beneficiaires);
 
@@ -519,9 +522,10 @@ class SinistreController extends Controller
             } else {
                 $imageSrc = '';
             }
+            $NomProduit = session('NomProduit');
 
             $qrcode = base64_encode(QrCode::format('svg')->size(80)->generate(url('sinistre/getInfoSinistre/' . $sinistre->id)));
-            $pdf = Pdf::loadView('users.espace_client.services.fiches.sinistre', compact('qrcode', 'sinistre', 'imageSrc'))
+            $pdf = Pdf::loadView('users.espace_client.services.fiches.sinistre', compact('qrcode', 'sinistre', 'imageSrc','NomProduit'))
                 ->setPaper('a4', 'portrait')
                 ->setOptions([
                     'isHtml5ParserEnabled' => true,
