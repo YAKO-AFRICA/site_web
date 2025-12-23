@@ -2,10 +2,12 @@
 /node_modules
 /public/build
 /public/hot
+/public/images
 /public/images/FormuleProducts/Brochure
 /public/images/FormuleProducts/Brochure/*.pdf
-/public/images
 /public/etatCotisationGenerer
+/public/Polices
+/public/Polices/*
 /public/storage
 /storage/*.key
 /vendor
