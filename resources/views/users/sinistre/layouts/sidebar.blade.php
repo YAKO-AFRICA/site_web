@@ -34,7 +34,8 @@
         @endif
         
         <li>
-            <a href="{{ route('sinistre.index') }}">
+            <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#enMaintenanceModal">
+            {{-- <a href="{{ route('sinistre.index') }}"> --}}
                 <div class="parent-icon"><i class="fadeIn animated bx bx-archive-out"></i>
                 </div>
                 <div class="menu-title">Pré-déclaration de sinistre</div>

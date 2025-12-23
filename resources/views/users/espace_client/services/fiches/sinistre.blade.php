@@ -469,7 +469,7 @@
                             font-size: 14px;
                             border-radius: 3px;
                             background-color: #ffffff;"
-                            name="prenom" value="{{ $sinistre->dateSinistre ?? '.' }}" />&nbsp; &nbsp; &nbsp;
+                            name="prenom" value="{{ !empty($sinistre->dateSinistre) ? \Carbon\Carbon::createFromFormat('Y-m-d', $sinistre->dateSinistre)->translatedFormat('d F Y') : '.' }}" />&nbsp; &nbsp; &nbsp;
                     </div>
                     <div class="form-group" style="margin-top: -35px;">
                         <label for="nom" style="margin-right: 10px">Cause du sinistre &nbsp; &nbsp; &nbsp;&nbsp;
@@ -515,7 +515,7 @@
                             font-size: 14px;
                             border-radius: 3px;
                             background-color: #ffffff;"
-                                    name="prenom" value="{{ $sinistre->dateLevee ?? '.' }}" />&nbsp; &nbsp; &nbsp;
+                                    name="prenom" value="{{ !empty($sinistre->dateLevee) ? \Carbon\Carbon::createFromFormat('Y-m-d', $sinistre->dateLevee)->translatedFormat('d F Y') : '.' }}" />&nbsp; &nbsp; &nbsp;
                                 <label for="prenom">Lieu levée&nbsp;</label>
                                 <input type="text" id="prenom"
                                     style="
@@ -539,7 +539,7 @@
                             font-size: 14px;
                             border-radius: 3px;
                             background-color: #ffffff;"
-                                    name="prenom" value="{{ $sinistre->dateInhumation ?? '.' }}" />&nbsp; &nbsp; &nbsp;
+                                    name="prenom" value="{{ !empty($sinistre->dateInhumation) ? \Carbon\Carbon::createFromFormat('Y-m-d', $sinistre->dateInhumation)->translatedFormat('d F Y') : '.' }}" />&nbsp; &nbsp; &nbsp;
                                 <label for="prenom">Lieu inhumation&nbsp;</label>
                                 <input type="text" id="prenom"
                                     style="

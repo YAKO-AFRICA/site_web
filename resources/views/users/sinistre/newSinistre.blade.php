@@ -39,7 +39,7 @@
     <div class="card">
 
         <div class="card-header">
-            <h1 class="card-title text-uppercase text-center">Pré-déclaration de sinistre</h1>
+            <h1 class="card-title text-uppercase text-center">Déclaration de sinistre</h1>
         </div>
         {{-- @include('users.espace_client.services.prestations.modals.infosMontantModal') --}}
         <div class="card-body">

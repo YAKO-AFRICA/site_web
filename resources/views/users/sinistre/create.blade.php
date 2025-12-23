@@ -42,7 +42,7 @@
     <div class="card">
 
         <div class="card-header">
-            <h1 class="card-title text-uppercase text-center">Pré-déclaration de sinistre</h1>
+            <h1 class="card-title text-uppercase text-center">Déclaration de sinistre</h1>
             <p class="text-center">Remplissez le formulaire ci-dessous pour déclarer votre sinistre. Veuillez remplir tous
                 les champs obligatoires (<span class="star">*</span>).</p>
         </div>
@@ -66,7 +66,7 @@
                                             <label for="nomDecalarant" class="form-label">Quel est votre nom ? <span
                                                     class="star">*</span></label>
                                             <input type="text" class="form-control" id="nomDecalarant"
-                                                name="nomDecalarant" placeholder="Votre Nom" required>
+                                                name="nomDecalarant" value="{{ Auth::guard('customer')->check() ? Auth::guard('customer')->user()->membre->nom : ''}}" placeholder="Votre Nom" {{ Auth::guard('customer')->check() ? 'readonly' : ''}} required>
 
 
                                             <input type="hidden" name="typeprestation" value="Sinistre">
@@ -78,7 +78,7 @@
                                             <label for="prenomDecalarant" class="form-label">Quel est votre prénom ? <span
                                                     class="star">*</span></label>
                                             <input type="text" class="form-control" id="prenomDecalarant"
-                                                name="prenomDecalarant" value="" placeholder="Votre Prénom" required>
+                                                name="prenomDecalarant" value="{{ Auth::guard('customer')->check() ? Auth::guard('customer')->user()->membre->prenom : ''}}" placeholder="Votre Prénom" {{ Auth::guard('customer')->check() ? 'readonly' : ''}} required>
                                         </div>
                                     </div>
                                     <div class="row g-3 mb-3">
@@ -86,22 +86,22 @@
                                             <label for="datenaissanceDecalarant" class="form-label">Quelle est votre date de
                                                 naissance ? </label>
                                             <input type="date" class="form-control" id="datenaissanceDecalarant"
-                                                name="datenaissanceDecalarant" value="" placeholder="dd/mm/yyyy">
+                                                name="datenaissanceDecalarant" value="{{ Auth::guard('customer')->check() ? \Carbon\Carbon::parse(Auth::guard('customer')->user()->membre->datenaissance)->format('Y-m-d') : '' }}" placeholder="dd/mm/yyyy" {{ Auth::guard('customer')->check() ? 'readonly' : ''}}>
                                         </div>
                                         <div class="col-12 col-lg-6">
                                             <label for="lieunaissanceDecalarant" class="form-label">Où êtes-vous né(e)
                                                 ?</label>
                                             <input type="text" class="form-control" id="lieunaissanceDecalarant"
-                                                name="lieunaissanceDecalarant" value="" placeholder="">
+                                                name="lieunaissanceDecalarant" value="{{ Auth::guard('customer')->check() ? Auth::guard('customer')->user()->membre->lieunaissance : '' }}" placeholder="" {{ Auth::guard('customer')->check() ? 'readonly' : ''}}>
                                         </div>
                                     </div>
                                     <div class="row g-3 mb-3">
                                         <div class="col-12 col-lg-6">
                                             <label for="filiation" class="form-label">Qui êtes-vous pour l'assuré(e) ? <span
                                                     class="star">*</span></label>
-                                            <select class="form-select" name="filiation" id="single-select-field"
-                                                data-placeholder="Filiation avec l'assuré(e)" required>
-                                                <option></option>
+                                            <select class="form-select" name="filiation" id="singl-select-field"
+                                                data-placeholder="" required>
+                                                <option value="" selected disabled>choisir une filiation</option>
                                                 @foreach ($filiations as $item)
                                                     <option
                                                         value="{{ $item['CodeFiliation'] == 'LUIMM' ? 'Souscripteur' : $item['MonLibelle'] }}">
@@ -116,7 +116,7 @@
                                             <label for="lieuresidenceDecalarant" class="form-label">Où habitez-vous ? <span
                                                     class="star">*</span> </label>
                                             <input type="text" class="form-control" id="lieuresidenceDecalarant"
-                                                name="lieuresidenceDecalarant" value=""
+                                                name="lieuresidenceDecalarant" value="{{ Auth::guard('customer')->check() ? Auth::guard('customer')->user()->membre->lieuresidence : '' }}"
                                                 placeholder="Votre lieu de résidence" required>
                                         </div>
                                     </div>
@@ -125,14 +125,14 @@
                                             <label for="celDecalarant" class="form-label">Sur quelle N° de téléphone pouvons
                                                 nous vous joindre ? <span class="star">*</span></label>
                                             <input type="number" class="form-control" id="celDecalarant"
-                                                name="celDecalarant" value="" placeholder="Téléphone principal"
+                                                name="celDecalarant" value="{{ Auth::guard('customer')->check() ? Auth::guard('customer')->user()->membre->cel : '' }}" placeholder="Téléphone principal"
                                                 required>
                                         </div>
                                         <div class="col-12 col-lg-6">
                                             <label for="emailDecalarant" class="form-label">Quelle est votre adresse email
                                                 ?</label>
                                             <input type="email" class="form-control" id="emailDecalarant"
-                                                name="emailDecalarant" value="" placeholder="Votre adresse email">
+                                                name="emailDecalarant" value="{{ Auth::guard('customer')->check() ? Auth::guard('customer')->user()->membre->email : '' }}" placeholder="Votre adresse email">
                                         </div>
 
                                     </div>
@@ -261,7 +261,7 @@
                                 data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <div class="row g-3 mb-3 justify-content-center align-items-center">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <label for="nature" class="form-label">Nature du sinistre <span
                                                     class="star">*</span> </label> &nbsp;
 
@@ -276,7 +276,17 @@
                                                 <label class="form-check-label" for="natureInvalidite">Invalidité</label>
                                             </div>
                                         </div>
-                                        <div class="col-md-6" id="typeDecesBlock">
+                                        <div class="col-md-4" id="villeSinistreBlock">
+                                            <label for="villeSinistre" class="form-label">Dans quelle ville a eu lieu le sinistre ? <span
+                                                    class="star">*</span> </label>
+                                            <input type="text" name="villeSinistre" id="villeSinistre" list="villeSinistreOptions" placeholder="Veuillez saisir la ville" class="form-control" required>
+                                            <datalist id="villeSinistreOptions">
+                                                @foreach ($villes as $ville)
+                                                    <option value="{{ $ville->libelleVillle}}">
+                                                @endforeach
+                                            </datalist>
+                                        </div>
+                                        <div class="col-md-4" id="typeDecesBlock">
                                             <label for="" class="form-label">Le décès est-il accidentel ? <span
                                                     class="star">*</span> </label> &nbsp;
 
@@ -291,6 +301,40 @@
                                                 <label class="form-check-label" for="AccidentelNon">Non</label>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div class="row g-3 justify-content-center align-items-center mb-3" id="sinistreCentreHospitalierBlock">
+                                        <div class="col-md-6" id="">
+                                            <label for="" class="form-label">Le sinistre est survenue dans un centre hospitalier ? <span
+                                                    class="star">*</span> </label> &nbsp;
+
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="sinistreCentreHospitalier"
+                                                    id="sinistreCentreHospitalierOui" value="1">
+                                                <label class="form-check-label" for="sinistreCentreHospitalierOui">Oui</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="sinistreCentreHospitalier"
+                                                    id="sinistreCentreHospitalierNon" value="0">
+                                                <label class="form-check-label" for="sinistreCentreHospitalierNon">Non</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6" id="centresMedicauxBlock">
+                                            <label for="centresMedicaux" class="form-label">Précisez le lieu s'il vous plaît !
+                                                <span class="star">*</span></label>
+
+                                            <input type="text" class="form-control" name="centresMedicaux"
+                                                id="centresMedicaux" list="centresMedicauxOptions"
+                                                placeholder="Veuillez saisir le lieu svp !" required>
+                                            <datalist id="centresMedicauxOptions">
+                                                @foreach ($centresMedicaux as $item)
+                                                    <option value="{{ $item['MonLibelle'] }}">
+                                                @endforeach
+                                                <option value="Sur place">
+                                                <option value="Dans l'ambulance">
+                                            </datalist>
+                                        </div>
+
                                     </div>
 
                                     <div class="row g-3 justify-content-center align-items-center mb-3">
@@ -360,7 +404,7 @@
                                                 placeholder="Veuillez saisir le lieu de conservation du corps">
                                             <datalist id="lieuConservationOptions">
                                                 @foreach ($lieuConservation as $item)
-                                                    <option value="{{ $item['localisation'] }}">
+                                                    <option value="{{ $item['designation'] . ' (' . $item['commune'] . ' - ' . $item['localisation'] . ')' }}">
                                                 @endforeach
 
                                             </datalist>
@@ -383,8 +427,14 @@
                                         <div class="col-md-6">
                                             <label for="lieuLevee" class="form-label">Lieu de levée de corps <span
                                                     class="star">*</span> </label>
-                                            <input type="text" class="form-control" name="lieuLevee" id="lieuLevee"
-                                                placeholder="Veuillez saisir le lieu de levée de corps ">
+                                            <input type="text" class="form-control" name="lieuLevee"
+                                                id="lieuLevee" list="lieuLeveeOptions"
+                                                placeholder="Veuillez saisir le lieu de levée de corps">
+                                            <datalist id="lieuLeveeOptions">
+                                                @foreach ($villes as $ville)
+                                                    <option value="{{ $ville->libelleVillle}}">
+                                                @endforeach
+                                            </datalist>
                                         </div>
                                     </div>
                                     <div class="row g-3 mb-3" id="dateLieuInhumationBlock">
@@ -399,7 +449,13 @@
                                             <label for="lieuInhumation" class="form-label">Lieu de l'inhumation <span
                                                     class="star">*</span> </label>
                                             <input type="text" class="form-control" name="lieuInhumation"
-                                                id="lieuInhumation" placeholder="Veuillez saisir le lieu de l'inhumation">
+                                                id="lieuInhumation" list="lieuInhumationOptions"
+                                                placeholder="Veuillez saisir le lieu de l'inhumation">
+                                            <datalist id="lieuInhumationOptions">
+                                                @foreach ($villes as $ville)
+                                                    <option value="{{ $ville->libelleVillle}}">
+                                                @endforeach
+                                            </datalist>
                                         </div>
                                     </div>
 
@@ -423,14 +479,147 @@
                         <div class="accordion-item etapeSinistre" id="etapeSinistre4">
                             <h2 class="accordion-header" id="headingFour">
                                 <button class="accordion-button collapsed" type="button">
-                                    <h5 class="text-uppercase">Moyen de paiement</h5>
+                                    <h5 class="text-uppercase">Bénéficiaire au contrat</h5>
                                 </button>
                             </h2>
                             <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
                                 data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
+                                    <div class="row table-responsive g-3 mb-3">
+                                        <table class="table">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Nom</th>
+                                                    <th>Prénoms</th>
+                                                    <th>Date de naissance</th>
+                                                    <th>Lieu de naissance</th>
+                                                    <th>Profession</th>
+                                                    <th>Filiation avec le souscriteur</th>
+                                                    <th>Maturité</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($allBeneficiaire as $beneficiaire)
+                                                    <tr>
+                                                        <td>{{ $beneficiaire['nomAssu'] ?? '' }}</td>
+                                                        <td>{{ $beneficiaire['PrenomAssu'] ?? '' }}</td>
+                                                        <td>{{ $beneficiaire['DateNaissanceAssu'] ?? '' }}</td>
+                                                        <td>{{ $beneficiaire['LieuNaissanceAssu'] ?? '' }}</td>
+                                                        <td>{{ $beneficiaire['ProfessionAssu'] ?? '' }}</td>
+                                                        <td>{{ $beneficiaire['CodeFiliation'] == "LUIMM" ? 'Souscriteur lui même' : $beneficiaire['MonLibelle'] ?? '' }}</td>
+                                                        <td>{{ $beneficiaire['estMajeur'] ? 'Majeur' : 'Mineur' }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-6 d-flex justify-content-start gap-3">
+                                            <button class="btn2 border-btn2 p-2" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapseThree" aria-expanded="true"
+                                                aria-controls="collapseThree"><i
+                                                    class='bx bx-left-arrow-alt fs-4'></i>Retour </button>
+                                        </div>
+                                        <div class="col-6 d-flex justify-content-end gap-3">
+                                            <button class="btn-prime p-2 next-step-btn d-none" id="nextStepBt"
+                                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive"
+                                                aria-expanded="false" aria-controls="collapseFive">Suivant <i
+                                                    class='bx bx-right-arrow-alt fs-4'></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @php
+                            // Sécurisation : convertir en Collection si ce n’est pas déjà le cas
+                            $allBeneficiaire = collect($allBeneficiaire);
+
+                            // Souscripteur (CodeFiliation = LUIMM)
+                            $souscripteur = $allBeneficiaire->firstWhere('CodeFiliation', 'LUIMM');
+
+                            $benefConserne = "";
+                        @endphp
+                        <div class="accordion-item etapeSinistre" id="etapeSinistre5">
+                            <h2 class="accordion-header" id="headingFive">
+                                <button class="accordion-button collapsed" type="button">
+                                    <h5 class="text-uppercase">Moyen de paiement (Bénéficiaire)</h5>
+                                </button>
+
+                                <p class="text-danger px-3">
+                                    Veuillez fournir les informations de paiement
+
+                                    {{-- ===== CAS : 1 SEUL BÉNÉFICIAIRE ===== --}}
+                                    @if ($allBeneficiaire->count() === 1)
+
+                                        @php
+                                            $benef = $allBeneficiaire->first();
+                                            
+                                        @endphp
+
+                                        @if (!$benef['estMajeur'])
+                                            du tuteur(trice) légal(e) du mineur
+                                            <strong>{{ $benef['nomAssu'] }} {{ $benef['PrenomAssu'] }}</strong>
+                                            @php
+                                                $benefConserne = "du tuteur(trice) légal(e) du mineur";
+                                            @endphp
+                                        @elseif ($benef['estMajeur'] && $benef['CodeFiliation'] === 'LUIMM')
+                                            du souscripteur
+                                            <strong>{{ $benef['nomAssu'] }} {{ $benef['PrenomAssu'] }}</strong>
+                                            @php
+                                                $benefConserne = 'de '.$benef['nomAssu'].' '.$benef['PrenomAssu'];
+                                            @endphp
+                                        @else
+                                            de
+                                            <strong>{{ $benef['nomAssu'] }} {{ $benef['PrenomAssu'] }}</strong>
+                                            @php
+                                                $benefConserne = 'de '.$benef['nomAssu'].' '.$benef['PrenomAssu'];
+                                            @endphp
+                                        @endif
+
+
+                                    {{-- ===== CAS : PLUSIEURS BÉNÉFICIAIRES ===== --}}
+                                    @elseif ($allBeneficiaire->count() > 1)
+
+                                        {{-- S’il existe un souscripteur majeur --}}
+                                        @if ($souscripteur && $souscripteur['estMajeur'])
+                                            du souscripteur
+                                            <strong>{{ $souscripteur['nomAssu'] }} {{ $souscripteur['PrenomAssu'] }}</strong>
+                                            @php
+                                                $benefConserne = 'de '.$souscripteur['nomAssu'].' '.$souscripteur['PrenomAssu'];
+                                            @endphp
+
+                                        {{-- Sinon, lister les bénéficiaires --}}
+                                        @else
+                                            @foreach ($allBeneficiaire as $benef)
+                                                @if (!$benef['estMajeur'])
+                                                    du tuteur(trice) légal(e) du mineur
+                                                    <strong>{{ $benef['nomAssu'] }} {{ $benef['PrenomAssu'] }}</strong>@if(!$loop->last) ou @endif
+                                                @else
+                                                    de
+                                                    <strong>{{ $benef['nomAssu'] }} {{ $benef['PrenomAssu'] }}</strong>@if(!$loop->last) ou @endif
+                                                @endif
+                                            @endforeach
+                                            @php
+                                                $benefConserne = "fournir plus au haut";
+                                            @endphp
+                                        @endif
+
+
+                                    {{-- ===== CAS PAR DÉFAUT ===== --}}
+                                    @else
+                                        des ayants droit du souscripteur
+                                        @php
+                                            $benefConserne = "des ayants droit du souscripteur";
+                                        @endphp
+                                    @endif
+                                </p>
+                            </h2>
+                            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive"
+                                data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
                                     <div class="row g-3 mb-3 text-center">
-                                        <span class="form-label">Par quel moyen de paiement souhaitez-vous être payé ?
+                                        <span class="form-label">Veuillez choisir le moyen de paiement ?
                                             <span class="star">*</span></span>
                                         <div class="row d-flex justify-content-center align-items-center mt-3 gap-3">
                                             <div class="moyenPaiement-option col-lg-3 col-md-4 col-sm-12">
@@ -455,7 +644,7 @@
 
                                     </div>
                                     <div class="row g-3 mb-3 text-center" id="Operateur">
-                                        <span class="form-label">Quel opérateur souhaitez-vous utiliser ?</span>
+                                        <span class="form-label">Veuillez choisir l'opérateur ?</span>
 
                                         <div class="row d-flex justify-content-center align-items-center mt-3 gap-3">
                                             <div class="Operateur-option col-lg-3 col-md-4 col-sm-12">
@@ -502,16 +691,12 @@
                                     </div>
                                     <div class="row mb-3" id="IBANPaiement">
                                         <div class="col-12 px-0">
-                                            <label for="IBAN" class="form-label">Quel est votre RIB sur lequel vous
-                                                souhaitez
-                                                recevoir le paiement <span class="star">*</span></label>
+                                            <label for="IBAN" class="form-label text-center">Veuillez entrer le RIB du compte sur lequel le beneficiaire recevra le paiement <span class="star">*</span></label>
                                             <div class="rib-container row">
                                                 <div class="col-lg-3 col-12 mb-3 w-lg-20 text-center">
                                                     <label for="codebanque" class="form-label">Code Banque</label><br>
-                                                    <input type="text" class="rib-input" name="rib_1"
-                                                        maxlength="1">
-                                                    <input type="text" class="rib-input" name="rib_2"
-                                                        maxlength="1">
+                                                    <input type="text" class="rib-input" value="C" name="rib_1" maxlength="1" readonly>
+                                                    <input type="text" class="rib-input" value="I" name="rib_2" maxlength="1" readonly>
                                                     <input type="text" class="rib-input" name="rib_3"
                                                         maxlength="1">
                                                     <input type="text" class="rib-input" name="rib_4"
@@ -582,11 +767,11 @@
                                     </div>
                                     <div class="row g-3 mb-3" id="TelephonePaiement">
                                         <div class="col-12 col-lg-6">
-                                            <label for="TelPaiement" class="form-label">N° de téléphone sur lequel vous
-                                                souhaitez recevoir le paiement <span class="star">*</span></label>
+                                            <label for="TelPaiement" class="form-label">N° de téléphone sur lequel le beneficiaire
+                                                 recevra le paiement <span class="star">*</span></label>
                                             <input type="number" class="form-control no-copy no-cut no-paste" name="TelPaiement"
                                                 id="TelPaiement"
-                                                placeholder="Veuillez saisir le N° de téléphone sur lequel vous souhaitez recevoir le paiement">
+                                                placeholder="Veuillez saisir le N° de téléphone sur lequel le beneficiaire recevra le paiement">
                                             <small><i id="telMsgError" class="text-danger"></i></small>
                                             <small><i id="telMsgSuccess" class="text-success"></i></small>
                                         </div>
@@ -605,27 +790,27 @@
                                     <div class="row">
                                         <div class="col-6 d-flex justify-content-start gap-3">
                                             <button class="btn2 border-btn2 p-2" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapseThree" aria-expanded="true"
-                                                aria-controls="collapseThree"><i
+                                                data-bs-target="#collapseFour" aria-expanded="true"
+                                                aria-controls="collapseFour"><i
                                                     class='bx bx-left-arrow-alt fs-4'></i>Retour </button>
                                         </div>
                                         <div class="col-6 d-flex justify-content-end gap-3">
                                             <button class="btn-prime p-2 next-step-btn d-none" id="nextStepBtn"
-                                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive"
-                                                aria-expanded="false" aria-controls="collapseFive">Suivant <i
+                                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix"
+                                                aria-expanded="false" aria-controls="collapseSix">Suivant <i
                                                     class='bx bx-right-arrow-alt fs-4'></i></button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="accordion-item etapeSinistre" id="etapeSinistre5">
-                            <h2 class="accordion-header" id="headingFive">
+                        <div class="accordion-item etapeSinistre" id="etapeSinistre6">
+                            <h2 class="accordion-header" id="headingSix">
                                 <button class="accordion-button collapsed" type="button">
                                     <h5 class="text-uppercase">Document requis</h5>
                                 </button>
                             </h2>
-                            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive"
+                            <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix"
                                 data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     @include('users.sinistre.components.stepsCreate.docs')
@@ -633,17 +818,11 @@
                                     <div class="row">
                                         <div class="col-6 d-flex justify-content-start gap-3">
                                             <button class="btn2 border-btn2 p-2" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapseFour" aria-expanded="false"
-                                                aria-controls="collapseFour"><i
+                                                data-bs-target="#collapseFive" aria-expanded="false"
+                                                aria-controls="collapseFive"><i
                                                     class='bx bx-left-arrow-alt fs-4'></i>Retour </button>
                                         </div>
                                         <div class="col-6 d-flex justify-content-end gap-3">
-
-                                            {{-- <button class="btn-prime p-2" id="nextStepResume" data-bs-toggle="collapse"
-                                                data-bs-target="#collapseSix" aria-expanded="false"
-                                                aria-controls="collapseSix" type="bouton">
-                                                Suivant <i class='bx bx-right-arrow-alt fs-4'></i>
-                                            </button> --}}
                                             <button class="btn-prime p-2" id="nextStepResume" type="button">
                                                 Suivant <i class='bx bx-right-arrow-alt fs-4'></i>
                                             </button>
@@ -654,13 +833,13 @@
                             </div>
 
                         </div>
-                        <div class="accordion-item etapeSinistre" id="etapeSinistre6">
-                            <h2 class="accordion-header" id="headingSix">
+                        <div class="accordion-item etapeSinistre" id="etapeSinistre7">
+                            <h2 class="accordion-header" id="headingSeven">
                                 <button class="accordion-button collapsed" type="button">
                                     <h5 class="text-uppercase">Resumé, Signature et Soumission</h5>
                                 </button>
                             </h2>
-                            <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix"
+                            <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven"
                                 data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     <div id="resumeSinistre">
@@ -747,6 +926,8 @@
                                                             <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5" id="DecesAccident"></dd>
                                                             <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Déclaration tardive:</dt>
                                                             <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5" id="DeclarationTard"></dd>
+                                                            <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Ville du sinistre: </dt>
+                                                            <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5" id="villeSin"></dd>
                                                         </dl>
                                                     </div>
                                                     <div class="col-md-6">
@@ -761,6 +942,8 @@
                                                             <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5" id="DateInhumationCorps"></dd>
                                                             <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Lieu d'inhumation:</dt>
                                                             <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5 text-wrap" id="LieuInhumationCorps"></dd>
+                                                            <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Lieu du sinistre: </dt>
+                                                            <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5 text-wrap" id="lieuSinistre"></dd>
                                                         </dl>
                                                     </div>
                                                 </div>
@@ -796,8 +979,8 @@
                                     <div class="row">
                                         <div class="col-6 d-flex justify-content-start gap-3">
                                             <button class="btn2 border-btn2 p-2" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapseFive" aria-expanded="false"
-                                                aria-controls="collapseFive"><i
+                                                data-bs-target="#collapseSix" aria-expanded="false"
+                                                aria-controls="collapseSix"><i
                                                     class='bx bx-left-arrow-alt fs-4'></i>Retour </button>
                                         </div>
                                         <div class="col-6 d-flex justify-content-end gap-3">
@@ -891,76 +1074,12 @@
     </script>
 
     <script>
-
-    // const row = `
-                //     <tr data-docid="${doc.idfichier}" data-row-required="${isRequired ? '1' : '0'}">
-                //         <!-- Colonne Libellé Fichier -->
-                //         <td class="align-middle">
-                //             <div class="text-wrap">${doc.libelleFichier} ${isRequired ? '<span class="star">*</span>' : ''}</div>
-                //         </td>
-
-                //         <!-- Colonne Radio -->
-                //         <td>
-                //             <ul class="list-grou">
-                //                 ${doc.listDoc.length > 1
-                //                     ? `
-                //                         <label>Veuillez choisir le document en votre possession ${isRequired ? '<span class="star">*</span>' : ''}</label>
-                //                         ${doc.listDoc.map((d, i) => `
-                //                             <li class="list-group-ite">
-                //                                 <input type="radio"
-                //                                     id="${d.codeDoc}"
-                //                                     name="docLibelle[${doc.idfichier}]"
-                //                                     value="${d.libelleDoc}"
-                //                                     class="doc-radio"
-                //                                     data-target="libelle-${doc.idfichier}"
-                //                                     >
-                //                                 <label for="${d.codeDoc}">${d.libelleDoc}</label>
-                //                             </li>
-                //                         `).join('')}
-                //                     `
-                //                     : `
-                //                         <li class="list-group-ite">
-                //                             <input type="radio"
-                //                                 id="${doc.listDoc[0].codeDoc}"
-                //                                 name="docLibelle[${doc.idfichier}]"
-                //                                 value="${doc.listDoc[0].libelleDoc}"
-                //                                 class="doc-radio"
-                //                                 data-target="libelle-${doc.idfichier}"
-                //                                 ${isRequired ? 'checked' : ''}>
-                //                             <label for="${doc.listDoc[0].codeDoc}">${doc.listDoc[0].libelleDoc}</label>
-                //                         </li>
-                //                     `
-                //                 }
-                //             </ul>
-                //         </td>
-                //         <td class="align-middle text-center">
-                //             <div class="file-input d-flex align-items-center justify-content-center">
-                //                 <input type="hidden" id="libelle-${doc.idfichier}" name="libelle[]" value="">
-                //                 <input type="file"
-                //                     id="file-${doc.idfichier}"
-                //                     name="docFile[]"
-                //                     accept=".pdf,.png,.jpg,.jpeg"
-                //                     hidden
-                //                     data-file-required="${isRequired ? '1' : '0'}">
-
-                //                 <button type="button"
-                //                         class="btn-prime btn-prime-two p-2 addFileBtn"
-                //                         data-target="file-${doc.idfichier}">
-                //                     <i class='bx bx-plus-circle'></i>
-                //                 </button>
-
-                //             </div>
-                //             <div class="file-preview-container mt-2 d-flex align-items-center justify-content-center">
-                //                 <!-- Ici on injectera l’aperçu -->
-                //                 <span class="file-preview ms-2 text-muted small"></span>
-                //             </div>
-                //         </td>
-                //     </tr>
-                // `;
         const SIGN_API = "{{ config('services.sign_api') }}";
         const OTP_API = "{{ config('services.otp_api') }}";
-       var beneficiaires = @json($beneficiaires ?? []);
-       beneficiaires = Object.values(beneficiaires);
+        var assuree = @json($assuree);
+        var beneficiaires = @json($allBeneficiaire ?? []);
+        beneficiaires = Object.values(beneficiaires);
+        var benefConserne = @json($benefConserne);
     </script>
 
     <script>
@@ -1303,8 +1422,8 @@
             changePhoneButtonForMobileMoney.addEventListener('click', function() {
                 // Masquer le modal otp et afficher le collapse
                 myModal.hide();
-                const collapseFour = document.querySelector("#collapseFour");
-                const bsCollapse = new bootstrap.Collapse(collapseFour, {
+                const collapseFive = document.querySelector("#collapseFive");
+                const bsCollapse = new bootstrap.Collapse(collapseFive, {
                     toggle: true
                 });
             })
@@ -1415,9 +1534,9 @@
                             confirmButtonText: "OK"
                         });
                     } else {
-                        // ✅ Ouvrir manuellement le collapse #collapseSix
-                        const collapseSix = document.querySelector("#collapseSix");
-                        const bsCollapse = new bootstrap.Collapse(collapseSix, {
+                        // ✅ Ouvrir manuellement le collapse #collapseSeven
+                        const collapseSeven = document.querySelector("#collapseSeven");
+                        const bsCollapse = new bootstrap.Collapse(collapseSeven, {
                             toggle: true
                         });
                     }
@@ -1613,6 +1732,8 @@
                     const lieuLevee = form.querySelector('[name="lieuLevee"]') ?.value || '';
                     const dateInhumation = form.querySelector('[name="dateInhumation"]') ?.value || '';
                     const lieuInhumation = form.querySelector('[name="lieuInhumation"]') ?.value || '';
+                    const villeSinistre = form.querySelector('[name="villeSinistre"]') ?.value || '';
+                    const lieuSinistre = form.querySelector('[name="centresMedicaux"]') ?.value || '';
 
                     // Mise à jour du champ du Numéro de téléphone pour la confirmation via OTP du numéro de paiement
                     phoneInput = document.getElementById('phoneInput');
@@ -1651,6 +1772,9 @@
                     document.getElementById('LieuLeveeCorps').textContent = lieuLevee;
                     document.getElementById('DateInhumationCorps').textContent = formatDateFR(dateInhumation);
                     document.getElementById('LieuInhumationCorps').textContent = lieuInhumation;
+
+                    document.getElementById('villeSin').textContent = villeSinistre;
+                    document.getElementById('lieuSinistre').textContent = lieuSinistre;
 
                     // Mise à jour du résumé des informations du contrat et du moyen de paiement
                     const moyenPaiementText = moyenPaiement === 'Virement_Bancaire' ? 'Virement Bancaire' : moyenPaiement === 'Mobile_Money' ? 'Mobile Money' : '';

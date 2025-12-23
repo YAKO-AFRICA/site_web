@@ -8,7 +8,7 @@
                 <ol class="breadcrumb mb-0 p-0">
                     <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Pré-déclaration de sinistre</li>
+                    <li class="breadcrumb-item active" aria-current="page">Déclaration de sinistre</li>
                 </ol>
             </nav>
         </div>
@@ -29,7 +29,7 @@
                         <div
                             class="card border rounded-4 py-5 text-center shadow-none border-success bg-outl-light-success">
                             <div class="card-body">
-                                <p class="mb-0 fs-5 text-success"><i class='bx bx-plus-circle fs-1'></i> <br> <span>Faire une pré-déclaration de sinistre</span> </p>
+                                <p class="mb-0 fs-5 text-success"><i class='bx bx-plus-circle fs-1'></i> <br> <span>Faire une Déclaration</span> </p>
                             </div>
                         </div>
                     </a>
@@ -50,7 +50,7 @@
                     <a href="{{ route('sinistre.historySinistre') }}" class="demande">
                         <div class="card border rounded-4 py-5 text-center shadow-none border-success bg-ligh-success">
                             <div class="card-body">
-                                <p class="mb-0 fs-5 text-success"><i class='bx bx-history fs-1'></i> <br> <span>Mes pré-déclarations de sinistre</span></p>
+                                <p class="mb-0 fs-5 text-success"><i class='bx bx-history fs-1'></i> <br> <span>Mes Déclarations</span></p>
                             </div>
                         </div>
                     </a>

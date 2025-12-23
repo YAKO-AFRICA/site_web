@@ -1034,7 +1034,7 @@ class CustomerLoginController extends Controller
     {
         $token = Str::random(80);
         $email = $request->email;
-        $membre = Membre::where('email', $email)->first();
+        $membre = Membre::where(['email' => $email, 'estajour' => '1', 'activer' => '1'])->where('typ_membre', '3')->first();
         $login = ($membre) ? $membre->login : '';
         $customer = ($membre) ? TblCustomer::where('login', $login)->orWhere('old_login', $login)->with('membre')->first() : null;
         // dd($customer);

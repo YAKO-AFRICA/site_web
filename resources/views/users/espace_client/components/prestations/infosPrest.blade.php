@@ -173,8 +173,8 @@
                                         <div class="rib-container row">
                                             <div class="col-lg-3 col-12 mb-3 w-lg-20 text-center">
                                                 <label for="codebanque" class="form-label">Code Banque</label><br>
-                                                <input type="text" class="rib-input" name="rib_1" maxlength="1">
-                                                <input type="text" class="rib-input" name="rib_2" maxlength="1">
+                                                <input type="text" class="rib-input" value="C" name="rib_1" maxlength="1" readonly>
+                                                <input type="text" class="rib-input" value="I" name="rib_2" maxlength="1" readonly>
                                                 <input type="text" class="rib-input" name="rib_3" maxlength="1">
                                                 <input type="text" class="rib-input" name="rib_4" maxlength="1">
                                                 <input type="text" class="rib-input" name="rib_5" maxlength="1">

@@ -3030,15 +3030,43 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Gestion des RIB inputs (avec validation)
+    // ribInputs.forEach((input, index) => {
+    //     input.addEventListener('input', function (event) {
+    //         this.value = this.value.replace(/[^a-zA-Z0-9]/g, ''); // Autoriser uniquement chiffres
+    //         handleInput(ribInputs, event, index);
+    //     });
+
+    //     input.addEventListener('keydown', (event) => handleKeyDown(ribInputs, event, index));
+    //     input.addEventListener('paste', handlePaste);
+    // });
+
+    // Gestion des RIB inputs (chiffres uniquement)
     ribInputs.forEach((input, index) => {
+
+        // Filtrage après saisie
         input.addEventListener('input', function (event) {
-            this.value = this.value.replace(/[^a-zA-Z0-9]/g, ''); // Autoriser uniquement lettres et chiffres
+            this.value = this.value.replace(/\D/g, ''); // \D = tout sauf chiffre
             handleInput(ribInputs, event, index);
         });
 
-        input.addEventListener('keydown', (event) => handleKeyDown(ribInputs, event, index));
-        input.addEventListener('paste', handlePaste);
+        // Blocage des touches non numériques
+        input.addEventListener('keydown', function (event) {
+            const allowedKeys = [
+                'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'
+            ];
+
+            if (!/[0-9]/.test(event.key) && !allowedKeys.includes(event.key)) {
+                event.preventDefault();
+            }
+
+            handleKeyDown(ribInputs, event, index);
+        });
+
+        input.addEventListener('paste', function (event) {
+            event.preventDefault(); // empêcher collage
+        });
     });
+
 });
 
 
@@ -3209,9 +3237,9 @@ const documents = [
     {
       "idfichier": 1,
       "CodeDoc": "COND_PART",
-      "libelleFichier": "Conditions particulières / bulletin d’adhésion ou déclaration de perte du contrat",
+      "libelleFichier": "Conditions particulières (Police) / bulletin d’adhésion ou déclaration de perte du contrat",
       "listDoc": [
-        { "codeDoc": "COND_PART", "libelleDoc": "Conditions particulières" },
+        { "codeDoc": "COND_PART", "libelleDoc": "Conditions particulières (Police)" },
         { "codeDoc": "BULLETIN_ADHESION", "libelleDoc": "Bulletin d’adhésion" },
         { "codeDoc": "DECLARATION_PERTE", "libelleDoc": "Déclaration de perte du contrat (commissariat)" }
       ],
@@ -3245,14 +3273,14 @@ const documents = [
     {
       "idfichier": 2,
       "CodeDoc": "ID_ASSURE",
-      "libelleFichier": "Pièces d'identification de l'assuré concerné",
+      "libelleFichier": `Pièces d'identification de l'assuré concerné (${assuree?.nomAssu ?? ''} ${assuree?.PrenomAssu ?? ''})`,
       "listDoc": [
-        { "codeDoc": "CNI_ASSURE", "libelleDoc": "CNI de l'assuré" },
-        { "codeDoc": "CARTE_CONSULAIRE_ASSURE", "libelleDoc": "Carte consulaire de l'assuré" },
-        { "codeDoc": "CARTE_SEJOUR_ASSURE", "libelleDoc": "Carte de séjour de l'assuré" },
-        { "codeDoc": "EXTRAIT_NAISSANCE_ASSURE", "libelleDoc": "Extrait d’acte de naissance de l'assuré" },
-        { "codeDoc": "JUGEMENT_SUPPLETIF_ASSURE", "libelleDoc": "Jugement supplétif de l'assuré" },
-        { "codeDoc": "AUTRE_PIECE_ASSURE", "libelleDoc": "Autre pièce d'identification de l'assuré" }
+        { "codeDoc": "CNI_ASSURE", "libelleDoc": `CNI de ${assuree?.nomAssu ?? ''} ${assuree?.PrenomAssu ?? ''}` },
+        { "codeDoc": "CARTE_CONSULAIRE_ASSURE", "libelleDoc": `Carte consulaire de ${assuree?.nomAssu ?? ''} ${assuree?.PrenomAssu ?? ''}` },
+        { "codeDoc": "CARTE_SEJOUR_ASSURE", "libelleDoc": `Carte de séjour de ${assuree?.nomAssu ?? ''} ${assuree?.PrenomAssu ?? ''}` },
+        { "codeDoc": "EXTRAIT_NAISSANCE_ASSURE", "libelleDoc": `Extrait d’acte de naissance de ${assuree?.nomAssu ?? ''} ${assuree?.PrenomAssu ?? ''}` },
+        { "codeDoc": "JUGEMENT_SUPPLETIF_ASSURE", "libelleDoc": `Jugement supplétif de ${assuree?.nomAssu ?? ''} ${assuree?.PrenomAssu ?? ''}` },
+        { "codeDoc": "AUTRE_PIECE_ASSURE", "libelleDoc": `Autre pièce d'identification de ${assuree?.nomAssu ?? ''} ${assuree?.PrenomAssu ?? ''}` }
       ],
       "Deces": true,
       "Invalidite": true,
@@ -3581,7 +3609,7 @@ const documents = [
     {
         "idfichier": 17,
         "CodeDoc": "RIB",
-        "libelleFichier": "Relevé d'identité bancaire (RIB)",
+        "libelleFichier": `Relevé d'identité bancaire (RIB) ${benefConserne}`,
         "listDoc": [
           { "codeDoc": "DOC_RIB", "libelleDoc": "Relevé d'identité bancaire" }
         ],
@@ -3611,7 +3639,7 @@ const documents = [
     {
         "idfichier": 18,
         "CodeDoc": "MobileMoney_Paiement",
-        "libelleFichier": "Fiche d'identification du n° de paiement avec le caché de l'opérateur téléphonique ou la capture d'écran de la vérification par la syntaxe",
+        "libelleFichier": `Fiche d'identification du n° de paiement (${benefConserne}) avec le caché de l'opérateur téléphonique ou la capture d'écran de la vérification par la syntaxe`,
         "listDoc": [
         { "codeDoc": "DOC_MOBILE_MONEY_PAIEMENT", "libelleDoc": "Fiche d'identification du n° de paiement" }
         ],
@@ -3814,6 +3842,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dateSinistre = document.getElementById('dateSinistre');
     const natureSinistreInvaliditeCheckbox = document.getElementById('natureInvalidite');
     const corpsConserveRadios = document.querySelectorAll('input[name="corpsConserve"]');
+    const sinistreCentreHospitalierRadios = document.querySelectorAll('input[name="sinistreCentreHospitalier"]');
     const CodeFiliatioAssure = document.getElementById('CodeFiliatioAssure').value;
     const decesAccidentelRadios = document.querySelectorAll('input[name="decesAccidentel"]');
     const declarationTardiveRadios = document.querySelectorAll('input[name="declarationTardive"]');
@@ -3824,6 +3853,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const elementsInvalidite = [];
 
     setRequired(['natureSinistre']);
+    setRequired(['sinistreCentreHospitalier']);
 
     let DateEffetReel = new Date(contratDetailsObj.contratDetails.DateEffetReel);
     let DelaiCarrenceMois = parseInt(contratDetailsObj.contratDetails.DelaiCarrence);
@@ -3844,7 +3874,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dateLeveeInput = document.getElementById('dateLevee');
     const dateInhumationInput = document.getElementById('dateInhumation');
 
-    dateLeveeInput.addEventListener('change', function () {
+    dateLeveeInput.addEventListener('input', function () {
         const selectedDate = this.value;
         dateInhumationInput.min = selectedDate;
 
@@ -3890,8 +3920,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Validation unique sur la date du sinistre
     dateSinistre.addEventListener('input', function () {
-        const selectedDate = new Date(this.value);
+        const dateSinistreValue = this.value;
+        const selectedDate = new Date(dateSinistreValue);
 
+        dateLeveeInput.min = dateSinistreValue;
+        // Si une date de la levée est déjà sélectionnée mais est antérieure à la date du sinistre
+        if (dateLeveeInput.value && dateLeveeInput.value < dateSinistreValue) {
+            dateLeveeInput.value = dateSinistreValue;
+        }
         if (isNaN(selectedDate)) {
             msgCarrenceError.text("Veuillez saisir une date.").show();
             msgCarrenceSuccess.text("").hide();
@@ -4183,7 +4219,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <button type="button"
                                             class="btn-prime btn-prime-two p-2 addFileBtn"
                                             data-target="file-${doc.idfichier}_${ben.IdPropositionPartenaires}">
-                                        <i class='bx bx-plus-circle'></i>
+                                        <i class='bx bx-download fs-5'></i>
                                     </button>
                                 </div>
                                 <div class="file-preview-container mt-2 d-flex align-items-center justify-content-center">
@@ -4245,7 +4281,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <button type="button"
                                             class="btn-prime btn-prime-two p-2 addFileBtn"
                                             data-target="file-${doc.idfichier}">
-                                        <i class='bx bx-plus-circle'></i>
+                                        <i class='bx bx-download fs-5'></i>
                                     </button>
                                 </div>
                                 <div class="file-preview-container mt-2 d-flex align-items-center justify-content-center">
@@ -4496,6 +4532,21 @@ document.addEventListener('DOMContentLoaded', function () {
             removeRequired(['declarationTardive', 'lieuConservation']);
         }
     }
+    function togglesinistreCentreHospitalier(){
+        const sinistreCentreHospitalierChecked = document.querySelector('input[name="sinistreCentreHospitalier"]:checked')?.value || null;
+        const centresMedicaux = document.querySelector('input[name="centresMedicaux"]');
+        
+        if (sinistreCentreHospitalierChecked == 1 || sinistreCentreHospitalierChecked == 0) {
+            showElements(['centresMedicauxBlock']);
+            setRequired(['centresMedicaux']);
+            removeRequired([]);
+            centresMedicaux.value = '';
+        } else {
+            hideElements(['centresMedicauxBlock']);
+            removeRequired(['centresMedicaux']);
+            centresMedicaux.value = '';
+        }
+    }
 
     function toggleDocuments() {
         const isDecesChecked = natureSinistreDecesCheckbox.checked;
@@ -4509,8 +4560,7 @@ document.addEventListener('DOMContentLoaded', function () {
             getToShowDocuments("Deces", accidentelChecked, corpsConserveChecked, declarationTardiveChecked, typeContrat, CodeFiliatioAssure, paiementMethodChecked);
         } else if (isInvaliditeChecked) {
             getToShowDocuments("Invalidite", accidentelChecked, corpsConserveChecked, declarationTardiveChecked, typeContrat, CodeFiliatioAssure, paiementMethodChecked);
-        }
-        
+        } 
     }
  
      // Ajoute les écouteurs d'événements
@@ -4518,11 +4568,13 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleElements();
         toggleDocuments();
         toggleCorpsConserve();
+        togglesinistreCentreHospitalier();
     });
     natureSinistreInvaliditeCheckbox.addEventListener('change', () => {
         toggleElements();
         toggleDocuments();
         toggleCorpsConserve();
+        togglesinistreCentreHospitalier();
     });
     
     decesAccidentelRadios.forEach(radio => {
@@ -4534,6 +4586,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // radio.addEventListener('change', toggleElements);
         radio.addEventListener('change', toggleDocuments);
         radio.addEventListener('change', toggleCorpsConserve);
+    });
+    sinistreCentreHospitalierRadios.forEach(radio => {
+        radio.addEventListener('change', togglesinistreCentreHospitalier);
     });
     paiementMethodRadios.forEach(radio => {
         radio.addEventListener('change', toggleDocuments);
@@ -4646,6 +4701,7 @@ document.addEventListener('DOMContentLoaded', function () {
      toggleDateSinistre();
      toggleDocuments();
      toggleCorpsConserve();
+     togglesinistreCentreHospitalier();
     //  updateIBAN();
      // Active la surveillance sur chaque étape
     activerSurveillance("#etapeSinistre1");
@@ -4663,145 +4719,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('getSinistre');
-    const spinner = document.getElementById('spinner');
-    const tableSinistre = document.getElementById('example3'); 
-    const tableSinistreBody = document.getElementById('tableSinistre'); 
-    let dataTableInstance = null;
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '-';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('fr-FR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
-    };
 
-    const clearTable = () => {
-        if (dataTableInstance) {
-            dataTableInstance.destroy();
-            dataTableInstance = null;
-        }
-        tableSinistreBody.innerHTML = '';
-    };
 
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        spinner.classList.remove('d-none');
 
-        const formData = new FormData(form);
-        const csrfToken = document.querySelector('input[name="_token"]').value;
-
-        fetch("/api/get-sinistre", {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Erreur lors de la récupération des données');
-            }
-            return response.json();
-        })
-        .then(data => {
-            clearTable();
-            if (data.status === 'success') {
-                const sinistres = data.data;
-                if (sinistres.length > 0) {
-                    tableSinistreBody.innerHTML = sinistres.map(sinistre => {
-                        const isEditable = sinistre.etape == 0 || sinistre.etape == 3;
-                        return `
-                        <tr>
-                            <td>${sinistre.code || '-'}</td>
-                            <td>${sinistre.idcontrat || '-'}</td>
-                            <td>${(sinistre.prenomAssuree || '') + ' ' + (sinistre.nomAssuree || '')}</td>
-                            <td>${sinistre.natureSinistre || '-'}</td>
-                            <td>${formatDate(sinistre.created_at) || '-'}</td>
-                            <td>
-                                ${sinistre.etape == '0' ? 
-                                    '<div class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>En attente de transmission</div>' :
-                                sinistre.etape == '1' ? 
-                                    '<div class="badge rounded-pill text-primary bg-light-primary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Transmise pour traitement</div>' :
-                                sinistre.etape == '2' ? 
-                                    '<div class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Acceptée et en cours de traitement</div>' :
-                                sinistre.etape == '3' ? 
-                                    '<div class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Pré-déclaration rejetée</div>' :
-                                    '<div class="badge rounded-pill text-secondary bg-light-secondary p-2 text-uppercase px-3"><i class="bx bxs-circle me-1"></i>Traitement Terminé</div>'
-                                }
-                            </td>
-                            <td>
-                                <div class="d-flex order-actions">
-                                    <a href="/sinistre/show/${sinistre.code}" class="ms-2 border"><i class='bx bxs-show'></i></a>
-                                    <a href="/sinistre/edit/${sinistre.code}" class="ms-3 border ${isEditable ? '' : 'disabled-link'}" 
-                                        title="${isEditable ? '' : 'Impossible de modifier la demande une fois transmise'}">
-                                        <i class='bx bxs-edit'></i>
-                                    </a>
-                                    
-                                   
-                                    <a href="javascript:;" class="deleteConfirmation border ms-3 ${isEditable ? '' : 'disabled-link'}"
-                                    data-type="confirmation_redirect" data-placement="top"
-                                    data-token="${csrfToken}" data-bs-toggle="tooltip" data-bs-placement="top" 
-                                    title="${isEditable ? '' : 'Impossible de supprimer la demande une fois transmise'}"
-                                    data-url="/sinistre/destroy/${sinistre.code}"
-                                    data-title="Vous êtes sur le point de supprimer la pré-déclaration N° ${sinistre.code}"
-                                    data-id="${sinistre.code}" data-param="0"
-                                    data-route="/sinistre/destroy/${sinistre.code}" ><i
-                                        class='bx bxs-trash' style="cursor: pointer"></i>
-                                </a>
-                                </div>
-                            </td>
-                        </tr>`;
-                    }).join('');
-
-                    // Initialiser DataTables après ajout des lignes
-                    dataTableInstance = $(tableSinistre).DataTable({
-                        lengthChange: true,
-                        language: {
-                            search: "Recherche :",
-                            lengthMenu: "Afficher _MENU_ lignes",
-                            zeroRecords: "Aucun enregistrement trouvé",
-                            info: "Affichage de _START_ à _END_ sur _TOTAL_ enregistrements",
-                            infoEmpty: "Aucun enregistrement disponible",
-                            infoFiltered: "(filtré à partir de _MAX_ enregistrements)",
-                            paginate: {
-                                first: "Premier",
-                                last: "Dernier",
-                                next: "Suivant",
-                                previous: "Précédent",
-                            },
-                        },
-                    });
-                } else {
-                    tableSinistreBody.innerHTML = `
-                        <tr>
-                            <td colspan="7" class="text-center">Aucun sinistre trouvé.</td>
-                        </tr>`;
-                }
-            } else {
-                tableSinistreBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center text-danger">Aucun sinistre trouvé</td>
-                    </tr>`;
-            }
-            spinner.classList.add('d-none');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            clearTable();
-            spinner.classList.add('d-none');
-            tableSinistreBody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center text-danger">Erreur lors de la récupération des données</td>
-                </tr>`;
-        });
-
-    });
-});
 
 
 

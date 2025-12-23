@@ -144,6 +144,7 @@ class SinistreController extends Controller
             return response()->json([
                 'type' => 'success',
                 'assures' => $assures,
+                'beneficiaires' => collect($data['allActeur'])->where('CodeRole', 'BEN')->values()->all(),
                 'contratDetails' => $data['details'][0],
                 'message' => 'Contrat trouvé avec succès.',
             ], 200);
@@ -239,14 +240,85 @@ class SinistreController extends Controller
         $acteurs = session('contratActeur');
         $assuree = session('contratActeurAssure');
         $beneficiaires = session('contratActeurBeneficiaire');
+        $beneficiaires = $beneficiaires->where('IdPersonne', '!=', $assuree['IdPersonne']);
+        // dd($beneficiaires,$assuree['IdPropositionPartenaires']);
+        $benefIsMajeur = false;
+        $age = null;
+        // $beneficiaireMajeur = [];
+        // $beneficiaireMineur = [];
+        $allBeneficiaire = [];
+
+        if ($beneficiaires->count() === 1) {
+
+            $beneficiaire = $beneficiaires->first(); // tableau
+
+            if (!empty($beneficiaire['DateNaissanceAssu'])) {
+
+                try {
+                    $dateNaissance = Carbon::createFromFormat(
+                        'd/m/Y',
+                        trim($beneficiaire['DateNaissanceAssu'])
+                    );
+
+                    $age = $dateNaissance->age;
+
+                    if ($age >= 18) {
+                        $benefIsMajeur = true;
+                        // array_push($beneficiaireMajeur, $beneficiaire);
+                        // complete la cle est majeur dans le tableau $allBeneficiaire avec la valeur true
+                        $beneficiaire['estMajeur'] = true;
+                        $beneficiaire['age'] = $age;
+                        array_push($allBeneficiaire, $beneficiaire);
+                    }else{
+                        // array_push($beneficiaireMineur, $beneficiaire);
+                        // complete la cle est majeur dans le tableau $allBeneficiaire avec la valeur false
+                        $beneficiaire['estMajeur'] = false;
+                        $beneficiaire['age'] = $age;
+                        array_push($allBeneficiaire, $beneficiaire);
+                    }
+
+                } catch (\Exception $e) {
+                    $age = null;
+                    $benefIsMajeur = false;
+                }
+            }
+        }else{
+            foreach ($beneficiaires as $beneficiaire) {
+                if (!empty($beneficiaire['DateNaissanceAssu'])) {
+                    try {
+                        $dateNaissance = Carbon::createFromFormat(
+                            'd/m/Y',
+                            trim($beneficiaire['DateNaissanceAssu'])
+                        );
+
+                        $age = $dateNaissance->age;
+
+                        if ($age >= 18) {
+                            $benefIsMajeur = true;
+                            // array_push($beneficiaireMajeur, $beneficiaire);
+                            // complete la cle est majeur dans le tableau $allBeneficiaire avec la valeur true
+                            $beneficiaire['estMajeur'] = true;
+                            $beneficiaire['age'] = $age;
+                            array_push($allBeneficiaire, $beneficiaire);
+                        }else{
+                            // array_push($beneficiaireMineur, $beneficiaire);
+                            // complete la cle est majeur dans le tableau $allBeneficiaire avec la valeur false
+                            $beneficiaire['estMajeur'] = false;
+                            $beneficiaire['age'] = $age;
+                            array_push($allBeneficiaire, $beneficiaire);
+                        }
+
+                    } catch (\Exception $e) {
+                        $age = null;
+                        $benefIsMajeur = false;
+                    }
+                }
+            }
+        }
+
+        // dd($allBeneficiaire, $beneficiaire);
         $produit = $details['produit'];
         session(['NomProduit' => $produit]);
-        // dd($details,$produit);
-
-        // dd($beneficiaires);
-
-        // $maladies = TblMaladie::all();
-
         $villes = TblVille::all();
         $response = Http::withOptions(['timeout' => 60])
             ->get(config('services.api.filiations'));
@@ -263,7 +335,7 @@ class SinistreController extends Controller
         if ($response->successful()) {
             $data = $response->json();
             if (!empty($data)) {
-                $maladies = $data;
+                $maladies = collect($data)->unique('MonLibelle')->values();
             }
         } else {
             $maladies = [];
@@ -273,11 +345,23 @@ class SinistreController extends Controller
         if ($response->successful()) {
             $data = $response->json();
             if (!empty($data)) {
-                $lieuConservation = $data;
+                $lieuConservation = collect($data)->values();
             }
         } else {
             $lieuConservation = [];
         }
+
+        $response = Http::withOptions(['timeout' => 60])
+            ->get(config('services.api.centres_medicaux_list'));
+        if ($response->successful()) {
+            $data = $response->json();
+            if (!empty($data)) {
+                $centresMedicaux = collect($data)->unique('MonLibelle')->values();
+            }
+        } else {
+            $centresMedicaux = [];
+        }
+        // dd($lieuConservation);
 
         // Génération du token sécurisé
         $tok = Str::random(80);
@@ -308,7 +392,7 @@ class SinistreController extends Controller
             Log::error('Exception lors de l\'appel à l\'API des pays : ' . $e->getMessage());
         }
         $this->clearSinistreSessions();
-        return view('users.sinistre.create', compact('token', 'tok', 'details', 'acteurs', 'assuree', 'beneficiaires', 'maladies', 'villes', 'filiations', 'lieuConservation', 'keyUuid', 'operationType', 'detailCountries'));
+        return view('users.sinistre.create', compact('token', 'tok', 'details', 'acteurs', 'assuree', 'beneficiaires', 'allBeneficiaire', 'maladies', 'villes', 'filiations', 'lieuConservation', 'centresMedicaux', 'keyUuid', 'operationType', 'detailCountries'));
     }
 
     // Méthode privée pour nettoyer les sessions
@@ -525,7 +609,7 @@ class SinistreController extends Controller
             $NomProduit = session('NomProduit');
 
             $qrcode = base64_encode(QrCode::format('svg')->size(80)->generate(url('sinistre/getInfoSinistre/' . $sinistre->id)));
-            $pdf = Pdf::loadView('users.espace_client.services.fiches.sinistre', compact('qrcode', 'sinistre', 'imageSrc','NomProduit'))
+            $pdf = Pdf::loadView('users.espace_client.services.fiches.sinistre', compact('qrcode', 'sinistre', 'imageSrc', 'NomProduit'))
                 ->setPaper('a4', 'portrait')
                 ->setOptions([
                     'isHtml5ParserEnabled' => true,

@@ -8,7 +8,7 @@
                     <div class="fm-menu">
                         <div class="list-group list-group-flush">
                             <a href="javascript:;" class="list-group-item py-1" data-target="info-contrat">
-                                <i class='bx bx-folder me-2'></i><span>Detail de la pré-déclaration</span>
+                                <i class='bx bx-folder me-2'></i><span>Detail de la Déclaration</span>
                             </a>
                         </div>
                     </div>
@@ -18,7 +18,7 @@
                 <div class="card-body">
                     <div class="fm-menu">
                         <div class="list-group list-group-flush mb-3">
-                            <span>Status de la pré-déclaration</span>
+                            <span>Status de la Déclaration</span>
                         </div>
                         @if ($sinistre->etape == 0)
                             <span class="badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3">
@@ -34,7 +34,7 @@
                             </span>
                         @elseif ($sinistre->etape == 3)
                             <span class="badge rounded-pill text-danger bg-light-danger p-2 text-uppercase px-3">
-                                <i class="bx bxs-circle me-1"></i>Pré-déclaration rejetée
+                                <i class="bx bxs-circle me-1"></i>Déclaration rejetée
                             </span>
                         @else
                             --
@@ -253,6 +253,11 @@
                                                     <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5">
                                                         {{ $sinistre->declarationTardive == '1' ? 'Oui' : ($sinistre->declarationTardive == '0' ? 'Non' : '') }}
                                                     </dd>
+                                                    <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Ville du sinistre:
+                                                    </dt>
+                                                    <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5">
+                                                        {{ $sinistre->villeSinistre ?? '' }}
+                                                    </dd>
                                                 </dl>
                                             </div>
                                             <div class="col-md-6">
@@ -275,6 +280,10 @@
                                                     </dt>
                                                     <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5 text-wrap">
                                                         {{ $sinistre->lieuInhumation ?? '' }}</dd>
+                                                    <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Lieu du sinistre:
+                                                    </dt>
+                                                    <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5 text-wrap">
+                                                        {{ $sinistre->lieuSinistre ?? '' }}</dd>
                                                 </dl>
                                             </div>
                                         </div>
