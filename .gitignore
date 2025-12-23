@@ -5,6 +5,7 @@
 /public/images/FormuleProducts/Brochure
 /public/images/FormuleProducts/Brochure/*.pdf
 /public/images
+/public/etatCotisationGenerer
 /public/storage
 /storage/*.key
 /vendor
