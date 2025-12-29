@@ -86,6 +86,39 @@
 <a href="https://yakoafricassur.com/e-services/download_apk.php" class="mt-3 app_float shadow" title="Télécharger notre application Mobile Ynov">
     <img src="{{ asset('assets/img/images/App_Ynov.png')}}" alt="" class="rounded app_float-icon" width="100px" height="100px">
 </a>
+
+{{-- <p class="whatsapp_float">
+    <dotlottie-wc
+        src="https://lottie.host/39407f99-c216-404b-a36e-eaf5b623e596/GO8dgE5GJ5.lottie"
+        style="width: 300px;height: 300px"
+        autoplay
+        loop
+    ></dotlottie-wc>
+</p>
+<p class="whatsapp_float">
+    <dotlottie-wc
+        src="https://lottie.host/2344dcaa-4c80-4aa6-a6a0-e94e3ef62d54/IQs0Ou6dZ2.lottie"
+        style="width: 300px;height: 300px"
+        autoplay
+        loop
+    ></dotlottie-wc>
+</p>
+<p class="whatsapp_float">
+    <dotlottie-wc
+        src="https://lottie.host/cd1ea6d5-1f85-4cc8-a391-342db808bf3f/sUJgXocJ4d.lottie"
+        style="width: 300px;height: 300px"
+        autoplay
+        loop
+    ></dotlottie-wc>
+</p>
+<p class="whatsapp_float">
+    <dotlottie-wc
+        src="https://lottie.host/f24a45bb-7618-452a-82c6-ce22c9b79fbd/0bcIJQ6WYB.lottie"
+        style="width: 300px;height: 300px"
+        autoplay
+        loop
+    ></dotlottie-wc>
+</p> --}}
 </main>
 
 <!-- footer-area -->
@@ -93,8 +126,9 @@
 <!-- footer-area-end -->
 
 <!-- JS here -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    {{-- <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script> --}}
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js" type="module"></script>
     {{-- <script src="{{ asset('assets/js/vendor/jquery-3.6.0.min.js')}}"></script> --}}
     {{-- <script src="{{ asset('assets/js/bootstrap.bundle.min.js')}}"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

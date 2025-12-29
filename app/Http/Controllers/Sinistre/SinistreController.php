@@ -486,6 +486,8 @@ class SinistreController extends Controller
                     'professionAssuree' => $request->professionAssuree,
                     'lieuresidenceAssuree' => $request->lieuresidenceAssuree,
                     'natureSinistre' => $request->natureSinistre,
+                    'villeSinistre' => $request->villeSinistre,
+                    'lieuSinistre' => $request->centresMedicaux,
                     'decesAccidentel' => $request->decesAccidentel,
                     'declarationTardive' => $request->declarationTardive,
                     'dateSinistre' => $request->dateSinistre,

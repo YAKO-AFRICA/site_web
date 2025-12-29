@@ -30,6 +30,8 @@ class TblSinistre extends Model
         'professionAssuree',
         'lieuresidenceAssuree',
         'natureSinistre',
+        'villeSinistre',
+        'lieuSinistre',
         'decesAccidentel',
         'declarationTardive',
         'dateSinistre',

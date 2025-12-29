@@ -3176,6 +3176,24 @@
                             nouvellePrimeValeur = parseInt(nouvellePrimeCADENCEInput?.value);
                             nouvellePrime = !isNaN(nouvellePrimeValeur) ? nouvellePrimeValeur.toLocaleString('fr-FR') : '15 000';
                             break;
+                        case 'CAD_EDUCPLUS':
+                            divNouveauCapitalDOIHOO.classList.add('d-none');
+                            divNouveauCapitalYKE.classList.add('d-none');
+                            divNouveauCapitalEducPlus.classList.remove('d-none');
+                            divNouveauCapitalAutreYK.classList.add('d-none');
+                            divNouvellePrimeCADENCE.classList.add('d-none');
+                            divNouvellePrimePFA_IND.classList.add('d-none');
+
+                            nouveauCapitalEducPlusInput.required = true;
+                            nouveauCapitalYKEInput.required = false;
+                            nouveauCapitalDOIHOOInput.required = false;
+                            nouveauCapitalAutreYKInput.required = false;
+                            nouvellePrimeCADENCEInput.required = false;
+                            nouvellePrimePFA_INDInput.required = false;
+
+                            nouveauCapitalValeur = parseInt(nouveauCapitalEducPlusInput?.value);
+                            nouveauCapital = !isNaN(nouveauCapitalValeur) ? nouveauCapitalValeur.toLocaleString('fr-FR') : '1 000 000';
+                            break;
 
                         case 'PFA_IND':
                             divNouvellePrimePFA_IND.classList.remove('d-none');
@@ -3223,17 +3241,20 @@
                         <p>Monsieur,</p> <br>
                         <p>Je viens par la présente demander une <strong>${selectedValue || '...'}</strong> sur mon contrat <strong>${contrat}</strong>.</p>
                         ${
-                            ['DOIHOO', 'YKE_2008', 'YKE_2018', 'YKF_2008', 'YKF_2018', 'YKS_2008', 'YKS_2018', 'YKR_2021', 'YKL_2004'].includes(contratDetails?.codeProduit)
+                            ['DOIHOO', 'CAD_EDUCPLUS', 'YKE_2008', 'YKE_2018', 'YKF_2008', 'YKF_2018', 'YKS_2008', 'YKS_2018', 'YKR_2021', 'YKL_2004'].includes(contratDetails?.codeProduit)
                             ? `
-                            <p><strong><u>Capital actuel :</u></strong></p>
-                            <ul><li>${parseInt(contratDetails?.CapitalSouscrit).toLocaleString('fr-FR') || '0'} FCFA</li></ul>
+                            <p><strong><u>Capital et prime actuelle :</u></strong></p>
+                            <ul>
+                                <li>Capital : ${parseInt(contratDetails?.CapitalSouscrit).toLocaleString('fr-FR') || '0'} FCFA</li>
+                                <li>Prime : ${parseInt(contratDetails?.TotalPrime).toLocaleString('fr-FR') || '0'} FCFA</li>
+                            </ul>
 
                             <p><strong><u>Nouveau capital souhaité :</u></strong></p>
                             <ul><li>${nouveauCapital} FCFA</li></ul>`
                             : `
                             <p><strong><u>Prime actuelle :</u></strong></p>
                             <ul>
-                                <li>${parseInt(contratDetails?.TotalPrime).toLocaleString('fr-FR') || '0'} FCFA</li>
+                                <li>Prime : ${parseInt(contratDetails?.TotalPrime).toLocaleString('fr-FR') || '0'} FCFA</li>
                             </ul>
                             <p><strong><u>Nouvelle prime souhaitée :</u></strong></p>
                             <ul>
@@ -5486,6 +5507,24 @@
 
                             nouvellePrimeValeur = parseInt(nouvellePrimeCADENCEInput?.value);
                             nouvellePrime = !isNaN(nouvellePrimeValeur) ? nouvellePrimeValeur.toLocaleString('fr-FR') : '15 000';
+                            break;
+
+                        case 'CAD_EDUCPLUS':
+                            divNouvellePrimeCADENCE.classList.add('d-none');
+                            divNouveauCapitalYKE.classList.add('d-none');
+                            divNouveauCapitalEducPlus.classList.remove('d-none');
+                            divNouveauCapitalAutreYK.classList.add('d-none');
+                            divNouvellePrimePFA_IND.classList.add('d-none');
+
+                            nouvellePrimeCADENCEInput.required = false;
+                            nouveauCapitalEducPlusInput.required = true;
+                            nouveauCapitalYKEInput.required = false;
+                            nouveauCapitalDOIHOOInput.required = false;
+                            nouveauCapitalAutreYKInput.required = false;
+                            nouvellePrimePFA_INDInput.required = false;
+
+                            nouveauCapitalValeur = parseInt(nouveauCapitalEducPlusInput?.value);
+                            nouveauCapital = !isNaN(nouveauCapitalValeur) ? nouveauCapitalValeur.toLocaleString('fr-FR') : '1 000 000';
                             break;
 
                         case 'PFA_IND':
