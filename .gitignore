@@ -6,6 +6,7 @@
 /public/images/FormuleProducts/Brochure
 /public/images/FormuleProducts/Brochure/*.pdf
 /public/etatCotisationGenerer
+/public/images/Actualities.zip
 /public/storage
 /storage/*.key
 /vendor
