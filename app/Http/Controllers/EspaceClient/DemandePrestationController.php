@@ -740,6 +740,8 @@ class DemandePrestationController extends Controller
         $beneficiaires = session('contratActeurBeneficiaire');
         $NbreEmission = intval($contratDetails['NbreEmission']);
         // dd($NbreEmission);
+        // recupere les acteurs de façon distinct en nom et prenom
+        $acteurs = collect($acteurs)->unique('nomAssu', 'PrenomAssu');
         $codeProduitYAKO = ['YKE_2008', 'YKE_2018', 'YKS_2008', 'YKS_2018', 'YKF_2008', 'YKF_2018', 'YKR_2021', 'YKL_2004'];
         $codeProduitEPAGNE = ["DOIHOO"];
         if (in_array($contratDetails['codeProduit'], $codeProduitYAKO)) {
