@@ -1,9 +1,109 @@
  <!-- header-area -->
  <header class="tg-header__style-five">
         <div class="tg-header__top">
-            <div class="container custom-container">
-                <div class="row">
-                    <div class="col-lg-9">
+            {{-- <div class="div-confitit">                   
+                <p class="confitit-1">
+                    <dotlottie-wc
+                        src="https://lottie.host/39407f99-c216-404b-a36e-eaf5b623e596/GO8dgE5GJ5.lottie"
+                        style="width: 300px;height: 300px"
+                        autoplay
+                        loop
+                    ></dotlottie-wc>
+                </p>
+                <p class="confitit-2">
+                    <dotlottie-wc
+                        src="https://lottie.host/f24a45bb-7618-452a-82c6-ce22c9b79fbd/0bcIJQ6WYB.lottie"
+                        style="width: 300px;height: 300px"
+                        autoplay
+                        loop
+                    ></dotlottie-wc>
+                </p>
+            </div> --}}
+            <div class="container-fluid banner-football d-flex align-items-center">
+             
+                <div class="div-banner-football">
+                    
+                    <div class="overflow-hidden">
+                        <div class="banner-scroll-football">
+                                <img src="{{ asset('assets/img/images/elephant.png') }}" 
+                                alt="Logo Elephant" class="banner-elephant-football">
+                                
+                                <img src="{{ asset('assets/img/images/Text.png') }}" 
+                                alt="Texte" class="banner-text-football">
+
+                                <img src="{{ asset('assets/img/images/elephant.png') }}" 
+                                alt="Logo Elephant" class="banner-elephant-football">
+
+                                <img src="{{ asset('assets/img/images/Text.png') }}" 
+                                alt="Texte" class="banner-text-football">
+
+                                <img src="{{ asset('assets/img/images/elephant.png') }}" 
+                                alt="Logo Elephant" class="banner-elephant-football">
+
+                                <img src="{{ asset('assets/img/images/Text.png') }}" 
+                                alt="Texte" class="banner-text-football">
+
+                                <img src="{{ asset('assets/img/images/elephant.png') }}" 
+                                alt="Logo Elephant" class="banner-elephant-football">
+
+                                 <img src="{{ asset('assets/img/images/Text.png') }}" 
+                                alt="Texte" class="banner-text-football">
+
+                            <div class="div-confitit">                   
+                                <p class="confitit-1">
+                                    <dotlottie-wc
+                                        src="https://lottie.host/39407f99-c216-404b-a36e-eaf5b623e596/GO8dgE5GJ5.lottie"
+                                        style="width: 300px;height: 300px"
+                                        autoplay
+                                        loop
+                                    ></dotlottie-wc>
+                                </p>
+                                <p class="confitit-2">
+                                    <dotlottie-wc
+                                        src="https://lottie.host/f24a45bb-7618-452a-82c6-ce22c9b79fbd/0bcIJQ6WYB.lottie"
+                                        style="width: 300px;height: 300px"
+                                        autoplay
+                                        loop
+                                    ></dotlottie-wc>
+                                </p>
+                            </div>
+                               
+                        </div>
+                    </div>
+                    {{-- <div class="overflow-hidden d-flex align-items-center">
+                        <div class="banner-scroll-football">
+                            <img src="{{ asset('assets/img/images/elephant.png') }}" 
+                                alt="Logo Elephant" class="banner-elephant-football">
+                                
+                                <div class="div-confitit">
+                                    <p class="confitit-1">
+                                        <dotlottie-wc
+                                            src="https://lottie.host/39407f99-c216-404b-a36e-eaf5b623e596/GO8dgE5GJ5.lottie"
+                                            style="width: 300px;height: 300px"
+                                            autoplay
+                                            loop
+                                        ></dotlottie-wc>
+                                    </p>
+                                    <p class="confitit-2">
+                                        <dotlottie-wc
+                                            src="https://lottie.host/f24a45bb-7618-452a-82c6-ce22c9b79fbd/0bcIJQ6WYB.lottie"
+                                            style="width: 300px;height: 300px"
+                                            autoplay
+                                            loop
+                                        ></dotlottie-wc>
+                                    </p>
+                                </div>
+                        </div>
+                        <div class="banner-scroll-text">
+                            <img src="{{ asset('assets/img/images/Text.png') }}" 
+                                alt="Texte" class="banner-text-football">
+                        </div>
+                    </div> --}}
+                </div>
+            </div>
+            {{-- <div class="container custom-container" >
+                <div class="row banner-foot justify-content-center align-items-center" style="width: 89%;">
+                    <div class="col-lg-12">
                         <ul class="tg-header__top-info left-side list-wrap">
                             <li style="width: 20%;"><i class="flaticon-phone-call"></i>
                                 <a class="" href="tel:2720331500">+(225)27 20 33 15 00</a>
@@ -13,6 +113,7 @@
                                 <li><i class="flaticon-pin"></i><strong>SIEGE :</strong> Abidjan-Plateau, avenue Noguès immeuble Woodin, 4ème étage --  <strong>SERVICES CLIENTS :</strong> Abidjan - Plateau, Rue de Commerce, Immeuble Pacifique en face de l'Immeuble du MALI</li>
                             </marquee> -->
                         </ul>
+                        
                     </div>
                     <div class="col-lg-3">
                         <ul class="tg-header__top-right list-wrap">
@@ -20,7 +121,7 @@
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
         <div id="sticky-header" class="tg-header__area tg-header__area-five">
             <div class="container-fluid">

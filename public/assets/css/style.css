@@ -16,6 +16,10 @@
     width: 17%;
     margin: 17px auto !important;
 } */
+
+/* .tg-header__style-five {
+    margin-top: 12px;
+} */
 .btn-prime {
     user-select: none;
     -moz-user-select: none;
@@ -294,7 +298,7 @@
     position: fixed;
     bottom: 90px;
     right: 10px;
-    z-index: 0;
+    z-index: 10;
     transform: scaleX(-1); /* Inverse l'orientation horizontale */
 }
 .happy_float2 {
@@ -313,7 +317,7 @@
     position: fixed;
     bottom: 90px;
     left: 10px;
-    z-index: 0;
+    z-index: 10;
 }
 
 .happy_float4 {

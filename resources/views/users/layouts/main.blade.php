@@ -94,8 +94,8 @@
         autoplay
         loop
     ></dotlottie-wc>
-</p>
-<p class="whatsapp_float">
+</p> --}}
+<p class="happy_float1">
     <dotlottie-wc
         src="https://lottie.host/2344dcaa-4c80-4aa6-a6a0-e94e3ef62d54/IQs0Ou6dZ2.lottie"
         style="width: 300px;height: 300px"
@@ -103,7 +103,15 @@
         loop
     ></dotlottie-wc>
 </p>
-<p class="whatsapp_float">
+<p class="happy_float3">
+    <dotlottie-wc
+        src="https://lottie.host/2344dcaa-4c80-4aa6-a6a0-e94e3ef62d54/IQs0Ou6dZ2.lottie"
+        style="width: 300px;height: 300px"
+        autoplay
+        loop
+    ></dotlottie-wc>
+</p>
+{{-- <p class="whatsapp_float">
     <dotlottie-wc
         src="https://lottie.host/cd1ea6d5-1f85-4cc8-a391-342db808bf3f/sUJgXocJ4d.lottie"
         style="width: 300px;height: 300px"
@@ -249,6 +257,120 @@
         });
     }
     </script>
+
+    {{-- <script>
+       document.addEventListener('DOMContentLoaded', () => {
+            const banner = document.querySelector('.banner-scroll-football');
+            const container = document.querySelector('.banner-football');
+
+            let isPaused = false;
+            let lastPauseTime = 0;
+
+            function loop() {
+                const now = Date.now();
+                const bannerRect = banner.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+
+                const bannerCenter = bannerRect.left + bannerRect.width / 2;
+                const containerCenter = containerRect.left + containerRect.width / 2;
+
+                // Évite pause multiple au même passage
+                if (
+                    !isPaused &&
+                    Math.abs(bannerCenter - containerCenter) < 8 &&
+                    now - lastPauseTime > 8000
+                ) {
+                    isPaused = true;
+                    lastPauseTime = now;
+                    banner.style.animationPlayState = 'paused';
+
+                    setTimeout(() => {
+                        banner.style.animationPlayState = 'running';
+                        isPaused = false;
+                    }, 3000);
+                }
+
+                requestAnimationFrame(loop);
+            }
+
+            requestAnimationFrame(loop);
+        });
+    </script>
+     --}}
+    {{-- <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const football = document.querySelector('.banner-scroll-football');
+    const text = document.querySelector('.banner-scroll-text');
+    const container = document.querySelector('.banner-football');
+
+    const PAUSE_TIME = 3000;
+    let step = 0;
+
+    function center(el) {
+        const r = el.getBoundingClientRect();
+        return r.left + r.width / 2;
+    }
+
+    function containerCenter() {
+        const r = container.getBoundingClientRect();
+        return r.left + r.width / 2;
+    }
+
+    function resetAnimation(el) {
+        el.style.animation = 'none';
+        el.offsetHeight;
+        el.style.animation = '';
+        el.style.animationPlayState = 'paused';
+    }
+
+    function loop() {
+        const c = containerCenter();
+
+        /* 1️⃣ football démarre */
+        if (step === 0) {
+            football.style.animationPlayState = 'running';
+            step = 1;
+        }
+
+        /* 2️⃣ football arrive au centre → STOP */
+        else if (step === 1 && Math.abs(center(football) - c) < 10) {
+            football.style.animationPlayState = 'paused';
+            text.style.animationPlayState = 'running';
+            step = 2;
+        }
+
+        /* 3️⃣ text arrive au centre → STOP */
+        else if (step === 2 && Math.abs(center(text) - c) < 10) {
+            text.style.animationPlayState = 'paused';
+            step = 3;
+
+            /* 4️⃣ attendre 3s puis repartir ensemble */
+            setTimeout(() => {
+                football.style.animationPlayState = 'running';
+                text.style.animationPlayState = 'running';
+                step = 4;
+            }, PAUSE_TIME);
+        }
+
+        /* 5️⃣ quand les deux sont sortis → reset */
+        else if (
+            step === 4 &&
+            center(football) < 0 &&
+            center(text) < 0
+        ) {
+            resetAnimation(football);
+            resetAnimation(text);
+            step = 0;
+        }
+
+        requestAnimationFrame(loop);
+    }
+
+    requestAnimationFrame(loop);
+});
+</script> --}}
+
+
     
 </body>
 
