@@ -376,6 +376,10 @@ Route::prefix('espace-client', 'PreventBackHistory')->name('customer.')->group(f
 
         Route::post('rdv/add',[RdvController::class, 'store'])->name('rdv.store');
 
+    
+        // paiement prime
+        Route::post('paiement/prime',[CustomerController::class, 'paiementPrime'])->name('paiement.prime');
+
          
     });
 });

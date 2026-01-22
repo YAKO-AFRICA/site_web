@@ -54,7 +54,8 @@
             </a>
         </li>
         <li>
-            <a href="https://yakoafricassur.com/e-services/paiement/paiement-prime.php" target="_blank">
+            <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#paiementPrimeModal">
+            {{-- <a href="https://yakoafricassur.com/e-services/paiement/paiement-prime.php" target="_blank"> --}}
                 <div class="parent-icon"><i class="bx bx-dollar-circle fs-5"></i>
                 </div>
                 <div class="menu-title">Payer ma prime</div>
@@ -169,6 +170,44 @@
         </nav>
     </div>
 
+    <div class="modal fade" id="paiementPrimeModal" tabindex="-1" aria-labelledby="paiementPrimeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paiementPrimeModalLabel">Payer ma prime</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <form action="{{ route('customer.paiement.prime') }}" method="post" id="paiementPrimeForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="card radius-10">
+                        <div class="card-body bg-light-succes rounded">
+                            <div class="">
+                                <label for="single-select" class="form-label">Pour quel Contrat
+                                    souhaitez-vous payer la prime ? <span class="star">*</span></label>
+                                <select class="form-select" name="idcontratForPaiement" id="single-select"
+                                    data-placeholder="" required>
+                                    <option selected value="">Veuillez sélectionner l'ID du contrat</option>
+                                    @foreach (Auth::guard('customer')->user()->membre->membreContrat as $contrat)
+                                        <option value="{{ $contrat->idcontrat }}">
+                                            {{ $contrat->idcontrat }}
+                                        </option> 
+                                    @endforeach
+                                </select>
+                                {{-- <input type="hidden" value="Prestation" name="type"> --}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+                    <button type="submit" id="submitBtn" class="btn-prime btn-prime-two">Continuer</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">

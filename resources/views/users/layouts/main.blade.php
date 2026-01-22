@@ -95,7 +95,7 @@
         loop
     ></dotlottie-wc>
 </p> --}}
-<p class="happy_float1">
+{{-- <p class="happy_float1">
     <dotlottie-wc
         src="https://lottie.host/2344dcaa-4c80-4aa6-a6a0-e94e3ef62d54/IQs0Ou6dZ2.lottie"
         style="width: 300px;height: 300px"
@@ -110,7 +110,7 @@
         autoplay
         loop
     ></dotlottie-wc>
-</p>
+</p> --}}
 {{-- <p class="whatsapp_float">
     <dotlottie-wc
         src="https://lottie.host/cd1ea6d5-1f85-4cc8-a391-342db808bf3f/sUJgXocJ4d.lottie"

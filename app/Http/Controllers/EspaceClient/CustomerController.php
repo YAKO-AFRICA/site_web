@@ -217,6 +217,34 @@ class CustomerController extends Controller
     {
         //
     }
+    public function paiementPrime(Request $request)
+    {
+        try {
+            $idcontrat = $request->input('idcontratForPaiement');
+            if (!$idcontrat) {
+                return response()->json([
+                    'type' => 'error',
+                    'urlback' => '',
+                    'message' => 'Aucun contrat sélectionné.',
+                    'code' => 400,
+                ]);
+            }else{
+                return response()->json([
+                    'type' => 'success',
+                    'urlback' => 'https://yakoafricassur.com/e-services/paiement/paiement-prime-facture.php?i='.$idcontrat,
+                    'message' => 'Veuillez patienter un instant. Vous serez redirigé vers la page de paiement.',
+                    'code' => 200,
+                ], 200);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'type' => 'error',
+                'urlback' => '',
+                'message' => 'Une erreur s\'est produite : ' . $th->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+    }
     public function etatCotisation()
     {
         return view('users.espace_client.services.cotisation.etat');

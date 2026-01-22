@@ -322,6 +322,66 @@
     </script>
 
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("paiementPrimeForm");
+            const btn = document.getElementById("submitBtn");
+
+            btn.addEventListener("click", function(event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: 'Traitement en cours...',
+                    text: 'Veuillez patienter...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
+                const formData = new FormData(form);
+
+                axios.post('{{ route('customer.paiement.prime') }}', formData)
+                    .then(function(response) {
+                        if (response.data.code === 200) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Succès',
+                                text: response.data.message,
+                                timer: 5000,
+                                showConfirmButton: false,
+                                timerProgressBar: true
+                            }).then(() => {
+                                // 1 seconde après
+                                setTimeout(() => {
+                                    window.open(response.data.urlback, '_blank');
+                                }, 1000);
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Erreur...',
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reessayer',
+                                text: response.data.message,
+                            });
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error(error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erreur...',
+                            showConfirmButton: true,
+                            confirmButtonText: 'Reessayer',
+                            text: response?.data?.message || "Une erreur est survenue.",
+                        });
+                    });
+                });
+        });
+    </script>
+
+
 
 
     <script>

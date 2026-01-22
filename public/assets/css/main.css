@@ -1164,8 +1164,8 @@ textarea {
 
 .tg-header__top {
   background: var(--tg-color-dark-blue);
-  height: 120px;
-  /* padding: 12px 0; */
+  /* height: 90px; */
+  padding: 12px 0;
   /* margin-top: 12px; */
 }
 
