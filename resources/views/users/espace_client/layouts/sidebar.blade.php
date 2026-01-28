@@ -170,6 +170,7 @@
         </nav>
     </div>
 
+   @if (Auth::guard('customer')->check())
     <div class="modal fade" id="paiementPrimeModal" tabindex="-1" aria-labelledby="paiementPrimeModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
@@ -208,6 +209,8 @@
             </div>
         </div>
     </div>
+        
+    @endif
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
