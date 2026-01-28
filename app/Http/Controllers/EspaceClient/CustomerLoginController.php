@@ -486,6 +486,7 @@ class CustomerLoginController extends Controller
                         $mailContent = view('users.espace_client.auth.mails.accountRegisterMail', [
                             'customer' => $customerData,
                             'emailType' => $emailType,
+                           'btnText' => 'Finaliser mon inscription',
                             'btnLink' => route('customer.registerForm.addContrat', ['id' => $customerData->id]),
                         ])->render();
 
@@ -635,7 +636,13 @@ class CustomerLoginController extends Controller
 
                             $recipientEmail = $customer->email;
                             $emailSubject = "ID contrat " . $idcontrat . " ajouté ";
-                            $mailContent = view('users.espace_client.auth.mails.contractAdded', compact('customer', 'idcontrat'));
+                            $mailContent = view('users.espace_client.auth.mails.contractAdded', [
+                            'customer' => $customer,
+                            'idcontrat' => $idcontrat,
+                            'btnText' => 'Consulter mon contrat',
+                            'btnLink' => route('customer.loginForm'),
+                        ])->render();
+                            // $mailContent = view('users.espace_client.auth.mails.contractAdded', compact('customer', 'idcontrat'));
 
                             $destinatorName = 'Cher(e) client(e) ' . $customer->nom . ' ' . $customer->prenom;
 
@@ -707,7 +714,15 @@ class CustomerLoginController extends Controller
                                     $recipientEmail = $customer->email;
                                     $emailType = 'account-register-end';
                                     $emailSubject = "Félicitation M/Mme/Mlle " . $customer->nom . ' ' . $customer->prenom;
-                                    $mailContent = view('users.espace_client.auth.mails.accountRegisterMail', compact('customer', 'emailSubject', 'emailType'));
+                                    // $mailContent = view('users.espace_client.auth.mails.accountRegisterMail', compact('customer', 'emailSubject', 'emailType'));
+                                     // Générer le contenu HTML
+                                    $mailContent = view('users.espace_client.auth.mails.accountRegisterMail', [
+                                        'customer' => $customer,
+                                        'emailType' => $emailType,
+                                        'emailSubject'=> $emailSubject,
+                                        'btnText' => 'Connectez-vous',
+                                        'btnLink' => route('customer.loginForm'),
+                                    ])->render();
                                     // $mailContent = '<td data-color="text" data-size="size text" data-min="10" data-max="26" data-link-color="link text color" data-link-style="font-weight:bold; text-decoration:underline; color:#40aceb;" align="justify" style="font:bold 16px/25px Arial, Helvetica, sans-serif; color:#888; padding:0 0 23px;">
                                     //         Votre compte Ynov a bien été crée succès vous pouvez désormais vous connecter à l\'aide de vos accès suivant:
                                     //         <ul>
@@ -1146,6 +1161,7 @@ class CustomerLoginController extends Controller
                 'membre' => $membre,
                 'fullName' => $fullName,
                 'login' => $request->login,
+                'btnText' => 'Se connecter',
                 'loginLink' => route('customer.loginForm'),
             ])->render();
 
