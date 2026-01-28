@@ -480,10 +480,12 @@ class CustomerLoginController extends Controller
                     $fullName = $customerData->nom . ' ' . $customerData->prenom;
 
                         $emailSubject = "Finalisation de la création de votre compte à Ynov - YAKO AFRICA Assurances Vie";
+                        $emailType = 'account-request';
         
                         // Générer le contenu HTML
                         $mailContent = view('users.espace_client.auth.mails.accountRegisterMail', [
                             'customer' => $customerData,
+                            'emailType' => $emailType,
                             'btnLink' => route('customer.registerForm.addContrat', ['id' => $customerData->id]),
                         ])->render();
 
