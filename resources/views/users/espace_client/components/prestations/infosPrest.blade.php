@@ -59,8 +59,14 @@
                                         
                                     </div>
                                     <div class="col-12 col-lg-6">
-                                        <label for="montant" class="form-label">Quel est le montant que vous souhaitez
-                                            demander ? <span class="star">*</span></label>
+                                        <label for="montant" class="form-label">
+                                        @if($typePrestation && $typePrestation->impact == 1)
+                                            Montant (Valeur de rachat du contrat) 
+                                            @else
+                                            Quel est le montant que vous souhaitez
+                                            demander ? 
+                                            @endif
+                                            <span class="star">*</span></label>
                                         <input type="text" class="form-control" min="0" name="montantSouhaite"
                                             id="montantSouhaite" value="{{ $prestation->montantSouhaite ?? '' }}" placeholder="Saisir le montant souhaité" required
                                             disabled>
