@@ -100,6 +100,7 @@
                         @csrf
                         @include('users.espace_client.components.prestations.infosPerso')
                         <input type="hidden" id="tokGenerate" name="tokGenerate" value="{{ $tok }}">
+                        <input type="hidden" name="typeprestation_id" id="typeprestation_id" value="{{ $typePrestation->id ?? '' }}">
                         @include('users.espace_client.components.prestations.infosPrest')
 
                         @php

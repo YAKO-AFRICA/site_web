@@ -632,6 +632,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const montantSouhaiteField = document.getElementById('montantSouhaite');
+    const typeprestation_id = document.getElementById("typeprestation_id").value;
+    const typeprestation_idNotOut = ['2','4','5'];
+    const typeprestation_idOut = ['3', '6', '7', '8', '9'];
     const AutresInfos = document.getElementById('AutresInfos');
     const capitalField = document.getElementById('Capital');
     const TotalEncaissementField = document.getElementById("TotalEncaissement");
@@ -759,58 +762,65 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-
-    montantSouhaiteField.addEventListener('input', function (e) {
-        let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, ''); // Supprime espaces et caractères non numériques
-
-        if (value) {
-            e.target.value = parseInt(value, 10).toLocaleString('fr-FR'); // Formate avec séparateurs de milliers
-        } else {
-            e.target.value = ""; // Champ vide si suppression complète
-        }
-
-        // Vérifier si le montant souhaité est valide
-        const montantSouhaite = parseInt(value, 10) || 0; // Valeur saisie ou 0 si vide
-
-        const capital = parseFloat(capitalField.value.replace(/\s/g, "")) || 0; // Supprimer les espaces avant conversion
-        const TotalEncaissement =
-            parseFloat(TotalEncaissementField.value.replace(/\s/g, "")) || 0; // Supprimer les espaces avant conversion
-        // const moitieCapital = capital / 2;
-        const moitieCapital = TotalEncaissement / 2;
-        const moitieCapitalFormate = moitieCapital.toLocaleString("fr-FR");
-
-        // Réinitialiser les messages d'erreur et de succès
-        msgError.text("").hide();
-        msgSuccess.text("").hide();
-        countError.text("").hide();
-        countSuccess.text("").hide();
-
-        if (montantSouhaite > moitieCapital || montantSouhaite <= 0) {
-            msgError.text(`Selon les termes du contrat, vous ne pouvez pas demander ce montant.`).show();
-            // msgError.text(`Selon les termes du contrat, le montant souhaité doit être inférieur ou égal à ${moitieCapitalFormate} FCFA.`).show();
-            montantSouhaiteField.classList.add('is-invalid');
-            montantSouhaiteField.classList.remove('is-valid');
-            // desactiver le bouton
-            btnContratSuivant.disabled = true;
-        } else if (montantSouhaiteField.value.trim() === "") {
-            montantSouhaiteField.classList.remove('is-invalid');
-            montantSouhaiteField.classList.remove('is-valid');
-            // desactiver le bouton
-            btnContratSuivant.disabled = true;
-        } else if (montantSouhaite <= moitieCapital && montantSouhaite > 0) {
-            msgSuccess.text(`Le montant définitif sera calculé en fonction de la situation du contrat.`).show();
-            montantSouhaiteField.classList.remove('is-invalid');
-            montantSouhaiteField.classList.add('is-valid');
-            // activer le bouton
+    if (typeprestation_idOut.includes(typeprestation_id)) {
             btnContratSuivant.disabled = false;
-        }
-    });
+            montantSouhaiteField.required = false;
+            montantSouhaiteField.readOnly = true;
+            // montantSouhaiteField.value = "0";
+    }else{
+        montantSouhaiteField.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, ''); // Supprime espaces et caractères non numériques
 
-    montantSouhaiteField.addEventListener("blur", function (e) {
-        if (e.target.value.trim() !== "") {
-            e.target.value = parseInt(e.target.value.replace(/\s/g, ''), 10).toLocaleString('fr-FR');
-        }
-    });
+            if (value) {
+                e.target.value = parseInt(value, 10).toLocaleString('fr-FR'); // Formate avec séparateurs de milliers
+            } else {
+                e.target.value = ""; // Champ vide si suppression complète
+            }
+
+            // Vérifier si le montant souhaité est valide
+            const montantSouhaite = parseInt(value, 10) || 0; // Valeur saisie ou 0 si vide
+
+            const capital = parseFloat(capitalField.value.replace(/\s/g, "")) || 0; // Supprimer les espaces avant conversion
+            const TotalEncaissement =
+                parseFloat(TotalEncaissementField.value.replace(/\s/g, "")) || 0; // Supprimer les espaces avant conversion
+            // const moitieCapital = capital / 2;
+            const moitieCapital = TotalEncaissement / 2;
+            const moitieCapitalFormate = moitieCapital.toLocaleString("fr-FR");
+
+            // Réinitialiser les messages d'erreur et de succès
+            msgError.text("").hide();
+            msgSuccess.text("").hide();
+            countError.text("").hide();
+            countSuccess.text("").hide();
+
+            if (montantSouhaite > moitieCapital || montantSouhaite <= 0) {
+                msgError.text(`Selon les termes du contrat, vous ne pouvez pas demander ce montant.`).show();
+                // msgError.text(`Selon les termes du contrat, le montant souhaité doit être inférieur ou égal à ${moitieCapitalFormate} FCFA.`).show();
+                montantSouhaiteField.classList.add('is-invalid');
+                montantSouhaiteField.classList.remove('is-valid');
+                // desactiver le bouton
+                btnContratSuivant.disabled = true;
+            } else if (montantSouhaiteField.value.trim() === "") {
+                montantSouhaiteField.classList.remove('is-invalid');
+                montantSouhaiteField.classList.remove('is-valid');
+                // desactiver le bouton
+                btnContratSuivant.disabled = true;
+            } else if (montantSouhaite <= moitieCapital && montantSouhaite > 0) {
+                msgSuccess.text(`Le montant définitif sera calculé en fonction de la situation du contrat.`).show();
+                montantSouhaiteField.classList.remove('is-invalid');
+                montantSouhaiteField.classList.add('is-valid');
+                // activer le bouton
+                btnContratSuivant.disabled = false;
+            }
+        });
+
+        montantSouhaiteField.addEventListener("blur", function (e) {
+            if (e.target.value.trim() !== "") {
+                e.target.value = parseInt(e.target.value.replace(/\s/g, ''), 10).toLocaleString('fr-FR');
+            }
+        });
+    }
+
     AutresInfos.addEventListener('input', function () {
         const charLimit = 400; // Limite en caractères
         // Compter le nombre de mots
@@ -874,15 +884,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const TotalEncaissement = parseFloat(TotalEncaissementField.value.replace(/\s/g, "")) || 0; // Supprimer les espaces avant conversion
             const moitieCapital = TotalEncaissement / 2;
             const moitieCapitalFormate = moitieCapital.toLocaleString('fr-FR');
-
-            if (montantSouhaite > moitieCapital || montantSouhaite <= 0) {
-                alert(`Selon les termes du contrat, vous ne pouvez pas demander ce montant.`);
-                // alert(`Selon les termes du contrat, le montant souhaité doit être supérieur à 0 et inferieur ou égal à ${moitieCapitalFormate} FCFA.`);
-                msgError.text(`Selon les termes du contrat, vous ne pouvez pas demander ce montant.`).show();
-                // ajouter une bordure rouge si le montant souhaité est invalide
-                montantSouhaiteField.classList.add('is-invalid');
-                montantSouhaiteField.classList.remove('is-valid');
-                return; // Arrêter si le montant souhaité n'est pas valide
+            if (typeprestation_idNotOut.includes(typeprestation_id)) {
+                if (montantSouhaite > moitieCapital || montantSouhaite <= 0) {
+                    alert(`Selon les termes du contrat, vous ne pouvez pas demander ce montant.`);
+                    // alert(`Selon les termes du contrat, le montant souhaité doit être supérieur à 0 et inferieur ou égal à ${moitieCapitalFormate} FCFA.`);
+                    msgError.text(`Selon les termes du contrat, vous ne pouvez pas demander ce montant.`).show();
+                    // ajouter une bordure rouge si le montant souhaité est invalide
+                    montantSouhaiteField.classList.add('is-invalid');
+                    montantSouhaiteField.classList.remove('is-valid');
+                    return; // Arrêter si le montant souhaité n'est pas valide
+                }
             }
 
             // Vérification et envoi de l'OTP
