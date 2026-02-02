@@ -538,16 +538,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert(`Un message contenant un code de confirmation a été envoyé sur le numéro ${phoneNumber}.`);
+                    Swal.fire({
+                        icon: "success",
+                        title: "Code de confirmation envoyé !",
+                        text: `Un code de confirmation a été envoyé sur le numéro ${phoneNumber}`,
+                        showConfirmButton: true,
+                        confirmButtonText: "OK",
+                        timer: 2000
+                    });
                     startOtpTimer(); // Démarrer le décompte après l'envoi de l'OTP
                     return true;
                 } else {
-                    alert("Une erreur s'est produite lors de l'envoi du code de confirmation.");
+                    Swal.fire({
+                        icon: "error",
+                        title: "Erreur",
+                        text: "Une erreur s'est produite lors de l'envoi du code de confirmation.",
+                    });
+                    // alert("Une erreur s'est produite lors de l'envoi du code de confirmation.");
                     // alert(result.error || "Une erreur s'est produite lors de l'envoi du code de confirmation.");
                     return false;
                 }
             } catch (error) {
-                alert("Une erreur s'est produite lors de l'envoi du code de confirmation.");
+                Swal.fire({
+                    icon: "error",
+                    title: "Erreur de connexion",
+                    text: "Impossible de contacter le serveur OTP. Veuillez réessayer.",
+                });
+                // alert("Une erreur s'est produite lors de l'envoi du code de confirmation.");
                 console.error(error);
                 return false;
             }
@@ -567,15 +584,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert(`Un message contenant un code de confirmation a été envoyé sur le numéro ${phoneNumber}.`);
+                    Swal.fire({
+                        icon: "success",
+                        title: "Code de confirmation envoyé !",
+                        text: `Un code de confirmation a été envoyé sur le numéro ${phoneNumber}`,
+                        showConfirmButton: true,
+                        confirmButtonText: "OK",
+                        timer: 2000
+                    });
+                    // alert(`Un message contenant un code de confirmation a été envoyé sur le numéro ${phoneNumber}.`);
                     startOtpTimer(); // Démarrer le décompte après l'envoi de l'OTP
                     return true;
                 } else {
-                    alert(result.error || "Une erreur s'est produite lors de l'envoi du code de confirmation.");
+                    Swal.fire({
+                        icon: "error",
+                        title: "Erreur",
+                        text: result.error || "Une erreur s'est produite lors de l'envoi du code de confirmation.",
+                    });
+                    // alert(result.error || "Une erreur s'est produite lors de l'envoi du code de confirmation.");
                     return false;
                 }
             } catch (error) {
-                alert("Une erreur s'est produite lors de l'envoi du code de confirmation.");
+                Swal.fire({
+                    icon: "error",
+                    title: "Erreur de connexion",
+                    text: "Impossible de contacter le serveur OTP. Veuillez réessayer.",
+                });
+                // alert("Une erreur s'est produite lors de l'envoi du code de confirmation.");
                 console.error(error);
                 return false;
             }
