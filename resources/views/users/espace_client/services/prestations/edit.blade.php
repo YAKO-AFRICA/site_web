@@ -105,6 +105,9 @@
                                 </div>
                                 <div class="flex-grow-1 ms-2">
                                     <h6 class="mb-0" style="font-size: 10px">
+                                    @if ($doc->filename != '' || $doc->filename != null || $doc->filename != '.')
+                                        {{ $doc->filename }}
+                                    @else
                                         {{ $doc->type == 'Police'
                                             ? "Police du contrat d'assurance"
                                             : ($doc->type == 'bulletin'
@@ -120,6 +123,7 @@
                                                                 : ($doc->type == 'etatPrestation'
                                                                     ? 'Fiche de la prestation'
                                                                     : '')))))) }}
+                                    @endif
                                     </h6>
                                     <p class="mb-0 text-secondary" style="font-size: 0.6em">
                                         {{ $doc->created_at ?? '' }}
@@ -136,7 +140,10 @@
                                     <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Preview
+                                                <h5 class="modal-title" id="exampleModalLabel">
+                                                @if ($doc->filename != '' || $doc->filename != null || $doc->filename != '.')
+                                                    {{ $doc->filename }}
+                                                @else
                                                     {{ $doc->type == 'Police'
                                                         ? "Police du contrat d'assurance"
                                                         : ($doc->type == 'bulletin'
@@ -152,6 +159,7 @@
                                                                             : ($doc->type == 'etatPrestation'
                                                                                 ? 'Fiche de la prestation'
                                                                                 : '')))))) }}
+                                                @endif
                                                 </h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>

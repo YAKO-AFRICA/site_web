@@ -63,9 +63,10 @@
 
                                                     <div class="input-group">
                                                         <input type="file" name="libelle[]"
-                                                            accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                            accept="image/*, .pdf"
                                                             class="form-control"
                                                             onchange="previewFilesPrest(event, 'previewDocName')" required>
+                                                        <input type="hidden" name="filename[]" value=".">
                                                         <input type="hidden" name="type[]" value="" id="DocName"
                                                             required>
                                                     </div>
@@ -94,8 +95,9 @@
                                                     <strong><small>(Recto)</small></strong> </label>
                                                 <div class="input-group">
                                                     <input id="CNIrecto-file-uploa" class="form-control" type="file"
-                                                        name="libelle[]" accept=".jpg, .png, image/jpeg, image/png"
+                                                        name="libelle[]" accept="image/*" capture="environment"
                                                         onchange="previewFilesPrest(event, 'previewCNIrecto')" required>
+                                                    <input type="hidden" name="filename[]" value="CNI recto">
                                                     <input type="hidden" name="type[]" value="CNIrecto">
                                                 </div>
                                                 <div id="previewCNIrecto" class="mt-3 preview-area"></div>
@@ -106,8 +108,9 @@
                                                     <strong><small>(Verso)</small></strong> </label>
                                                 <div class="input-group">
                                                     <input id="CNIverso-file-uploa" class="form-control" type="file"
-                                                        name="libelle[]" accept=".jpg, .png, image/jpeg, image/png"
+                                                        name="libelle[]" accept="image/*" capture="environment"
                                                         onchange="previewFilesPrest(event, 'previewCNIverso')" required>
+                                                    <input type="hidden" name="filename[]" value="CNI verso">
                                                     <input type="hidden" name="type[]" value="CNIverso">
                                                 </div>
 
@@ -137,9 +140,10 @@
                                                     <div class="input-group">
                                                         <input id="FicheID-file-uploa" class="form-control"
                                                             type="file" name="libelle[]"
-                                                            accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                            accept="image/*, .pdf"
                                                             onchange="previewFilesPrest(event, 'previewFicheIDNum')"
                                                             required>
+                                                        <input type="hidden" name="filename[]" value="Fiche d'identification du n° de telephone">
                                                         <input type="hidden" name="type[]" value="FicheIDNum" required>
                                                     </div>
                                                     <div id="previewFicheIDNum" class="mt-3 preview-area"></div>
@@ -167,9 +171,10 @@
                                                     <div class="input-group">
 
                                                         <input type="file" name="libelle[]" class="form-control"
-                                                            accept=".jpg, .png, image/jpeg, image/png, .pdf"
+                                                            accept="image/*, .pdf"
                                                             onchange="previewFilesPrest(event, 'previewRIB')" required>
 
+                                                        <input type="hidden" name="filename[]" value="RIB">
                                                         <input type="hidden" name="type[]" value="RIB">
                                                     </div>
                                                     <div id="previewRIB" class="mt-3 preview-area"></div>
@@ -232,7 +237,7 @@
                             $types['Signature'] == null) --}}
                     @if (
                         $conditionsInvalides)
-                        <button type="submit" class="btn-prime btn-prime-two px-4">Submit <i
+                        <button type="submit" class="btn-prime btn-prime-two px-4">Enregistrer <i
                                 class='bx bx-check'></i></button>
                     @endif
                     <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>

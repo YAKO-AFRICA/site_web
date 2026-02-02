@@ -1100,6 +1100,7 @@ class DemandePrestationController extends Controller
                     if ($moyenPaiement != 'Virement_Bancaire') {
                         foreach ($request->file('libelle') as $index => $file) {
                             $fileType = $request->type[$index];
+                            $fileLabel = $request->filename[$index];
 
                             // Si le fichier est de type 'IBAN', ne pas l'enregistrer
                             if ($fileType === 'RIB') {
@@ -1118,12 +1119,14 @@ class DemandePrestationController extends Controller
                                     'libelle' => $fileName,
                                     'path' => 'storage/prestations/docsPrestation/' . $fileName,
                                     'type' => $fileType,
+                                    'filename' => $fileLabel,
                                 ];
                             }
                         }
                     } else {
                         foreach ($request->file('libelle') as $index => $file) {
                             $fileType = $request->type[$index];
+                            $fileLabel = $request->filename[$index];
 
                             // Si le fichier est de type 'FicheIDNum', ne pas l'enregistrer
                             if ($fileType === 'FicheIDNum') {
@@ -1142,6 +1145,7 @@ class DemandePrestationController extends Controller
                                     'libelle' => $fileName,
                                     'path' => 'storage/prestations/docsPrestation/' . $fileName,
                                     'type' => $fileType,
+                                    'filename' => $fileLabel,
                                 ];
                             }
                         }
@@ -1173,6 +1177,7 @@ class DemandePrestationController extends Controller
                             'libelle' => $mergedFileName,
                             'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
                             'type' => 'CNI',
+                            'filename' => 'CNI complète',
                         ];
                     }
 
@@ -1840,6 +1845,7 @@ class DemandePrestationController extends Controller
 
                 foreach ($request->file('libelle') as $index => $file) {
                     $fileType = $request->type[$index]; // Utilisation de l'index pour obtenir le type
+                    $fileLabel = $request->filename[$index];
 
                     if ($fileType === 'CNIrecto') {
                         $rectoFile = $file;
@@ -1853,6 +1859,7 @@ class DemandePrestationController extends Controller
                             'libelle' => $fileName,
                             'path' => 'storage/prestations/docsPrestation/' . $fileName,
                             'type' => $fileType,
+                            'filename' => $fileLabel,
                         ];
                     }
                 }
@@ -1884,6 +1891,7 @@ class DemandePrestationController extends Controller
                         'libelle' => $mergedFileName,
                         'path' => 'storage/prestations/docsPrestation/' . $mergedFileName,
                         'type' => 'CNI',
+                        'filename' => 'CNI complète',
                     ];
                 }
                 // dd($prestationFiles);
@@ -2187,6 +2195,7 @@ class DemandePrestationController extends Controller
             TblDocPrestation::create([
                 'idPrestation' => $prestation->id,
                 'libelle' => $fileName,
+                'filename' => 'Fiche de demande de prestation',
                 'path' => 'storage/prestations/etatPrestations/' . $fileName,
                 'type' => 'etatPrestation',
             ]);
