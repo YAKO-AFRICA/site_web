@@ -76,12 +76,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-6 d-flex justify-content-start gap-3">
-                                        <button class="btn2 border-btn2 px-4" type="button"
+                                        <button class="btn2 border-btn2 p-2" type="button"
                                             onclick="stepper1.previous()"><i
-                                                class='bx bx-left-arrow-alt me-2 fs-4'></i>Retour </button>
+                                                class='bx bx-left-arrow-alt fs-4'></i>Retour </button>
                                     </div>
                                     <div class="col-6 d-flex justify-content-end gap-3">
-                                        <button type="button" class="collapsed btn-prime" type="button"
+                                        <button type="button" class="collapsed btn-prime p-2" type="button"
                                             data-bs-toggle="collapse" id="btnContratSuivant" data-bs-target="#collapseTwo"
                                             aria-expanded="false" aria-controls="collapseTwo">Suivant <i
                                                 class='bx bx-right-arrow-alt fs-4'></i></button>
@@ -256,18 +256,18 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-6 d-flex justify-content-start gap-3">
-                                        <button class="btn2 border-btn2 px-4" type="button"
+                                        <button class="btn2 border-btn2 p-2" type="button"
                                             data-bs-toggle="collapse" data-bs-target="#collapseOne"
                                             aria-expanded="true" aria-controls="collapseOne"><i
-                                                class='bx bx-left-arrow-alt me-2 fs-4'></i>Retour </button>
+                                                class='bx bx-left-arrow-alt fs-4'></i>Retour </button>
                                     </div>
                                     <div class="col-6 d-flex justify-content-end gap-3">
-                                        <button class="btn-prime" type="button" id="btnIbanPaiementSuivant" data-bs-toggle="collapse"
+                                        <button class="btn-prime p-2" type="button" id="btnIbanPaiementSuivant" data-bs-toggle="collapse"
                                             data-bs-target="#collapseThree" aria-expanded="false"
                                             aria-controls="collapseThree">Suivant <i
                                                 class='bx bx-right-arrow-alt fs-4'></i></button>
 
-                                        <button class="btn-prime" type="button" id="btnTelPaiementSuivant" data-bs-toggle="collapse"
+                                        <button class="btn-prime p-2" type="button" id="btnTelPaiementSuivant" data-bs-toggle="collapse"
                                             data-bs-target="#collapseThree" aria-expanded="false"
                                             aria-controls="collapseThree">Suivant <i
                                                 class='bx bx-right-arrow-alt fs-4'></i></button>
@@ -316,10 +316,10 @@
                             </div> --}}
                                 <div class="row">
                                     <div class="col-6 d-flex justify-content-start gap-3">
-                                        <button class="btn2 border-btn2 px-4" type="button"
+                                        <button class="btn2 border-btn2 p-2" type="button"
                                             data-bs-toggle="collapse" data-bs-target="#collapseTwo"
                                             aria-expanded="false" aria-controls="collapseTwo"><i
-                                                class='bx bx-left-arrow-alt me-2 fs-4'></i>Retour </button>
+                                                class='bx bx-left-arrow-alt fs-4'></i>Retour </button>
                                     </div>
                                     <div class="col-6 d-flex justify-content-end gap-3">
                                         {{-- vers etape 3 --}}
@@ -329,7 +329,7 @@
                                         </button> --}}
 
                                         {{-- vers confirmation otp --}}
-                                        <button class="btn-prime next-btn" type="button" id="next-stepper3"
+                                        <button class="btn-prime next-btn p-2" type="button" id="next-stepper3"
                                             data-next="etapePrest5">
                                             Suivant <i class='bx bx-right-arrow-alt fs-4'></i>
                                         </button>
@@ -378,8 +378,8 @@
                             {{-- <button class="btn2 border-btn2 prev-btn" type="button" data-prev="etapePrest4">
                                       <i class='bx bx-left-arrow-alt fs-4'></i>
                                   </button> --}}
-                            <button class="btn-prime px-4 next-step-btn2" type="button">étape 3<i
-                                    class='bx bx-right-arrow-alt ms-2 fs-4'></i></button>
+                            <button class="btn-prime p-2 next-step-btn2" type="button">étape 3<i
+                                    class='bx bx-right-arrow-alt fs-4'></i></button>
                         </div>
                     </div>
                 </div>

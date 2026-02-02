@@ -111,32 +111,11 @@
                 </div>
                 <p class="text-center"><small class="text-danger"><i>Les champs obligatoires sont marqués par
                             (<strong>*</strong>) </i></small></p>
-                {{-- <div class="row g-3 mb-3 text-center">
-                    <span class="form-label">Quel est votre sexe ?</span>
-                    @php
-                        $sexe = Auth::guard('customer')->user()->membre->sexe ?? '';
-                    @endphp
-                    <div class="row d-flex justify-content-center align-items-center mt-3 gap-3">
-                        <div class="gender-option col-lg-3 col-md-3 col-sm-12">
-                            <input type="radio" name="sexe" {{ $sexe === 'M' ? 'checked' : '' }} value="M"
-                                id="male" class="gender-input">
-                            <label for="male" class="gender-label d-flex align-items-center">
-                                <span class="gender-icon">♂</span> Masculin
-                            </label>
-                        </div>
-                        <div class="gender-option col-lg-3 col-md-3 col-sm-12">
-                            <input type="radio" name="sexe" {{ $sexe === 'F' ? 'checked' : '' }} value="F"
-                                id="female" class="gender-input">
-                            <label for="female" class="gender-label d-flex align-items-center">
-                                <span class="gender-icon">♀</span> Féminin
-                            </label>
-                        </div>
-                    </div>
-                </div> --}}
+    
                 <div class="row">
                     <div class="col-12 d-flex justify-content-end gap-3">
-                        <button class="btn-prime btn-prime-two next-step-btn" type="button">Suivant <i
-                                class='bx bx-right-arrow-alt fs-4 ms-2'></i></button>
+                        <button class="btn-prime btn-prime-two next-step-btn p-2" type="button">Suivant <i
+                                class='bx bx-right-arrow-alt fs-4'></i></button>
                     </div>
                 </div>
 

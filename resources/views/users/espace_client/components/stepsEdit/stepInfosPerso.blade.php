@@ -86,8 +86,8 @@
                 <p class="text-center"><small class="text-danger"><i>Les champs obligatoires sont marqués par (<strong>*</strong>) </i></small></p>
                 <div class="row">
                     <div class="col-12 d-flex justify-content-end gap-3">
-                        <button class="btn-prime next-step-btnEdit" type="button">Suivant <i
-                            class='bx bx-right-arrow-alt fs-4 ms-2'></i></button>
+                        <button class="btn-prime next-step-btnEdit p-2" type="button">Suivant <i
+                            class='bx bx-right-arrow-alt fs-4'></i></button>
                     </div>
                 </div>
                 
