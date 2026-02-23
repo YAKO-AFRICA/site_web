@@ -174,7 +174,7 @@ class RdvController extends Controller
                     $dataResponse =[
                         'type'=>'success',
                         'urlback'=> route('customer.rdv.mesRdv'),
-                        'message'=>"RDV N° $coderdv enregistré avec succes!",
+                        'message'=>"RDV N° $coderdv enregistré avec succes ! Vous allez recevoir un message de confirmation de la date effective de reception",
                         'code'=>200,
                     ];
                     DB::commit();
