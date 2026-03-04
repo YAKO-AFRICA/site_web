@@ -267,7 +267,7 @@
             altFormat: "j F, Y", // Format alternatif en français (ex: 10 décembre, 2024)
             dateFormat: "d-m-Y", // Format réel de la date envoyée (10-12-2024)
             minDate: "today", // La date minimale est aujourd'hui
-            // locale: "fr" // Définit la langue en français
+            maxDate: new Date().fp_incr(31) // +31 jours
         });
 
         $(".date-range").flatpickr({
