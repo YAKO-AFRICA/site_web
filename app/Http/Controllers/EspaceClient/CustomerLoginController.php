@@ -666,11 +666,11 @@ class CustomerLoginController extends Controller
                                 'code' => 200,
                             ]);
                         } else {
-                            if ($data['details'][0]['OnStdbyOff'] != "1") {
+                            if ($data['details'][0]['OnStdbyOff'] == "3") {
                                 return response()->json([
                                     'type' => 'error',
                                     'urlback' => '',
-                                    'message' => 'Ce contrat est arreté ou en veille.',
+                                    'message' => 'Ce contrat est arreté.',
                                     'code' => 400,
                                 ]);
                             } else {
