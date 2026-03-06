@@ -126,7 +126,7 @@ class CustomerController extends Controller
                             ]);
                         }
                     } else {
-                        if ($data['details'][0]['OnStdbyOff'] != "1") {
+                        if ($data['details'][0]['OnStdbyOff'] == "3") {
                             return response()->json([
                                 'type' => 'error',
                                 'urlback' => '',
