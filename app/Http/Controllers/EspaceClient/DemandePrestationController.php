@@ -353,7 +353,7 @@ class DemandePrestationController extends Controller
                 'TotalEncaissement' => array_sum(array_column($encaissements, 'RegltMontant'))
             ]);
 
-            if ($details['OnStdbyOff'] != "1") {
+            if ($details['OnStdbyOff'] == "3") {
                 return $this->jsonError(
                     "Le contrat N°{$prestation->idcontrat} est arrêté ou en veille."
                 );
