@@ -670,7 +670,7 @@ class CustomerLoginController extends Controller
                                 return response()->json([
                                     'type' => 'error',
                                     'urlback' => '',
-                                    'message' => 'Ce contrat est arreté.',
+                                    'message' => 'Ce contrat est arreté ou en veille.',
                                     'code' => 400,
                                 ]);
                             } else {

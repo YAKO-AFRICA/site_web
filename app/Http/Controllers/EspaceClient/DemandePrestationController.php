@@ -467,7 +467,7 @@ class DemandePrestationController extends Controller
 
                     // dd($data);
                     // dd($data, $prime, $TotalEncaissement, $contisationPourcentage, $cumulCotisationTerme, $Duree); 
-                    if ($data['details'][0]['OnStdbyOff'] != "1") {
+                    if ($data['details'][0]['OnStdbyOff'] == "3") {
                         return response()->json([
                             'type' => 'error',
                             'urlback' => '', // URL du PDF
@@ -588,7 +588,7 @@ class DemandePrestationController extends Controller
 
                     // dd($data);
                     // dd($data, $prime, $TotalEncaissement, $contisationPourcentage, $cumulCotisationTerme, $Duree); 
-                    if ($data['details'][0]['OnStdbyOff'] != "1") {
+                    if ($data['details'][0]['OnStdbyOff'] == "3") {
                         return response()->json([
                             'type' => 'error',
                             'urlback' => '', // URL du PDF
