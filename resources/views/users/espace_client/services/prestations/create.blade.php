@@ -102,6 +102,7 @@
                         <input type="hidden" id="tokGenerate" name="tokGenerate" value="{{ $tok }}">
                         <input type="hidden" name="typeprestation_id" id="typeprestation_id" value="{{ $typePrestation->id ?? '' }}">
                         @include('users.espace_client.components.prestations.infosPrest')
+                        <input type="hidden" name="actionOperation" id="actionOperation" value="{{ $action ?? '' }}">
 
                         @php
                             $keyUuid = $token['key_uuid'];
@@ -121,6 +122,14 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <!-- Leaflet Geocoding Plugin -->
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    {{-- @include('users.espace_client.services.prestations.modals.signModal')
+    @include('users.espace_client.services.prestations.modals.otpModal') --}}
+
+    <script>
+        const SIGN_API = "{{ config('services.sign_api') }}";
+        const OTP_API = "{{ config('services.otp_api') }}";
+    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -229,19 +238,19 @@
             docMsgesucces.text("").hide();
 
             function updateDocName() {
-                if (typeFileSelect.value === 'AttestationPerteContrat') {
-                    typeFileSelect.classList.add('is-invalid');
-                    typeFileSelect.classList.remove('is-valid');
+                {{-- if (typeFileSelect.value === 'AttestationPerteContrat') {
+                    {{-- typeFileSelect.classList.add('is-invalid');
+                    typeFileSelect.classList.remove('is-valid'); --}}
                     // nextStepper3.classList.add('d-none');
                     // retirer le requirement de fichier
-                    FileUpload.required = false;
+                    FileUpload.required = true;
                     docNameInput.value = '';
                     SingletypeInput.value = typeFileSelect.value;
                     docMsgerror.text(
                             "Vous êtes prié de bien vouloir charger le duplicata de votre police ou bulletin du contrat d'assurance ou rendez-vous dans une agence YAKO AFRICA pour obtenir le duplicata si vous n'en avez pas."
                         )
                         .show(); // Mettre à jour le texte de l'erreur.").show(); // Mettre à jour le texte de l'erreur.").show(); // Mettre à jour le texte de l'erreur.").show(); // Mettre à jour le texte de l'erreur.").show();
-                } else {
+                } else { --}}
                     typeFileSelect.classList.remove('is-invalid');
                     typeFileSelect.classList.add('is-valid');
                     // nextStepper3.classList.remove('d-none');
@@ -254,7 +263,7 @@
                     docMsgerror.text("").hide();
                     docMsgesucces.text("").hide();
                     docNameInput.value = typeFileSelect.value; // Met à jour avec la valeur sélectionnée
-                }
+                {{-- } --}}
 
             }
 
@@ -268,15 +277,10 @@
 
     <script>
         let TotalEncaissement = @json($TotalEncaissement);
-        // alert(TotalEncaissement);
     </script>
     @include('users.espace_client.services.prestations.modals.detailContratModal')
     @include('users.espace_client.services.prestations.modals.signModal')
-
-    <script>
-        const SIGN_API = "{{ config('services.sign_api') }}";
-    </script>
-
+    
     <script>
         let pollingInterval;
 

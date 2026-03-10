@@ -668,6 +668,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const montantSouhaiteField = document.getElementById('montantSouhaite');
     const typeprestation_id = document.getElementById("typeprestation_id").value;
+    const actionOperation = document.getElementById("actionOperation").value;
     const typeprestation_idNotOut = ['2','4','5'];
     const typeprestation_idOut = ['3', '6', '7', '8', '9'];
     const AutresInfos = document.getElementById('AutresInfos');
@@ -797,67 +798,65 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-    if (typeprestation_idOut.includes(typeprestation_id)) {
+    // if (typeprestation_idOut.includes(typeprestation_id)) {
+    if (actionOperation != 'new') {
             btnContratSuivant.disabled = false;
             montantSouhaiteField.required = false;
             montantSouhaiteField.readOnly = true;
-            // montantSouhaiteField.value = "0";
     }else{
-        if(montantSouhaiteField.value != "" || montantSouhaiteField.value != null || montantSouhaiteField.value != undefined){
-            btnContratSuivant.disabled = false;
-            montantSouhaiteField.required = false;
-            montantSouhaiteField.readOnly = true;
-            // montantSouhaiteField.min = montantSouhaiteField.value;
-            // montantSouhaiteField.max = montantSouhaiteField.value;
-        }else{
+        // if(montantSouhaiteField.value != "" || montantSouhaiteField.value != null || montantSouhaiteField.value != undefined){
+        //     btnContratSuivant.disabled = false;
+        //     montantSouhaiteField.required = false;
+        //     montantSouhaiteField.readOnly = true;
+        // }else{
             
-            montantSouhaiteField.addEventListener('input', function (e) {
-                let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, ''); // Supprime espaces et caractères non numériques
-    
-                if (value) {
-                    e.target.value = parseInt(value, 10).toLocaleString('fr-FR'); // Formate avec séparateurs de milliers
-                } else {
-                    e.target.value = ""; // Champ vide si suppression complète
-                }
-    
-                // Vérifier si le montant souhaité est valide
-                const montantSouhaite = parseInt(value, 10) || 0; // Valeur saisie ou 0 si vide
-    
-                const capital = parseFloat(capitalField.value.replace(/\s/g, "")) || 0; // Supprimer les espaces avant conversion
-                const TotalEncaissement =
-                    parseFloat(TotalEncaissementField.value.replace(/\s/g, "")) || 0; // Supprimer les espaces avant conversion
-                // const moitieCapital = capital / 2;
-                const moitieCapital = TotalEncaissement / 2;
-                const moitieCapitalFormate = moitieCapital.toLocaleString("fr-FR");
-    
-                // Réinitialiser les messages d'erreur et de succès
-                msgError.text("").hide();
-                msgSuccess.text("").hide();
-                countError.text("").hide();
-                countSuccess.text("").hide();
-    
-                if (montantSouhaite > moitieCapital || montantSouhaite <= 0) {
-                    msgError.text(`Selon les termes du contrat, vous ne pouvez pas demander ce montant.`).show();
-                    // msgError.text(`Selon les termes du contrat, le montant souhaité doit être inférieur ou égal à ${moitieCapitalFormate} FCFA.`).show();
-                    montantSouhaiteField.classList.add('is-invalid');
-                    montantSouhaiteField.classList.remove('is-valid');
-                    // desactiver le bouton
-                    btnContratSuivant.disabled = true;
-                } else if (montantSouhaiteField.value.trim() === "") {
-                    montantSouhaiteField.classList.remove('is-invalid');
-                    montantSouhaiteField.classList.remove('is-valid');
-                    // desactiver le bouton
-                    btnContratSuivant.disabled = true;
-                } else if (montantSouhaite <= moitieCapital && montantSouhaite > 0) {
-                    msgSuccess.text(`Le montant définitif sera calculé en fonction de la situation du contrat.`).show();
-                    montantSouhaiteField.classList.remove('is-invalid');
-                    montantSouhaiteField.classList.add('is-valid');
-                    // activer le bouton
-                    btnContratSuivant.disabled = false;
-                }
-            });
+            
+        // }
+        montantSouhaiteField.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/g, ''); // Supprime espaces et caractères non numériques
 
-        }
+            if (value) {
+                e.target.value = parseInt(value, 10).toLocaleString('fr-FR'); // Formate avec séparateurs de milliers
+            } else {
+                e.target.value = ""; // Champ vide si suppression complète
+            }
+
+            // Vérifier si le montant souhaité est valide
+            const montantSouhaite = parseInt(value, 10) || 0; // Valeur saisie ou 0 si vide
+
+            const capital = parseFloat(capitalField.value.replace(/\s/g, "")) || 0; // Supprimer les espaces avant conversion
+            const TotalEncaissement =
+                parseFloat(TotalEncaissementField.value.replace(/\s/g, "")) || 0; // Supprimer les espaces avant conversion
+            // const moitieCapital = capital / 2;
+            const moitieCapital = TotalEncaissement / 2;
+            const moitieCapitalFormate = moitieCapital.toLocaleString("fr-FR");
+
+            // Réinitialiser les messages d'erreur et de succès
+            msgError.text("").hide();
+            msgSuccess.text("").hide();
+            countError.text("").hide();
+            countSuccess.text("").hide();
+
+            if (montantSouhaite > moitieCapital || montantSouhaite <= 0) {
+                msgError.text(`Selon les termes du contrat, vous ne pouvez pas demander ce montant.`).show();
+                // msgError.text(`Selon les termes du contrat, le montant souhaité doit être inférieur ou égal à ${moitieCapitalFormate} FCFA.`).show();
+                montantSouhaiteField.classList.add('is-invalid');
+                montantSouhaiteField.classList.remove('is-valid');
+                // desactiver le bouton
+                btnContratSuivant.disabled = true;
+            } else if (montantSouhaiteField.value.trim() === "") {
+                montantSouhaiteField.classList.remove('is-invalid');
+                montantSouhaiteField.classList.remove('is-valid');
+                // desactiver le bouton
+                btnContratSuivant.disabled = true;
+            } else if (montantSouhaite <= moitieCapital && montantSouhaite > 0) {
+                msgSuccess.text(`Le montant définitif sera calculé en fonction de la situation du contrat.`).show();
+                montantSouhaiteField.classList.remove('is-invalid');
+                montantSouhaiteField.classList.add('is-valid');
+                // activer le bouton
+                btnContratSuivant.disabled = false;
+            }
+        });
 
         montantSouhaiteField.addEventListener("blur", function (e) {
             if (e.target.value.trim() !== "") {
@@ -929,7 +928,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const TotalEncaissement = parseFloat(TotalEncaissementField.value.replace(/\s/g, "")) || 0; // Supprimer les espaces avant conversion
             const moitieCapital = TotalEncaissement / 2;
             const moitieCapitalFormate = moitieCapital.toLocaleString('fr-FR');
-            if (typeprestation_idNotOut.includes(typeprestation_id)) {
+            // if (typeprestation_idNotOut.includes(typeprestation_id)) {
+            if (actionOperation == 'new') {
                 if (montantSouhaite > moitieCapital || montantSouhaite <= 0) {
                     alert(`Selon les termes du contrat, vous ne pouvez pas demander ce montant.`);
                     // alert(`Selon les termes du contrat, le montant souhaité doit être supérieur à 0 et inferieur ou égal à ${moitieCapitalFormate} FCFA.`);
@@ -1209,36 +1209,37 @@ document.addEventListener('DOMContentLoaded', function () {
         let phoneNumber = '225' + phone;
         let firstTwoDigits = phone.substring(0, 2); // Extraire les deux premiers chiffres de phone
 
-        if (firstTwoDigits == '07' || firstTwoDigits == '05') {
-            try {
-                const response = await fetch('/api/send-otpByOrangeAPI', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    },
-                    body: JSON.stringify({
-                        TelPaiement: phoneNumber
-                    }),
-                });
+        // if (firstTwoDigits == '07' || firstTwoDigits == '05') {
+        //     try {
+        //         const response = await fetch('/api/send-otpByOrangeAPI', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        //             },
+        //             body: JSON.stringify({
+        //                 TelPaiement: phoneNumber
+        //             }),
+        //         });
 
-                const result = await response.json();
+        //         const result = await response.json();
 
-                if (response.ok) {
-                    alert(`Un message contenant un code de confirmation a été envoyé sur le numéro ${phoneNumber}.`);
-                    startOtpTimer(); // Démarrer le décompte après l'envoi de l'OTP
-                    return true;
-                } else {
-                    alert("Une erreur s'est produite lors de l'envoi du code de confirmation.");
-                    // alert(result.error || "Une erreur s'est produite lors de l'envoi du code de confirmation.");
-                    return false;
-                }
-            } catch (error) {
-                alert("Une erreur s'est produite lors de l'envoi du code de confirmation.");
-                console.error(error);
-                return false;
-            }
-        } else if (firstTwoDigits == '01') {
+        //         if (response.ok) {
+        //             alert(`Un message contenant un code de confirmation a été envoyé sur le numéro ${phoneNumber}.`);
+        //             startOtpTimer(); // Démarrer le décompte après l'envoi de l'OTP
+        //             return true;
+        //         } else {
+        //             alert("Une erreur s'est produite lors de l'envoi du code de confirmation.");
+        //             // alert(result.error || "Une erreur s'est produite lors de l'envoi du code de confirmation.");
+        //             return false;
+        //         }
+        //     } catch (error) {
+        //         alert("Une erreur s'est produite lors de l'envoi du code de confirmation.");
+        //         console.error(error);
+        //         return false;
+        //     }
+        // } else 
+        if (firstTwoDigits == '07' || firstTwoDigits == '05' || firstTwoDigits == '01') {
             try {
                 const response = await fetch('/api/send-otpByInfobipAPI', {
                     method: 'POST',
@@ -2120,8 +2121,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
     // Initialisation du timer
-    // let otpTimer = document.getElementById('otp-timer');
-    // let timeLeft = 5 * 60; // 5 minutes en secondes
     let otpInputs = document.querySelectorAll('.otp-input');
     // let resendOtpLink = document.querySelector('.resend-otp-link');
     let nextStepBtn = document.querySelector('.next-step-btn2');

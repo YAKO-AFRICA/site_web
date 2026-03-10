@@ -60,7 +60,7 @@
                                     </div>
                                     <div class="col-12 col-lg-6">
                                         <label for="montant" class="form-label">
-                                        @if($typePrestation && $typePrestation->impact == 1)
+                                        @if($action == 'next')
                                             Montant (Valeur de rachat du contrat) 
                                             @else
                                             Quel est le montant que vous souhaitez
@@ -216,19 +216,11 @@
                                             <span class="text-center"><i id="ibanMsgError" class="text-danger"></i></span>
                                             <span class="text-center"><i id="ibanMsgSuccess" class="text-success"></i></span>
                                         </div>
-                                        <input type="hidden" class="form-control" name="IBAN" id="IBAN"
-                                                    >
+                                        <input type="hidden" class="form-control" name="IBAN" id="IBAN">
                                             
                                         <input type="hidden" name="TelOtp" value="" id="TelOtp">
                                     </div>
-                                    {{-- <div class="col-12">
-                                                
-                                        <input type="hidden" class="form-control" name="ConfirmIBAN"
-                                            id="ConfirmIBAN"
-                                            placeholder="Veuillez resaisir l'IBAN sur lequel vous souhaitez recevoir le paiement">
-                                            <small><i id="ibanConfirmMsgError" class="text-danger"></i></small>
-                                            <small><i id="ibanConfirmMsgSuccess" class="text-success"></i></small>
-                                    </div> --}}
+                                    
                                     <small class="text-center"><span class="form-label star"><i>Veuillez saisir le RIB de votre compte
                                                 courant </i></span></small>
                                 </div>
