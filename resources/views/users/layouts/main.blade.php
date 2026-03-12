@@ -420,6 +420,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById("contactsubmitForm").addEventListener("submit", function(e){
 
+            const recaptcha_token = document.getElementById("recaptcha_token");
+            
+
             e.preventDefault();
 
             const form = this;
@@ -428,6 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: 'Traitement en cours...',
                 text: 'Veuillez patienter...',
                 allowOutsideClick: false,
+                showConfirmButton: false,
                 didOpen: () => {
                     Swal.showLoading();
                 },
@@ -438,7 +442,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'submit'})
                 .then(function (token) {
 
-                    document.getElementById("recaptcha_token").value = token;
+                    recaptcha_token.value = token;
+                    console.log("reCAPTCHA token:", token);
+                    console.log("reCAPTCHA token element:", recaptcha_token);
 
                     const formData = new FormData(form);
 
