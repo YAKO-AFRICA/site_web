@@ -226,12 +226,13 @@ class SouscritionController extends Controller
     public function store(Request $request)
     {
 
-        Log::info('Token reçu:', ['token' => $request->recaptcha_token]);
+        // Log::info('Token reçu:', ['token' => $request->recaptcha_token]);
         // Honeypot anti-spam
         if ($request->filled('website')) {
             return response()->json([
                 'type' => 'error',
                 'message' => 'Spam détecté',
+                'urlback' => '',
                 'code' => 403
             ]);
         }
@@ -254,6 +255,7 @@ class SouscritionController extends Controller
             return response()->json([
                 'type' => 'error',
                 'message' => 'reCAPTCHA invalide ' . $errorCodes,
+                'urlback' => '',
                 'code' => 403
             ]);
         }
@@ -263,6 +265,7 @@ class SouscritionController extends Controller
             return response()->json([
                 'type' => 'error',
                 'message' => 'Spam détecté par reCAPTCHA',
+                'urlback' => '',
                 'code' => 403
             ]);
         }
@@ -350,6 +353,7 @@ class SouscritionController extends Controller
             return response()->json([
                 'type' => 'error',
                 'message' => "Erreur lors de l'enregistrement!",
+                'urlback' => '',
                 'code' => 500
             ]);
         } catch (\Throwable $th) {
@@ -359,6 +363,7 @@ class SouscritionController extends Controller
             return response()->json([
                 'type' => 'error',
                 'message' => "Erreur système!",
+                'urlback' => '',
                 'code' => 500
             ]);
         }

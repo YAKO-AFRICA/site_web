@@ -791,7 +791,7 @@
                         
                     </form> --}}
 
-                        <form action="{{ route('admin.subscription.store') }}" method="POST" class="submitForm" enctype="multipart/form-data" onsubmit="return validateForm()">
+                        {{-- <form id="contactsubmitForm" action="{{ route('admin.subscription.store') }}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                             @csrf
 
                             <div class="row">
@@ -840,11 +840,64 @@
                             <!-- Token reCAPTCHA -->
                             <input type="hidden" name="recaptcha_token" id="recaptcha_token">
 
-                            <button type="submit"  class="btn btn-primary">
+                            <button type="submit" id="submitBtn" class="btn btn-primary">
                                 Soumettre
                             </button>
 
-                        </form>
+                        </form> --}}
+                        <form id="contactsubmitForm" method="POST">
+    @csrf
+
+    <div class="row">
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-grp">
+                    <input type="text" name="customer_firstname" placeholder="Nom" required>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-grp">
+                    <input type="number" name="customer_phone" placeholder="Téléphone" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-grp">
+                    <input type="email" name="customer_email" placeholder="Email" required>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-grp">
+                    <input type="text" name="object" placeholder="Objet" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-grp">
+            <textarea name="content" placeholder="Message" required></textarea>
+        </div>
+
+    </div>
+
+    <input type="hidden" name="type" value="contact">
+
+    <!-- Honeypot -->
+    <div style="display:none;">
+        <input type="text" name="website">
+    </div>
+
+    <input type="hidden" name="recaptcha_token" id="recaptcha_token">
+
+    <button type="submit" id="submitBtn" class="btn btn-primary">
+        Soumettre
+    </button>
+
+</form>
 
 
                         {{-- <p class="ajax-response mb-0"></p> --}}

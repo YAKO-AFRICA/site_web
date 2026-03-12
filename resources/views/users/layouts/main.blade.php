@@ -258,6 +258,8 @@
     }
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+
     {{-- <script>
        document.addEventListener('DOMContentLoaded', () => {
             const banner = document.querySelector('.banner-scroll-football');
@@ -391,26 +393,96 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     </script> --}}
 
-    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+    {{-- <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
-            const form = document.querySelector(".submitForm");
+            grecaptcha.ready(function () {
 
-            form.addEventListener("submit", function(e) {
+                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'submit'})
+                .then(function (token) {
 
-                e.preventDefault();
+                    console.log("reCAPTCHA token:", token);
 
-                grecaptcha.ready(function () {
+                    document.getElementById('recaptcha_token').value = token;
 
-                    grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'submit'})
-                    .then(function (token) {
+                });
 
-                        document.getElementById('recaptcha_token').value = token;
+            });
 
-                        //form.submit();
-                        // on envoie le formulaire après génération du token
+        });
+    </script> --}}
+
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+
+    <script>
+
+        document.getElementById("contactsubmitForm").addEventListener("submit", function(e){
+
+            e.preventDefault();
+
+            const form = this;
+
+            Swal.fire({
+                title: 'Traitement en cours...',
+                text: 'Veuillez patienter...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+            grecaptcha.ready(function () {
+
+                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'submit'})
+                .then(function (token) {
+
+                    document.getElementById("recaptcha_token").value = token;
+
+                    const formData = new FormData(form);
+
+                    axios.post('{{ route('admin.subscription.store') }}', formData)
+
+                    .then(function(response){
+
+                        Swal.close();
+
+                        if(response.data.code === 200){
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Succès',
+                                text: response.data.message,
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+
+                            form.reset();
+
+                        }else{
+
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Erreur',
+                                text: response.data.message
+                            });
+
+                        }
+
+                    })
+
+                    .catch(function(error){
+
+                        Swal.close();
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erreur serveur',
+                            text: 'Une erreur est survenue.'
+                        });
+
+                        console.error(error);
 
                     });
 
@@ -419,6 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
         });
+
     </script>
 
     {{-- <script>
