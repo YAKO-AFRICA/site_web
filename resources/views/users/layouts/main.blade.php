@@ -370,9 +370,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script> --}}
 
-    <script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script>
+    {{-- <script src="https://www.google.com/recaptcha/enterprise.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script> --}}
+    {{-- <script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script> --}}
 
-    <script>
+    {{-- <script>
         document.addEventListener("DOMContentLoaded", function() {
 
             grecaptcha.ready(function() {
@@ -388,7 +389,37 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
         });
+    </script> --}}
+
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            grecaptcha.ready(function () {
+
+                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'submit'})
+                .then(function (token) {
+
+                    console.log("reCAPTCHA token:", token);
+
+                    document.getElementById('recaptcha_token').value = token;
+
+                });
+
+            });
+
+        });
     </script>
+
+    {{-- <script>
+        function onClick(e) {
+            e.preventDefault();
+            grecaptcha.enterprise.ready(async () => {
+            const token = await grecaptcha.enterprise.execute('{{ env('RECAPTCHA_SITE_KEY') }}', {action: 'contact'});
+            });
+        }
+    </script> --}}
 
 
     

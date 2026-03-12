@@ -238,7 +238,7 @@ class SouscritionController extends Controller
         $recaptchaResponse = Http::asForm()->post(
             'https://www.google.com/recaptcha/api/siteverify',
             [
-                'secret' => env('RECAPTCHA_SECRET_KEY'),
+                'secret' => config('services.recaptcha.secret_key'),
                 'response' => $request->recaptcha_token,
                 'remoteip' => $request->ip(),
             ]
@@ -246,7 +246,17 @@ class SouscritionController extends Controller
 
         $recaptcha = $recaptchaResponse->json();
 
-        if (!$recaptcha['success'] || $recaptcha['score'] < 0.5) {
+        if (!isset($recaptcha['success']) || $recaptcha['success'] !== true) {
+
+            return response()->json([
+                'type' => 'error',
+                'message' => 'reCAPTCHA invalide',
+                'code' => 403
+            ]);
+        }
+
+        if (isset($recaptcha['score']) && $recaptcha['score'] < 0.3) {
+
             return response()->json([
                 'type' => 'error',
                 'message' => 'Spam détecté par reCAPTCHA',

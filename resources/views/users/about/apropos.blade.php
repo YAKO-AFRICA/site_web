@@ -840,7 +840,7 @@
                             <!-- Token reCAPTCHA -->
                             <input type="hidden" name="recaptcha_token" id="recaptcha_token">
 
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit"  class="btn btn-primary">
                                 Soumettre
                             </button>
 
