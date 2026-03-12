@@ -396,14 +396,23 @@ document.addEventListener('DOMContentLoaded', () => {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
-            grecaptcha.ready(function () {
+            const form = document.querySelector(".submitForm");
 
-                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'submit'})
-                .then(function (token) {
+            form.addEventListener("submit", function(e) {
 
-                    console.log("reCAPTCHA token:", token);
+                e.preventDefault();
 
-                    document.getElementById('recaptcha_token').value = token;
+                grecaptcha.ready(function () {
+
+                    grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'submit'})
+                    .then(function (token) {
+
+                        document.getElementById('recaptcha_token').value = token;
+
+                        //form.submit();
+                        // on envoie le formulaire après génération du token
+
+                    });
 
                 });
 

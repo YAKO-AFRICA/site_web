@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -159,7 +160,7 @@ class SouscritionController extends Controller
     //             'content' => $request->content,
     //             'type' => $request->type,
     //         ]);
-            
+
     //         if ($saving) {
     //             $product = FormuleProduit::where('uuid', $saving->product_uuid)->first();
     //             $recipientEmail = $saving->customer_email;
@@ -184,7 +185,7 @@ class SouscritionController extends Controller
     //                 'created_at' => $saving->created_at,
     //                 'type' => $saving->type,
     //             ];
-                
+
     //             // Envoi de l'email
     //             $mail = new cotationSenderMail($data, $emailSubject);
     //             Mail::to($recipientEmail)->send($mail);
@@ -225,6 +226,7 @@ class SouscritionController extends Controller
     public function store(Request $request)
     {
 
+        Log::info('Token reçu:', ['token' => $request->recaptcha_token]);
         // Honeypot anti-spam
         if ($request->filled('website')) {
             return response()->json([
@@ -247,10 +249,11 @@ class SouscritionController extends Controller
         $recaptcha = $recaptchaResponse->json();
 
         if (!isset($recaptcha['success']) || $recaptcha['success'] !== true) {
+            $errorCodes = isset($recaptcha['error-codes']) ? implode(', ', $recaptcha['error-codes']) : 'Unknown error';
 
             return response()->json([
                 'type' => 'error',
-                'message' => 'reCAPTCHA invalide',
+                'message' => 'reCAPTCHA invalide ' . $errorCodes,
                 'code' => 403
             ]);
         }
@@ -328,8 +331,8 @@ class SouscritionController extends Controller
 
                 if ($request->type == 'Pré-souscription') {
                     Mail::to('cotations@yakoafricassur.com')->send($mail);
-                }else{
-//                 // Mail::to('reclamations@yakoafricassur.com')->send($mail);
+                } else {
+                    //                 // Mail::to('reclamations@yakoafricassur.com')->send($mail);
                 }
 
                 DB::commit();
@@ -349,7 +352,6 @@ class SouscritionController extends Controller
                 'message' => "Erreur lors de l'enregistrement!",
                 'code' => 500
             ]);
-
         } catch (\Throwable $th) {
 
             DB::rollBack();

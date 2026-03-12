@@ -791,7 +791,7 @@
                         
                     </form> --}}
 
-                        <form action="{{ route('admin.subscription.store') }}" method="POST" class="submitForm" enctype="multipart/form-data">
+                        <form action="{{ route('admin.subscription.store') }}" method="POST" class="submitForm" enctype="multipart/form-data" onsubmit="return validateForm()">
                             @csrf
 
                             <div class="row">
