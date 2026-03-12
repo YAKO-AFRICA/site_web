@@ -461,11 +461,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     </script> --}}
 
-    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdaUYgsAAAAAJMZy7ObPux1-4CWgi6zFf4WrbnG"></script>
+    {{-- <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script> --}}
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const siteKey = '{{ config('services.recaptcha.site_key') }}';
+        const siteKey = '6LdaUYgsAAAAAJMZy7ObPux1-4CWgi6zFf4WrbnG';
         console.log("Site Key chargée:", siteKey);
         
         // Vérifier que reCAPTCHA est bien chargé
