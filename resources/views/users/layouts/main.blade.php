@@ -372,49 +372,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script> --}}
 
-    {{-- <script src="https://www.google.com/recaptcha/enterprise.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script> --}}
-    {{-- <script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITE_KEY') }}"></script> --}}
 
-    {{-- <script>
-        document.addEventListener("DOMContentLoaded", function() {
-
-            grecaptcha.ready(function() {
-
-                grecaptcha.execute('{{ env('RECAPTCHA_SITE_KEY') }}', {
-                    action: 'contact'
-                }).then(function(token) {
-
-                    document.getElementById('recaptcha_token').value = token;
-
-                });
-
-            });
-
-        });
-    </script> --}}
+    
 
     {{-- <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-
-            grecaptcha.ready(function () {
-
-                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'submit'})
-                .then(function (token) {
-
-                    console.log("reCAPTCHA token:", token);
-
-                    document.getElementById('recaptcha_token').value = token;
-
-                });
-
-            });
-
-        });
-    </script> --}}
-
-    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
 
     <script>
 
@@ -498,16 +459,162 @@ document.addEventListener('DOMContentLoaded', () => {
 
         });
 
-    </script>
-
-    {{-- <script>
-        function onClick(e) {
-            e.preventDefault();
-            grecaptcha.enterprise.ready(async () => {
-            const token = await grecaptcha.enterprise.execute('{{ env('RECAPTCHA_SITE_KEY') }}', {action: 'contact'});
-            });
-        }
     </script> --}}
+
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const siteKey = '{{ config('services.recaptcha.site_key') }}';
+        console.log("Site Key chargée:", siteKey);
+        
+        // Vérifier que reCAPTCHA est bien chargé
+        let recaptchaLoaded = false;
+        let recaptchaAttempts = 0;
+        
+        function checkRecaptcha() {
+            if (typeof grecaptcha !== 'undefined' && grecaptcha) {
+                console.log("reCAPTCHA chargé avec succès");
+                recaptchaLoaded = true;
+                return true;
+            }
+            
+            if (recaptchaAttempts < 10) {
+                recaptchaAttempts++;
+                console.log("Attente du chargement reCAPTCHA... tentative", recaptchaAttempts);
+                setTimeout(checkRecaptcha, 500);
+            } else {
+                console.error("reCAPTCHA n'a pas pu être chargé");
+            }
+            
+            return false;
+        }
+        
+        checkRecaptcha();
+        
+        document.getElementById("contactsubmitForm").addEventListener("submit", function(e){
+            e.preventDefault();
+            
+            const recaptcha_token = document.getElementById("recaptcha_token");
+            const form = this;
+            const submitBtn = document.getElementById("submitBtn");
+            
+            // Désactiver le bouton pour éviter les doubles soumissions
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Traitement...";
+            
+            Swal.fire({
+                title: 'Traitement en cours...',
+                text: 'Veuillez patienter...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+            
+            // Vérifier que reCAPTCHA est disponible
+            if (!recaptchaLoaded || typeof grecaptcha === 'undefined') {
+                Swal.close();
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Soumettre";
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'reCAPTCHA n\'est pas encore chargé. Veuillez rafraîchir la page.'
+                });
+                return;
+            }
+            
+            try {
+                grecaptcha.ready(function() {
+                    grecaptcha.execute(siteKey, {action: 'submit'})
+                    .then(function(token) {
+                        recaptcha_token.value = token;
+                        console.log("Token généré, longueur:", token.length);
+                        
+                        const formData = new FormData(form);
+                        
+                        // Debug : afficher le contenu de formData
+                        for (let pair of formData.entries()) {
+                            console.log(pair[0] + ': ' + pair[1]);
+                        }
+                        
+                        axios.post('{{ route('admin.subscription.store') }}', formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        })
+                        .then(function(response){
+                            Swal.close();
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = "Soumettre";
+                            
+                            if(response.data.code === 200){
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Succès',
+                                    text: response.data.message,
+                                    timer: 4000,
+                                    showConfirmButton: false
+                                });
+                                form.reset();
+                            } else {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Erreur',
+                                    text: response.data.message
+                                });
+                            }
+                        })
+                        .catch(function(error){
+                            Swal.close();
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = "Soumettre";
+                            
+                            let errorMessage = 'Une erreur est survenue.';
+                            if (error.response && error.response.data && error.response.data.message) {
+                                errorMessage = error.response.data.message;
+                            }
+                            
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erreur serveur',
+                                text: errorMessage
+                            });
+                            
+                            console.error("Erreur Axios:", error);
+                        });
+                    })
+                    .catch(function(error) {
+                        console.error("Erreur reCAPTCHA execute:", error);
+                        Swal.close();
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "Soumettre";
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erreur reCAPTCHA',
+                            text: 'Impossible de générer le token. Code: ' + error
+                        });
+                    });
+                });
+            } catch (error) {
+                console.error("Erreur grecaptcha:", error);
+                Swal.close();
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Soumettre";
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Erreur d\'initialisation reCAPTCHA'
+                });
+            }
+        });
+    });
+</script>
+    
 
 
     

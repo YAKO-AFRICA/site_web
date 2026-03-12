@@ -265,7 +265,8 @@
                     <div class="section-title mb-50 tg-heading-subheading animation-style3">
                         <span class="sub-title">RENCONTREZ NOTRE ÉQUIPE</span>
                         <h2 class="title tg-element-title">Une expertise en assurance à laquelle vous pouvez faire
-                            <br>confiance</h2>
+                            <br>confiance
+                        </h2>
                     </div>
                 </div>
                 <div class="col-xl-5 col-lg-6">
@@ -413,8 +414,8 @@
                                         <div class="modal-body row">
                                             <div class="col-md-5 p-3" style="border-right:#C1C1C1 solid 1px">
 
-                                                <img src="{{ asset('images/Teams/' . $team->team_image) }}" alt=""
-                                                    class="img-fluid">
+                                                <img src="{{ asset('images/Teams/' . $team->team_image) }}"
+                                                    alt="" class="img-fluid">
 
                                                 <div class="team-content">
                                                     <h4 class="title text-center">{{ $team->team_name }}</h4>
@@ -471,8 +472,8 @@
                                         <div class="modal-body row">
                                             <div class="col-md-5 p-3" style="border-right:#C1C1C1 solid 1px">
 
-                                                <img src="{{ asset('images/Teams/' . $team2->team_image) }}" alt=""
-                                                    class="img-fluid">
+                                                <img src="{{ asset('images/Teams/' . $team2->team_image) }}"
+                                                    alt="" class="img-fluid">
 
                                                 <div class="team-content">
                                                     <h4 class="title text-center">{{ $team2->team_name }}</h4>
@@ -593,8 +594,8 @@
                                         <div class="modal-body row">
                                             <div class="col-md-5 p-3" style="border-right:#C1C1C1 solid 1px">
 
-                                                <img src="{{ asset('images/Teams/' . $team1->team_image) }}" alt=""
-                                                    class="img-fluid">
+                                                <img src="{{ asset('images/Teams/' . $team1->team_image) }}"
+                                                    alt="" class="img-fluid">
 
                                                 <div class="team-content">
                                                     <h4 class="title text-center">{{ $team1->team_name }}</h4>
@@ -652,8 +653,8 @@
                                         <div class="modal-body row">
                                             <div class="col-md-5 p-3" style="border-right:#C1C1C1 solid 1px">
 
-                                                <img src="{{ asset('images/Teams/' . $team2->team_image) }}" alt=""
-                                                    class="img-fluid">
+                                                <img src="{{ asset('images/Teams/' . $team2->team_image) }}"
+                                                    alt="" class="img-fluid">
 
                                                 <div class="team-content">
                                                     <h4 class="title text-center">{{ $team2->team_name }}</h4>
@@ -846,58 +847,58 @@
 
                         </form> --}}
                         <form id="contactsubmitForm" method="POST">
-    @csrf
+                            @csrf
 
-    <div class="row">
+                            <div class="row">
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-grp">
-                    <input type="text" name="customer_firstname" placeholder="Nom" required>
-                </div>
-            </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-grp">
+                                            <input type="text" name="customer_firstname" placeholder="Nom" required>
+                                        </div>
+                                    </div>
 
-            <div class="col-md-6">
-                <div class="form-grp">
-                    <input type="number" name="customer_phone" placeholder="Téléphone" required>
-                </div>
-            </div>
-        </div>
+                                    <div class="col-md-6">
+                                        <div class="form-grp">
+                                            <input type="number" name="customer_phone" placeholder="Téléphone" required>
+                                        </div>
+                                    </div>
+                                </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-grp">
-                    <input type="email" name="customer_email" placeholder="Email" required>
-                </div>
-            </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-grp">
+                                            <input type="email" name="customer_email" placeholder="Email" required>
+                                        </div>
+                                    </div>
 
-            <div class="col-md-6">
-                <div class="form-grp">
-                    <input type="text" name="object" placeholder="Objet" required>
-                </div>
-            </div>
-        </div>
+                                    <div class="col-md-6">
+                                        <div class="form-grp">
+                                            <input type="text" name="object" placeholder="Objet" required>
+                                        </div>
+                                    </div>
+                                </div>
 
-        <div class="form-grp">
-            <textarea name="content" placeholder="Message" required></textarea>
-        </div>
+                                <div class="form-grp">
+                                    <textarea name="content" placeholder="Message" required></textarea>
+                                </div>
 
-    </div>
+                            </div>
 
-    <input type="hidden" name="type" value="contact">
+                            <input type="hidden" name="type" value="contact">
 
-    <!-- Honeypot -->
-    <div style="display:none;">
-        <input type="text" name="website">
-    </div>
+                            <!-- Honeypot -->
+                            <div style="display:none;">
+                                <input type="text" name="website">
+                            </div>
 
-    <input type="hidden" name="recaptcha_token" id="recaptcha_token">
+                            <input type="hidden" name="recaptcha_token" id="recaptcha_token">
 
-    <button type="submit" id="submitBtn" class="btn btn-primary">
-        Soumettre
-    </button>
+                            <button type="submit" id="submitBtn" class="btn btn-primary">
+                                Soumettre
+                            </button>
 
-</form>
+                        </form>
 
 
                         {{-- <p class="ajax-response mb-0"></p> --}}
