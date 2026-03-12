@@ -120,13 +120,7 @@
                                             <div class="modal-body" style="width: 100%; height: 80vh">
                                                 <iframe style="width: 100%; height: 100%" src="{{ asset($doc->path) }}"
                                                     frameborder="0"></iframe>
-                                                {{-- @if ($doc->type == 'etatPrestation')
-                                                    <iframe style="width: 100%; height: 100%" src="{{ asset($doc->path) }}"
-                                                        frameborder="0"></iframe>
-                                                @else
-                                                    <iframe style="width: 100%; height: 100%" src="{{ asset($doc->path) }}"
-                                                        frameborder="0"></iframe>
-                                                @endif --}}
+                                                
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn-prime btn-prime-two text-white"
@@ -136,17 +130,7 @@
                                                         <i class="bx bx-download"></i>
                                                     </a>
                                                 </button>
-                                                {{-- @if ($doc->type == 'etatPrestation')
-                                                    
-                                                @else
-                                                    <button type="button" class="btn-prime btn-prime-two text-white"
-                                                        data-bs-dismiss="modal">
-                                                        <a class="text-white" href="{{ asset($doc->path) }}"
-                                                            id="download-bulletin" title="Preview" download>Telecharger
-                                                            <i class="bx bx-download"></i>
-                                                        </a></button>
-                                                @endif --}}
-
+                                                
                                                 <button type="button" class="btn-prime"
                                                     data-bs-dismiss="modal">Fermer</button>
                                             </div>

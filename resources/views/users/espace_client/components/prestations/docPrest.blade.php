@@ -18,33 +18,14 @@
                             <option value="bulletin">Bulletin de souscription</option>
                             <option value="AttestationPerteContrat">Attestation de perte du contrat</option>
                         </select>
-                        {{-- <div class="mb-3">
-                            <div class="card">
-                                <div class="card-header">
-                                    
-                                </div>
-                                <div class="card-body">
-                                    
-                                </div>
-                            </div> 
-                        </div> --}}
+                       
                     </div>
                     <div class="col-12 col-md-6 mb-3">
                         <label class="form-label">Joindre le document ici !</label>
                         <input id="Police-file-uploa" type="file" class="form-control" name="libelle[]" accept="image/*, .pdf" required>
                         <input type="hidden" name="type[]" value="" id="DocName">
-                        <input type="hidden" name="filename[]" value=".">
+                        <input type="hidden" name="filename[]" value="Contrat d'assurance">
                         <input type="hidden" name="Singletype" value="" id="Singletype">
-                        {{-- <div class="mb-3">
-                            <div class="card">
-                                <div class="card-header">
-                                    <label class="form-label">Joindre le document ici !</label>
-                                </div>
-                                <div class="card-body">
-                                    
-                                </div>
-                            </div> 
-                        </div> --}}
                     </div>
                 </div>
                 <div class="row">
@@ -115,15 +96,7 @@
                         >
                         <input type="hidden" name="filename[]" value="CNI recto">
                         <input type="hidden" name="type[]" value="CNIrecto">
-                        {{-- <div class="mb-3">
-                            <div class="card">
-                                <div class="card-header">
-                                </div>
-                                <div class="card-body">
-                                    
-                                </div>
-                            </div> 
-                        </div> --}}
+                        
                     </div>
 
                     <!-- CNI Verso -->
@@ -142,15 +115,6 @@
                         >
                         <input type="hidden" name="filename[]" value="CNI verso">
                         <input type="hidden" name="type[]" value="CNIverso">
-                        {{-- <div class="mb-3">
-                            <div class="card">
-                                <div class="card-header">
-                                </div>
-                                <div class="card-body">
-                                    
-                                </div>
-                            </div>
-                        </div> --}}
                     </div>
 
                 </div>
@@ -169,57 +133,14 @@
                         <input id="FicheID-file-uploa" class="form-control" type="file" name="libelle[]" accept="image/*, .pdf">
                         <input type="hidden" name="filename[]" value="Fiche d'identification du n° de telephone">
                         <input type="hidden" name="type[]" value="FicheIDNum">
-                        {{-- <div class="mb-3">
-                            <div class="card">
-                                <div class="card-header">
-                                </div>
-                                <div class="card-body">
-                                    
-                                </div>
-                            </div> 
-                        </div> --}}
                     </div>
                     <div class="col-12 mb-3" id="RIB-file">
                         <label class="form-label">Joindre le RIB <strong>(Compte courant)</strong></label>
                         <input id="RIB-file-uploa" class="form-control" type="file" name="libelle[]" accept="image/*, .pdf">
                         <input type="hidden" name="filename[]" value="RIB">
                         <input type="hidden" name="type[]" value="RIB">
-                        {{-- <div class="mb-3">
-                            <div class="card">
-                                <div class="card-header">
-                                </div>
-                                <div class="card-body">
-                                </div>
-                            </div>
-                        </div> --}}
+                        
                     </div>
-                    {{-- <div class="col-12 col-md-6">
-
-                        <div class="card">
-
-                            <div class="card-body">
-
-                                <div class="mb-3">
-
-                                    <label class="form-label">Signature (Veuillez signer une feuille blanche
-                                        précédé de la mention <span class="text-danger">"LU et APPROUVE"</span>
-                                        ) et joindre la photo</label>
-
-                                    <div class="input-group">
-
-                                        <input type="file" name="libelle[]" class="form-control"
-                                            accept=".jpg, .png, image/jpeg, image/png" required>
-
-                                        <input type="hidden" name="type[]" value="Signature">
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>   --}}
                 </div>
             </div>
         </div>

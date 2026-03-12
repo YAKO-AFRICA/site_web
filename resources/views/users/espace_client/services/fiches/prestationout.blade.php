@@ -586,7 +586,7 @@
                             font-size: 14px;
                             border-radius: 3px;
                             background-color: #ffffff;"
-                        value="{{ $prestation->rdv->codedmd ?? '.' }}" />
+                        value="{{ $prestation->rdv->idrdv ?? '.' }}" />
                 </div>
                 <div class="form-group" style="margin-top: 10px">
                     <label for="" style="margin-right: 2px;">Montants <br> des primes</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

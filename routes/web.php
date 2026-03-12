@@ -79,7 +79,7 @@ Route::middleware('guest:web', 'PreventBackHistory')->group(function(){
     Route::post('/admin/mail/newsletter/store',[SouscritionController::class,'newsletterStore'])->name('admin.newsletterStore.store');
     Route::get('/admin/mail/mail',[SouscritionController::class,'mail'])->name('admin.mail');
 
-    Route::post('admin/mail/add',[SouscritionController::class,'store'])->name('admin.subscription.store');
+    Route::post('admin/mail/add',[SouscritionController::class,'store'])->name('admin.subscription.store')->middleware('throttle:5,1');
 
     Route::post('admin/home/assistance/addCourrier',[AdminController::class, 'assistanceStore'])->name('admin.assistance.addCourrier');
     Route::post('admin/home/assistance/deleteCourrier/{uuid}',[AdminController::class, 'assistanceDestroy'])->name('admin.assistance.deleteCourrier');
