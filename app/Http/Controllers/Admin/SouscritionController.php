@@ -261,7 +261,7 @@ class SouscritionController extends Controller
             ]);
         }
 
-        if (isset($recaptcha['score']) && $recaptcha['score'] < 0.3) {
+        if (isset($recaptcha['score']) && $recaptcha['score'] < 0.5) {
 
             return response()->json([
                 'type' => 'error',
