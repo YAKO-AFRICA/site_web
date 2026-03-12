@@ -241,7 +241,8 @@ class SouscritionController extends Controller
         $recaptchaResponse = Http::asForm()->post(
             'https://www.google.com/recaptcha/api/siteverify',
             [
-                'secret' => config('services.recaptcha.secret_key'),
+                'secret' => '6LdaUYgsAAAAAMUzQgLPDRrYTgTAsK-QdgtzfLDS',
+                // 'secret' => config('services.recaptcha.secret_key'),
                 'response' => $request->recaptcha_token,
                 'remoteip' => $request->ip(),
             ]
