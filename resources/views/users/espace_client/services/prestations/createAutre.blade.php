@@ -836,7 +836,7 @@
                                     data-bs-target="#qrCodeModal" id="signatureBtn">
                                     Signer électroniquement
                                 </button>
-                                <button type="submit" class="btn-prime btn-prime-two d-none" id="submitBtn">
+                                <button type="submit" class="btn-prime btn-prime-two d-none" id="submitBtnCourrier">
                                     Transmettre à YAKO AFRICA Assurance Vie
                                 </button>
                             </div>
@@ -6023,7 +6023,7 @@
         let pollingInterval;
 
         const qrCodeModal = document.getElementById('qrCodeModal');
-        const submitBtn = document.getElementById('submitBtn');
+        const submitBtn = document.getElementById('submitBtnCourrier');
         const signatureBtn = document.getElementById('signatureBtn');
 
         qrCodeModal.addEventListener('shown.bs.modal', function() {
@@ -6082,7 +6082,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const form = document.getElementById("PrestationAutre");
-            const btn = document.getElementById("submitBtn");
+            const btn = document.getElementById("submitBtnCourrier");
 
             btn.addEventListener("click", function(event) {
                 event.preventDefault();
