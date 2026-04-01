@@ -72,7 +72,7 @@ class RdvController extends Controller
         if ($rdv) {
             return redirect()->back()->with('fail','Une prestation de type "' . $typePrestation->libelle . '" pour le contrat ' . $idcontrat . ' est déja en cours. N° de prestation : ' . $rdv->codedmd.' cette prestation est a débouchée sur une prise de rendez-vous.'); 
         }else{
-            // session()->forget('contractDetails');
+            session()->forget('contractDetails');
             return view('users.espace_client.services.rdv.create', compact('typePrestation', 'villes', 'villeReseaux', 'contratDetails'));
         }
         
