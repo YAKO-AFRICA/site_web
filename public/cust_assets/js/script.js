@@ -1644,172 +1644,882 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+// document.addEventListener('DOMContentLoaded', function () {
+//     // const selectLieuRDV = document.getElementById('single-select-optgroup-field');
+//     const selectLieuRDV = document.getElementById('idTblBureau');
+//     const inputDateRDV = document.getElementById('daterdv');
+//     console.log('inputDateRDV',inputDateRDV)
+//     const selectOptionsRdv = document.getElementById('optionsRdv');
+//     const spinner = document.getElementById('spinner');
+//     const spinnerDaterdv = document.getElementById('spinnerDaterdv');
+
+//     inputDateRDV.disabled = true;
+//     $(document).ready(function () {
+//         var availableOptions = []; // Un tableau pour stocker les options de RDV disponibles
+//         var availableOptions = []; // Tableau pour stocker les options de RDV disponibles
+
+//         $('#idTblBureau').on('change', function () {
+//             var id = $(this).val();
+//             console.log('id2',id)
+//             if (spinner) {
+//                 spinner.style.display = 'block';
+//             }
+//             $.ajax({
+//                 type: 'GET',
+//                 url: '/espace-client/rdv/optionDate/' + id,
+//                 dataType: 'json',
+//                 success: function (data) {
+//                     if (data.status === 'success' && data.data.length > 0) {
+//                         var jmax = '';
+//                         var lieu = '';
+//                         var jours = [];
+//                         availableOptions = []; // Réinitialiser les options disponibles
+//                         // Boucle à travers les données reçues
+//                         $.each(data.data, function (index, villeReseau) {
+//                             lieu = villeReseau.libelleVilleBureau || 'Lieu inconnu'; // Récupérer le nom du lieu
+//                             $.each(villeReseau.option_rdv, function (index, optionRdv) {
+//                                 // Sauvegarder les options dans un tableau
+//                                 availableOptions.push({
+//                                     codejour: optionRdv.codejour,
+//                                     codelieu: optionRdv.codelieu,
+//                                     nbmax: optionRdv.nbmax
+//                                 });
+
+//                                 // Générer les options pour l'élément #optionsRdv
+//                                 jmax += '<option value="' + optionRdv.nbmax + '">' + optionRdv.jour + '</option>';
+//                                 jours.push(optionRdv.jour); // Ajouter le jour à la liste des jours disponibles
+//                             });
+//                         });
+
+//                         // Mettre à jour les champs HTML
+//                         $('#optionsRdv').html(jmax); // Liste des options
+//                         $('#lieurdv').text(lieu); // Nom du lieu
+//                         $('#jourRdv').text(jours.join(' - ')); // Liste des jours disponibles
+//                         inputDateRDV.disabled = false;
+//                         console.log('inputDateRDVAfter',inputDateRDV)
+//                         inputDateRDV.value = "";
+//                         $('#msgerror').text(''); // Ne pas afficher le message d'erreur
+//                         $('#msgesucces').text(''); // Ne pas afficher le message de succès
+//                         if (spinner) {
+//                             spinner.style.display = 'none';
+//                         }
+//                     } else {
+//                         alert('Aucune information disponible pour ce lieu de RDV.');
+//                         $('#lieurdv').text(''); // Réinitialiser le lieu
+//                         $('#jourRdv').text(''); // Réinitialiser les jours
+//                         if (spinner) {
+//                             spinner.style.display = 'none';
+//                         }
+//                     }
+//                 },
+//                 error: function (xhr, status, error) {
+//                     console.error('Erreur AJAX : ', xhr.responseText);
+//                     alert('Une erreur est survenue lors de la récupération des données.');
+//                     $('#lieurdv').text(''); // Réinitialiser le lieu
+//                     $('#jourRdv').text(''); // Réinitialiser les jours
+//                     if (spinner) {
+//                         spinner.style.display = 'none';
+//                     }
+//                 }
+//             });
+//         });
+
+//         $('#daterdv').on('change', function () {
+//             var idTblBureau = $('#idTblBureau').val();
+//             var daterdv = $(this).val(); // Exemple : 10/12/2024
+//             console.log('daterdv', daterdv);
+//             // Réinitialiser les messages à chaque changement
+//             $('#msgerror').text('').hide(); // Masquer le message d'erreur
+//             $('#msgesucces').text('').hide(); // Masquer le message de succès
+//             if (spinnerDaterdv) {
+//                 spinnerDaterdv.style.display = 'block';
+//             }
+
+//             if (daterdv) {
+//                 // Conversion de la date au format JavaScript
+//                 var parts = daterdv.split('-'); // Supposons que le format est d/m/Y
+//                 console.log('parts', parts);
+//                 // var dateObj = new Date(parts[2], parts[1] - 1, parts[0]); // Année, mois (0-indexé), jour
+//                 var dateObj = new Date(parts[0], parts[1] - 1, parts[2]); // Année, mois (0-indexé), jour
+//                 console.log('dateObj', dateObj);
+
+//                 // Vérification si la date est un samedi (6) ou un dimanche (0)
+//                 var day = dateObj.getDay();
+//                 if (day === 0 || day === 6) {
+//                     alert("Les rendez-vous ne peuvent pas être pris le week-end ou les jours fériés. Veuillez sélectionner un jour en semaine.");
+//                     $('input[name="daterdv"]').val('');
+//                     $('#msgerror').text("Les rendez-vous ne peuvent pas être pris le week-end ou les jours fériés. Veuillez sélectionner un jour en semaine.").show();
+//                     return; // Arrête l'exécution
+//                 }
+//             }
+
+//             if (idTblBureau && daterdv) {
+//                 // Filtrage des options disponibles pour la date sélectionnée
+//                 var availableForDate = availableOptions.filter(function (option) {
+//                     return option.codelieu == idTblBureau && parseInt(option.codejour) === dateObj.getDay();
+//                 });
+
+//                 if (availableForDate.length > 0) {
+//                     // Si des options sont disponibles pour la date et le lieu
+//                     $.each(availableForDate, function (index, option) {
+//                         var Nbmax = parseInt(option.nbmax);
+
+//                         // Vérification de la disponibilité des places
+//                         $.ajax({
+//                             type: 'GET',
+//                             url: '/espace-client/rdv/getRdv',
+//                             data: {
+//                                 idTblBureau: idTblBureau,
+//                                 daterdv: daterdv
+//                             },
+//                             dataType: 'json',
+//                             success: function (data) {
+//                                 if (data.status === 'success') {
+//                                     var orderInsert = parseInt(data.data.orderInsert);
+//                                     if (orderInsert >= Nbmax) {
+//                                         alert("Plus de places disponibles à cette date.");
+//                                         $('input[name="daterdv"]').val('');
+//                                         $('#msgerror').text("Plus de places disponibles à cette date.").show();
+//                                         return;
+//                                     } else {
+//                                         var remainingSlots = Nbmax - orderInsert;
+//                                         $('#msgesucces').text('Il reste ' + remainingSlots + ' place(s) à cette date.').show();
+//                                     }
+//                                 } else {
+//                                     $('#msgesucces').text('Il reste ' + Nbmax + ' place(s) à cette date.').show();
+//                                 }
+//                                 if (spinnerDaterdv) {
+//                                     spinnerDaterdv.style.display = 'none';
+//                                 }
+//                             },
+//                             error: function (xhr, status, error) {
+//                                 console.error('Erreur AJAX : ', xhr.responseText);
+//                                 alert("Erreur lors de la vérification de la disponibilité.");
+//                                 $('input[name="daterdv"]').val('');
+//                                 if (spinnerDaterdv) {
+//                                     spinnerDaterdv.style.display = 'none';
+//                                 }
+//                             }
+//                         });
+//                     });
+//                 } else {
+//                     alert("Cette date n'est pas disponible pour ce lieu de RDV. Veuillez choisir une autre.");
+//                     $('input[name="daterdv"]').val('');
+//                     $('#msgerror').text("Cette date n'est pas disponible pour ce lieu de RDV. Veuillez choisir une autre.").show();
+//                     if (spinnerDaterdv) {
+//                         spinnerDaterdv.style.display = 'none';
+//                     }
+//                 }
+//             }
+//         });
+//     });
+
+// });
+
+
+
+// document.addEventListener('DOMContentLoaded', function () {
+//     const selectLieuRDV = document.getElementById('idTblBureau');
+//     const inputDateRDV = document.getElementById('daterdv');
+//     const selectOptionsRdv = document.getElementById('optionsRdv');
+//     const spinner = document.getElementById('spinner');
+//     const spinnerDaterdv = document.getElementById('spinnerDaterdv');
+    
+//     let joursFeries = []; // Variable pour stocker les jours fériés
+    
+//     // Récupérer les jours fériés depuis le serveur
+//     function chargerJoursFeries() {
+//         $.ajax({
+//             type: 'GET',
+//             url: '/espace-client/rdv/jours-feries',
+//             dataType: 'json',
+//             success: function (data) {
+//                 joursFeries = data;
+//                 console.log('Jours fériés chargés:', joursFeries);
+//                 // Reconfigurer flatpickr avec les jours fériés
+//                 configurerFlatpickr();
+//             },
+//             error: function (xhr, status, error) {
+//                 console.error('Erreur lors du chargement des jours fériés:', error);
+//                 configurerFlatpickr(); // Configurer sans jours fériés en cas d'erreur
+//             }
+//         });
+//     }
+    
+//     // Fonction pour vérifier si une date est un jour férié
+//     function estJourFerie(date) {
+//         const dateStr = date.toISOString().split('T')[0];
+//         return joursFeries.includes(dateStr);
+//     }
+    
+//     // Fonction pour vérifier si une date est un week-end ou jour férié
+//     function estDateIndisponible(date) {
+//         const day = date.getDay();
+//         return day === 0 || day === 6 || estJourFerie(date);
+//     }
+    
+//     // Configurer flatpickr avec les jours désactivés
+//     function configurerFlatpickr() {
+//         const disabledRanges = plagesDesactivees;
+
+//         console.log('disabledRanges', disabledRanges);
+        
+//         // Fusionner les plages désactivées avec les jours fériés
+//         const allDisabledRanges = [...disabledRanges];
+
+//         console.log('allDisabledRanges', allDisabledRanges);
+        
+//         // Ajouter chaque jour férié comme une plage d'un seul jour
+//         joursFeries.forEach(jourFerie => {
+//             allDisabledRanges.push({
+//                 from: jourFerie,
+//                 to: jourFerie
+//             });
+//         });
+        
+//         flatpickr(".date-format", {
+//             locale: 'fr',
+//             altInput: true,
+//             altFormat: "j F, Y",
+//             dateFormat: "Y-m-d",
+//             minDate: "today",
+//             maxDate: new Date().fp_incr(31),
+//             disable: allDisabledRanges,
+//             onDayCreate: function(dObj, dStr, fp, dayElem) {
+//                 // Ajouter un style spécial pour les jours fériés
+//                 const date = new Date(dayElem.dateObj);
+//                 if (estJourFerie(date)) {
+//                     dayElem.style.backgroundColor = '#f8d7da';
+//                     dayElem.style.color = '#721c24';
+//                     dayElem.title = 'Jour férié - Non disponible';
+//                 } else if (date.getDay() === 0 || date.getDay() === 6) {
+//                     dayElem.style.backgroundColor = '#fff3cd';
+//                     dayElem.style.color = '#856404';
+//                     dayElem.title = 'Week-end - Non disponible';
+//                 }
+//             }
+//         });
+//     }
+    
+//     inputDateRDV.disabled = true;
+    
+//     $(document).ready(function () {
+//         var availableOptions = []; // Tableau pour stocker les options de RDV disponibles
+        
+//         // Charger les jours fériés au démarrage
+//         chargerJoursFeries();
+        
+//         $('#idTblBureau').on('change', function () {
+//             var id = $(this).val();
+//             if (spinner) {
+//                 spinner.style.display = 'block';
+//             }
+            
+//             $.ajax({
+//                 type: 'GET',
+//                 url: '/espace-client/rdv/optionDate/' + id,
+//                 dataType: 'json',
+//                 success: function (data) {
+//                     if (data.status === 'success' && data.data.length > 0) {
+//                         var jmax = '';
+//                         var lieu = '';
+//                         var jours = [];
+//                         availableOptions = []; // Réinitialiser les options disponibles
+                        
+//                         $.each(data.data, function (index, villeReseau) {
+//                             lieu = villeReseau.libelleVilleBureau || 'Lieu inconnu';
+//                             $.each(villeReseau.option_rdv, function (index, optionRdv) {
+//                                 availableOptions.push({
+//                                     codejour: optionRdv.codejour,
+//                                     codelieu: optionRdv.codelieu,
+//                                     nbmax: optionRdv.nbmax,
+//                                     jour: optionRdv.jour
+//                                 });
+//                                 jmax += '<option value="' + optionRdv.nbmax + '">' + optionRdv.jour + '</option>';
+//                                 jours.push(optionRdv.jour);
+//                             });
+//                         });
+                        
+//                         $('#optionsRdv').html(jmax);
+//                         $('#lieurdv').text(lieu);
+//                         $('#jourRdv').text(jours.join(' - '));
+//                         inputDateRDV.disabled = false;
+//                         inputDateRDV.value = "";
+//                         $('#msgerror').text('');
+//                         $('#msgesucces').text('');
+                        
+//                         if (spinner) {
+//                             spinner.style.display = 'none';
+//                         }
+//                     } else {
+//                         alert('Aucune information disponible pour ce lieu de RDV.');
+//                         $('#lieurdv').text('');
+//                         $('#jourRdv').text('');
+//                         if (spinner) {
+//                             spinner.style.display = 'none';
+//                         }
+//                     }
+//                 },
+//                 error: function (xhr, status, error) {
+//                     console.error('Erreur AJAX : ', xhr.responseText);
+//                     alert('Une erreur est survenue lors de la récupération des données.');
+//                     $('#lieurdv').text('');
+//                     $('#jourRdv').text('');
+//                     if (spinner) {
+//                         spinner.style.display = 'none';
+//                     }
+//                 }
+//             });
+//         });
+        
+//         $('#daterdv').on('change', function () {
+//             var idTblBureau = $('#idTblBureau').val();
+//             var daterdv = $(this).val();
+//             console.log('daterdv', daterdv);
+            
+//             $('#msgerror').text('').hide();
+//             $('#msgesucces').text('').hide();
+            
+//             if (spinnerDaterdv) {
+//                 spinnerDaterdv.style.display = 'block';
+//             }
+            
+//             if (daterdv) {
+//                 // Conversion de la date au format JavaScript
+//                 var parts = daterdv.split('-');
+//                 var dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+//                 var day = dateObj.getDay();
+                
+//                 // Vérification week-end et jours fériés
+//                 if (day === 0 || day === 6) {
+//                     alert("Les rendez-vous ne peuvent pas être pris le week-end. Veuillez sélectionner un jour en semaine.");
+//                     $('input[name="daterdv"]').val('');
+//                     $('#msgerror').text("Les rendez-vous ne peuvent pas être pris le week-end. Veuillez sélectionner un jour en semaine.").show();
+//                     if (spinnerDaterdv) {
+//                         spinnerDaterdv.style.display = 'none';
+//                     }
+//                     return;
+//                 }
+                
+//                 // Vérification des jours fériés
+//                 if (estJourFerie(dateObj)) {
+//                     const jours = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+//                     const mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+//                     const dateFormatee = jours[dateObj.getDay()] + " " + dateObj.getDate() + " " + mois[dateObj.getMonth()] + " " + dateObj.getFullYear();
+                    
+//                     alert("Les rendez-vous ne peuvent pas être pris les jours fériés. Le " + dateFormatee + " est un jour férié en Côte d'Ivoire.");
+//                     $('input[name="daterdv"]').val('');
+//                     $('#msgerror').text("Le " + dateFormatee + " est un jour férié. Veuillez sélectionner une autre date.").show();
+//                     if (spinnerDaterdv) {
+//                         spinnerDaterdv.style.display = 'none';
+//                     }
+//                     return;
+//                 }
+//             }
+            
+//             if (idTblBureau && daterdv) {
+//                 var parts = daterdv.split('-');
+//                 var dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+                
+//                 var availableForDate = availableOptions.filter(function (option) {
+//                     return option.codelieu == idTblBureau && parseInt(option.codejour) === dateObj.getDay();
+//                 });
+                
+//                 if (availableForDate.length > 0) {
+//                     $.each(availableForDate, function (index, option) {
+//                         var Nbmax = parseInt(option.nbmax);
+                        
+//                         $.ajax({
+//                             type: 'GET',
+//                             url: '/espace-client/rdv/getRdv',
+//                             data: {
+//                                 idTblBureau: idTblBureau,
+//                                 daterdv: daterdv
+//                             },
+//                             dataType: 'json',
+//                             success: function (data) {
+//                                 if (data.status === 'success') {
+//                                     var orderInsert = parseInt(data.data.orderInsert);
+//                                     if (orderInsert >= Nbmax) {
+//                                         alert("Plus de places disponibles à cette date.");
+//                                         $('input[name="daterdv"]').val('');
+//                                         $('#msgerror').text("Plus de places disponibles à cette date.").show();
+//                                         if (spinnerDaterdv) {
+//                                             spinnerDaterdv.style.display = 'none';
+//                                         }
+//                                         return;
+//                                     } else {
+//                                         var remainingSlots = Nbmax - orderInsert;
+//                                         $('#msgesucces').text('Il reste ' + remainingSlots + ' place(s) à cette date.').show();
+//                                     }
+//                                 } else {
+//                                     $('#msgesucces').text('Il reste ' + Nbmax + ' place(s) à cette date.').show();
+//                                 }
+//                                 if (spinnerDaterdv) {
+//                                     spinnerDaterdv.style.display = 'none';
+//                                 }
+//                             },
+//                             error: function (xhr, status, error) {
+//                                 console.error('Erreur AJAX : ', xhr.responseText);
+//                                 alert("Erreur lors de la vérification de la disponibilité.");
+//                                 $('input[name="daterdv"]').val('');
+//                                 if (spinnerDaterdv) {
+//                                     spinnerDaterdv.style.display = 'none';
+//                                 }
+//                             }
+//                         });
+//                     });
+//                 } else {
+//                     const joursNom = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+//                     const jourSelectionne = joursNom[dateObj.getDay()];
+//                     alert("Le " + jourSelectionne + " n'est pas un jour de réception pour ce lieu de RDV.");
+//                     $('input[name="daterdv"]').val('');
+//                     $('#msgerror').text("Le " + jourSelectionne + " n'est pas un jour de réception pour ce lieu de RDV.").show();
+//                     if (spinnerDaterdv) {
+//                         spinnerDaterdv.style.display = 'none';
+//                     }
+//                 }
+//             }
+//         });
+//     });
+// });
+
+
 document.addEventListener('DOMContentLoaded', function () {
-    // const selectLieuRDV = document.getElementById('single-select-optgroup-field');
     const selectLieuRDV = document.getElementById('idTblBureau');
     const inputDateRDV = document.getElementById('daterdv');
-    const selectOptionsRdv = document.getElementById('optionsRdv');
     const spinner = document.getElementById('spinner');
     const spinnerDaterdv = document.getElementById('spinnerDaterdv');
-
-    inputDateRDV.disabled = true;
-
-    $(document).ready(function () {
-        var availableOptions = []; // Un tableau pour stocker les options de RDV disponibles
-        var availableOptions = []; // Tableau pour stocker les options de RDV disponibles
-
-        $('#idTblBureau').on('change', function () {
-            var id = $(this).val();
-            if (spinner) {
-                spinner.style.display = 'block';
+    const infoFermetureBlock = document.getElementById('info-fermetureBlock');
+    
+    let joursFeries = []; // Variable pour stocker les jours fériés
+    let availableOptions = []; // Tableau pour stocker les options de RDV disponibles
+    let plagesDesactivees = []; // Variable pour stocker les plages désactivées
+    
+    // Récupérer les jours fériés depuis le serveur
+    function chargerJoursFeries() {
+        $.ajax({
+            type: 'GET',
+            url: '/espace-client/rdv/jours-feries',
+            dataType: 'json',
+            success: function (data) {
+                joursFeries = data;
+                console.log('Jours fériés chargés:', joursFeries);
+                configurerDatesMinMax();
+            },
+            error: function (xhr, status, error) {
+                console.error('Erreur lors du chargement des jours fériés:', error);
+                configurerDatesMinMax();
             }
-            $.ajax({
-                type: 'GET',
-                url: '/espace-client/rdv/optionDate/' + id,
-                dataType: 'json',
-                success: function (data) {
-                    if (data.status === 'success' && data.data.length > 0) {
-                        var jmax = '';
-                        var lieu = '';
-                        var jours = [];
-                        availableOptions = []; // Réinitialiser les options disponibles
-                        // Boucle à travers les données reçues
-                        $.each(data.data, function (index, villeReseau) {
-                            lieu = villeReseau.libelleVilleBureau || 'Lieu inconnu'; // Récupérer le nom du lieu
-                            $.each(villeReseau.option_rdv, function (index, optionRdv) {
-                                // Sauvegarder les options dans un tableau
-                                availableOptions.push({
-                                    codejour: optionRdv.codejour,
-                                    codelieu: optionRdv.codelieu,
-                                    nbmax: optionRdv.nbmax
-                                });
-
-                                // Générer les options pour l'élément #optionsRdv
-                                jmax += '<option value="' + optionRdv.nbmax + '">' + optionRdv.jour + '</option>';
-                                jours.push(optionRdv.jour); // Ajouter le jour à la liste des jours disponibles
-                            });
-                        });
-
-                        // Mettre à jour les champs HTML
-                        $('#optionsRdv').html(jmax); // Liste des options
-                        $('#lieurdv').text(lieu); // Nom du lieu
-                        $('#jourRdv').text(jours.join(' - ')); // Liste des jours disponibles
-                        inputDateRDV.disabled = false;
-                        inputDateRDV.value = "";
-                        $('#msgerror').text(''); // Ne pas afficher le message d'erreur
-                        $('#msgesucces').text(''); // Ne pas afficher le message de succès
-                        if (spinner) {
-                            spinner.style.display = 'none';
+        });
+    }
+    
+    // Récupérer les plages désactivées depuis le serveur
+    function chargerPlagesDesactivees() {
+        $.ajax({
+            type: 'GET',
+            url: '/espace-client/rdv/plages-desactivees',
+            dataType: 'json',
+            success: function (data) {
+                plagesDesactivees = data;
+                console.log('Plages désactivées chargées:', plagesDesactivees);
+                // Afficher les informations des périodes de fermeture
+                afficherInfoPeriodesFermeture();
+            },
+            error: function (xhr, status, error) {
+                console.error('Erreur lors du chargement des plages désactivées:', error);
+            }
+        });
+    }
+    
+    // Afficher les périodes de fermeture dans l'interface
+    function afficherInfoPeriodesFermeture() {
+        if (!plagesDesactivees || plagesDesactivees.length === 0) return;
+        
+        // Supprimer l'ancien message s'il existe
+        const ancienInfo = document.getElementById('info-fermeture');
+        if (ancienInfo) {
+            ancienInfo.remove();
+        }
+        
+        let messageHtml = '<p id="info-fermeture" class="alert alert-warning mt-2" style="font-size: 13px; padding: 8px 12px; background-color: #fff3cd; border-left: 4px solid #ffc107;">';
+        messageHtml += '<i class="fas fa-calendar-times"></i> <strong>Dates déjà clôturés :</strong><br>';
+        
+        plagesDesactivees.forEach((plage, index) => {
+            const debut = new Date(plage.from);
+            const fin = new Date(plage.to);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            
+            if (debut.toDateString() === fin.toDateString()) {
+                messageHtml += `• ${debut.toLocaleDateString('fr-FR', options)}<br>`;
+            } else {
+                messageHtml += `• Du ${debut.toLocaleDateString('fr-FR', options)} au ${fin.toLocaleDateString('fr-FR', options)}<br>`;
+            }
+        });
+        
+        messageHtml += '<small class="text-muted">Ces dates ne sont plus disponibles pour la prise de rendez-vous.</small>';
+        messageHtml += '</p>';
+        
+        // Ajouter le message après le champ date
+        const parentDiv = infoFermetureBlock.parentNode;
+        parentDiv.insertAdjacentHTML('beforeend', messageHtml);
+    }
+    
+    // Configurer les dates min et max
+    function configurerDatesMinMax() {
+        const today = new Date();
+        const maxDate = new Date();
+        maxDate.setDate(today.getDate() + 31);
+        
+        // Formater les dates pour l'input date (YYYY-MM-DD)
+        const todayStr = today.toISOString().split('T')[0];
+        const maxDateStr = maxDate.toISOString().split('T')[0];
+        
+        inputDateRDV.min = todayStr;
+        inputDateRDV.max = maxDateStr;
+    }
+    
+    // Fonction pour vérifier si une date est dans une plage désactivée
+    function estDateDansPlageDesactivee(dateStr) {
+        const date = new Date(dateStr);
+        
+        for (let plage of plagesDesactivees) {
+            const debut = new Date(plage.from);
+            const fin = new Date(plage.to);
+            
+            // Ajuster les heures pour comparer uniquement les dates
+            debut.setHours(0, 0, 0, 0);
+            fin.setHours(0, 0, 0, 0);
+            date.setHours(0, 0, 0, 0);
+            
+            if (date >= debut && date <= fin) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // Fonction pour vérifier si une date est un jour férié
+    function estJourFerie(dateStr) {
+        return joursFeries.includes(dateStr);
+    }
+    
+    // Fonction pour obtenir le nom du jour en français
+    function getNomJour(dayNumber) {
+        const jours = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+        return jours[dayNumber];
+    }
+    
+    // Fonction pour formater la date en français
+    function formatDateFrancais(dateStr) {
+        const date = new Date(dateStr);
+        const jours = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+        const mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+        return jours[date.getDay()] + " " + date.getDate() + " " + mois[date.getMonth()] + " " + date.getFullYear();
+    }
+    
+    // Fonction pour formater une plage de dates
+    function formatPlageDate(debut, fin) {
+        const dateDebut = new Date(debut);
+        const dateFin = new Date(fin);
+        const mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+        
+        if (dateDebut.toDateString() === dateFin.toDateString()) {
+            return dateDebut.getDate() + " " + mois[dateDebut.getMonth()] + " " + dateDebut.getFullYear();
+        } else {
+            return dateDebut.getDate() + " " + mois[dateDebut.getMonth()] + " au " + 
+                   dateFin.getDate() + " " + mois[dateFin.getMonth()] + " " + dateFin.getFullYear();
+        }
+    }
+    
+    // Fonction pour vérifier la disponibilité de la date
+    function verifierDisponibiliteDate(dateStr, idTblBureau) {
+        $('#msgerror').text('').hide();
+        $('#msgesucces').text('').hide();
+        
+        if (spinnerDaterdv) {
+            spinnerDaterdv.style.display = 'block';
+        }
+        
+        const dateObj = new Date(dateStr);
+        const day = dateObj.getDay();
+        const jourNom = getNomJour(day);
+        
+        // Vérification week-end
+        if (day === 0 || day === 6) {
+            const message = "Les rendez-vous ne peuvent pas être pris pour le week-end. Veuillez sélectionner un jour ouvré en semaine.";
+            alert(message);
+            inputDateRDV.value = '';
+            $('#msgerror').text(message).show();
+            if (spinnerDaterdv) {
+                spinnerDaterdv.style.display = 'none';
+            }
+            return false;
+        }
+        
+        // Vérification des jours fériés
+        if (estJourFerie(dateStr)) {
+            const dateFormatee = formatDateFrancais(dateStr);
+            const message = "Les rendez-vous ne peuvent pas être pris pour un jour férié. Le " + dateFormatee + " est un jour férié en Côte d'Ivoire.";
+            alert(message);
+            inputDateRDV.value = '';
+            $('#msgerror').text(message).show();
+            if (spinnerDaterdv) {
+                spinnerDaterdv.style.display = 'none';
+            }
+            return false;
+        }
+        
+        // Vérification des plages désactivées
+        if (estDateDansPlageDesactivee(dateStr)) {
+            const plagesBloquees = plagesDesactivees.filter(plage => {
+                const debut = new Date(plage.from);
+                const fin = new Date(plage.to);
+                const date = new Date(dateStr);
+                debut.setHours(0, 0, 0, 0);
+                fin.setHours(0, 0, 0, 0);
+                date.setHours(0, 0, 0, 0);
+                return date >= debut && date <= fin;
+            });
+            
+            let message = "Cette date n'est plus disponible car les rendez-vous de cette date sont clôturés";
+            if (plagesBloquees.length > 0) {
+                const plage = plagesBloquees[0];
+                const periodeFormatee = formatPlageDate(plage.from, plage.to);
+                message = `Cette date n'est plus disponible car les rendez-vous du ${periodeFormatee} sont clôturés.`;
+            }
+            
+            alert(message);
+            inputDateRDV.value = '';
+            $('#msgerror').text(message).show();
+            if (spinnerDaterdv) {
+                spinnerDaterdv.style.display = 'none';
+            }
+            return false;
+        }
+        
+        if (idTblBureau && dateStr) {
+            // Vérifier si le jour est autorisé pour cette ville
+            var availableForDate = availableOptions.filter(function (option) {
+                return option.codelieu == idTblBureau && parseInt(option.codejour) === day;
+            });
+            
+            if (availableForDate.length > 0) {
+                // Vérifier les places disponibles
+                $.ajax({
+                    type: 'GET',
+                    url: '/espace-client/rdv/getRdv',
+                    data: {
+                        idTblBureau: idTblBureau,
+                        daterdv: dateStr
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        const option = availableForDate[0];
+                        console.log('availableForDate ', option)
+                        const Nbmax = parseInt(option.nbmax);
+                        console.log('Nbmax ', Nbmax)
+                        
+                        if (data.status === 'success' && data.data) {
+                            var totalResultat = data.data.length || 0;
+                            if (totalResultat >= Nbmax) {
+                                const message = "Plus de places disponibles à cette date.";
+                                alert(message);
+                                inputDateRDV.value = '';
+                                $('#msgerror').text(message).show();
+                            } else {
+                                var remainingSlots = Nbmax - totalResultat;
+                                const message = 'Il reste ' + remainingSlots + ' place(s) à cette date.';
+                                $('#msgesucces').text(message).show();
+                            }
+                        } else {
+                            const message = 'Il reste ' + Nbmax + ' place(s) à cette date.';
+                            $('#msgesucces').text(message).show();
                         }
-                    } else {
-                        alert('Aucune information disponible pour ce lieu de RDV.');
-                        $('#lieurdv').text(''); // Réinitialiser le lieu
-                        $('#jourRdv').text(''); // Réinitialiser les jours
-                        if (spinner) {
-                            spinner.style.display = 'none';
+                        if (spinnerDaterdv) {
+                            spinnerDaterdv.style.display = 'none';
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Erreur AJAX : ', xhr.responseText);
+                        alert("Erreur lors de la vérification de la disponibilité.");
+                        inputDateRDV.value = '';
+                        if (spinnerDaterdv) {
+                            spinnerDaterdv.style.display = 'none';
                         }
                     }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Erreur AJAX : ', xhr.responseText);
-                    alert('Une erreur est survenue lors de la récupération des données.');
-                    $('#lieurdv').text(''); // Réinitialiser le lieu
-                    $('#jourRdv').text(''); // Réinitialiser les jours
+                });
+                return true;
+            } else {
+                const message = "Le " + jourNom + " n'est pas un jour de réception pour ce lieu de RDV.";
+                alert(message);
+                inputDateRDV.value = '';
+                $('#msgerror').text(message).show();
+                if (spinnerDaterdv) {
+                    spinnerDaterdv.style.display = 'none';
+                }
+                return false;
+            }
+        }
+        // if (idTblBureau && dateStr) {
+        //     // Vérifier si le jour est autorisé pour cette ville
+        //     var availableForDate = availableOptions.filter(function (option) {
+        //         return option.codelieu == idTblBureau && parseInt(option.codejour) === day;
+        //     });
+            
+        //     if (availableForDate.length > 0) {
+        //         // Vérifier les places disponibles
+        //         $.ajax({
+        //             type: 'GET',
+        //             url: '/espace-client/rdv/getRdv',
+        //             data: {
+        //                 idTblBureau: idTblBureau,
+        //                 daterdv: dateStr
+        //             },
+        //             dataType: 'json',
+        //             success: function (data) {
+        //                 const option = availableForDate[0];
+        //                 const Nbmax = parseInt(option.nbmax);
+                        
+        //                 if (data.status === 'success' && data.data) {
+        //                     var orderInsert = parseInt(data.data.orderInsert) || 0;
+        //                     if (orderInsert >= Nbmax) {
+        //                         const message = "Plus de places disponibles à cette date.";
+        //                         alert(message);
+        //                         inputDateRDV.value = '';
+        //                         $('#msgerror').text(message).show();
+        //                     } else {
+        //                         var remainingSlots = Nbmax - orderInsert;
+        //                         const message = 'Il reste ' + remainingSlots + ' place(s) à cette date.';
+        //                         $('#msgesucces').text(message).show();
+        //                     }
+        //                 } else {
+        //                     const message = 'Il reste ' + Nbmax + ' place(s) à cette date.';
+        //                     $('#msgesucces').text(message).show();
+        //                 }
+        //                 if (spinnerDaterdv) {
+        //                     spinnerDaterdv.style.display = 'none';
+        //                 }
+        //             },
+        //             error: function (xhr, status, error) {
+        //                 console.error('Erreur AJAX : ', xhr.responseText);
+        //                 alert("Erreur lors de la vérification de la disponibilité.");
+        //                 inputDateRDV.value = '';
+        //                 if (spinnerDaterdv) {
+        //                     spinnerDaterdv.style.display = 'none';
+        //                 }
+        //             }
+        //         });
+        //         return true;
+        //     } else {
+        //         const message = "Le " + jourNom + " n'est pas un jour de réception pour ce lieu de RDV.";
+        //         alert(message);
+        //         inputDateRDV.value = '';
+        //         $('#msgerror').text(message).show();
+        //         if (spinnerDaterdv) {
+        //             spinnerDaterdv.style.display = 'none';
+        //         }
+        //         return false;
+        //     }
+        // }
+        
+        if (spinnerDaterdv) {
+            spinnerDaterdv.style.display = 'none';
+        }
+        return false;
+    }
+    
+    // Désactiver l'input date au départ
+    inputDateRDV.disabled = true;
+    
+    // Charger les données au démarrage
+    chargerJoursFeries();
+    chargerPlagesDesactivees();
+    
+    // Gestionnaire pour le changement de lieu de RDV
+    $('#idTblBureau').on('change', function () {
+        var id = $(this).val();
+        if (spinner) {
+            spinner.style.display = 'block';
+        }
+        
+        // Réinitialiser la date
+        inputDateRDV.value = '';
+        $('#msgerror').text('').hide();
+        $('#msgesucces').text('').hide();
+        
+        $.ajax({
+            type: 'GET',
+            url: '/espace-client/rdv/optionDate/' + id,
+            dataType: 'json',
+            success: function (data) {
+                if (data.status === 'success' && data.data.length > 0) {
+                    var jmax = '';
+                    var lieu = '';
+                    var jours = [];
+                    availableOptions = []; // Réinitialiser les options disponibles
+                    
+                    $.each(data.data, function (index, villeReseau) {
+                        lieu = villeReseau.libelleVilleBureau || 'Lieu inconnu';
+                        $.each(villeReseau.option_rdv, function (index, optionRdv) {
+                            availableOptions.push({
+                                codejour: optionRdv.codejour,
+                                codelieu: optionRdv.codelieu,
+                                nbmax: optionRdv.nbmax,
+                                jour: optionRdv.jour
+                            });
+                            jmax += '<option value="' + optionRdv.nbmax + '">' + optionRdv.jour + '</option>';
+                            jours.push(optionRdv.jour);
+                        });
+                    });
+                    
+                    $('#optionsRdv').html(jmax);
+                    $('#lieurdv').text(lieu);
+                    $('#jourRdv').text(jours.join(' - '));
+                    inputDateRDV.disabled = false;
+                    
+                    if (spinner) {
+                        spinner.style.display = 'none';
+                    }
+                } else {
+                    alert('Aucune information disponible pour ce lieu de RDV.');
+                    $('#lieurdv').text('');
+                    $('#jourRdv').text('');
+                    inputDateRDV.disabled = true;
+                    inputDateRDV.value = '';
                     if (spinner) {
                         spinner.style.display = 'none';
                     }
                 }
-            });
-        });
-
-        $('#daterdv').on('change', function () {
-            var idTblBureau = $('#idTblBureau').val();
-            var daterdv = $(this).val(); // Exemple : 10/12/2024
-            // Réinitialiser les messages à chaque changement
-            $('#msgerror').text('').hide(); // Masquer le message d'erreur
-            $('#msgesucces').text('').hide(); // Masquer le message de succès
-            if (spinnerDaterdv) {
-                spinnerDaterdv.style.display = 'block';
-            }
-
-            if (daterdv) {
-                // Conversion de la date au format JavaScript
-                var parts = daterdv.split('-'); // Supposons que le format est d/m/Y
-                var dateObj = new Date(parts[2], parts[1] - 1, parts[0]); // Année, mois (0-indexé), jour
-
-                // Vérification si la date est un samedi (6) ou un dimanche (0)
-                var day = dateObj.getDay();
-                if (day === 0 || day === 6) {
-                    alert("Les rendez-vous ne peuvent pas être pris le week-end ou les jours fériés. Veuillez sélectionner un jour en semaine.");
-                    $('input[name="daterdv"]').val('');
-                    $('#msgerror').text("Les rendez-vous ne peuvent pas être pris le week-end ou les jours fériés. Veuillez sélectionner un jour en semaine.").show();
-                    return; // Arrête l'exécution
-                }
-            }
-
-            if (idTblBureau && daterdv) {
-                // Filtrage des options disponibles pour la date sélectionnée
-                var availableForDate = availableOptions.filter(function (option) {
-                    return option.codelieu == idTblBureau && parseInt(option.codejour) === dateObj.getDay();
-                });
-
-                if (availableForDate.length > 0) {
-                    // Si des options sont disponibles pour la date et le lieu
-                    $.each(availableForDate, function (index, option) {
-                        var Nbmax = parseInt(option.nbmax);
-
-                        // Vérification de la disponibilité des places
-                        $.ajax({
-                            type: 'GET',
-                            url: '/espace-client/rdv/getRdv',
-                            data: {
-                                idTblBureau: idTblBureau,
-                                daterdv: daterdv
-                            },
-                            dataType: 'json',
-                            success: function (data) {
-                                if (data.status === 'success') {
-                                    var orderInsert = parseInt(data.data.orderInsert);
-                                    if (orderInsert >= Nbmax) {
-                                        alert("Plus de places disponibles à cette date.");
-                                        $('input[name="daterdv"]').val('');
-                                        $('#msgerror').text("Plus de places disponibles à cette date.").show();
-                                        return;
-                                    } else {
-                                        var remainingSlots = Nbmax - orderInsert;
-                                        $('#msgesucces').text('Il reste ' + remainingSlots + ' place(s) à cette date.').show();
-                                    }
-                                } else {
-                                    $('#msgesucces').text('Il reste ' + Nbmax + ' place(s) à cette date.').show();
-                                }
-                                if (spinnerDaterdv) {
-                                    spinnerDaterdv.style.display = 'none';
-                                }
-                            },
-                            error: function (xhr, status, error) {
-                                console.error('Erreur AJAX : ', xhr.responseText);
-                                alert("Erreur lors de la vérification de la disponibilité.");
-                                $('input[name="daterdv"]').val('');
-                                if (spinnerDaterdv) {
-                                    spinnerDaterdv.style.display = 'none';
-                                }
-                            }
-                        });
-                    });
-                } else {
-                    alert("Cette date n'est pas disponible pour ce lieu de RDV. Veuillez choisir une autre.");
-                    $('input[name="daterdv"]').val('');
-                    $('#msgerror').text("Cette date n'est pas disponible pour ce lieu de RDV. Veuillez choisir une autre.").show();
-                    if (spinnerDaterdv) {
-                        spinnerDaterdv.style.display = 'none';
-                    }
+            },
+            error: function (xhr, status, error) {
+                console.error('Erreur AJAX : ', xhr.responseText);
+                alert('Une erreur est survenue lors de la récupération des données.');
+                $('#lieurdv').text('');
+                $('#jourRdv').text('');
+                if (spinner) {
+                    spinner.style.display = 'none';
                 }
             }
         });
     });
-
+    
+    // Gestionnaire pour le changement de date
+    inputDateRDV.addEventListener('change', function() {
+        const dateStr = this.value;
+        const idTblBureau = $('#idTblBureau').val();
+        
+        if (!idTblBureau) {
+            alert('Veuillez d\'abord sélectionner un lieu de RDV.');
+            this.value = '';
+            return;
+        }
+        
+        if (dateStr) {
+            verifierDisponibiliteDate(dateStr, idTblBureau);
+        }
+    });
 });
-
 document.addEventListener('DOMContentLoaded', function () {
     $(document).ready(function () {
         // Déclencher l'événement "change" sur le champ de sélection pour le premier contrat

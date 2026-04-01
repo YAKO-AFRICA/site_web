@@ -67,7 +67,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-12 d-flex justify-content-end gap-3">
-                                    <button class="btn-prime next-btn" type="button" data-next="etaperdv2">Suivant <i
+                                    <button class="btn-prime next-btn p-2" type="button" data-next="etaperdv2">Suivant <i
                                         class='bx bx-right-arrow-alt fs-4'></i></button>
                                 </div>
                             </div>
@@ -104,10 +104,10 @@
                             </div>
                             <div class="row">
                                 <div class="col-6 d-flex justify-content-start gap-3">
-                                    <button class="btn2 border-btn2 prev-btn" type="button" data-prev="etaperdv1"><i class='bx bx-left-arrow-alt fs-4'></i> Retour</button>
+                                    <button class="btn2 border-btn2 prev-btn p-2" type="button" data-prev="etaperdv1"><i class='bx bx-left-arrow-alt fs-4'></i> Retour</button>
                                 </div>
                                 <div class="col-6 d-flex justify-content-end gap-3">
-                                    <button class="btn-prime next-btn" type="button" data-next="etaperdv3">Suivant <i
+                                    <button class="btn-prime next-btn p-2" type="button" data-next="etaperdv3">Suivant <i
                                         class='bx bx-right-arrow-alt fs-4'></i></button>
                                 </div>
                             </div>
@@ -130,8 +130,8 @@
                                 </div>
                                 <div class="col-12 col-lg-6">
                                     <label for="idTblBureau" class="form-label">Lieu de RDV souhaité <span class="star">*</span></label>
-                                    <select class="form-select" name="idTblBureau" id="idTblBureau" data-placeholder="" required>
-                                        <option selected value="">Veuillez sélectionner le lieu du RDV</option>
+                                    <select class="form-select" name="idTblBureau" id="idTblBureau" required>
+                                        <option selected value="" disabled>Veuillez sélectionner le lieu du RDV</option>
                                         @foreach($villeReseaux as $villeReseau)
                                             <option value="{{$villeReseau->idVilleBureau}}">{{$villeReseau->libelleVilleBureau}}</option>
                                         @endforeach
@@ -145,8 +145,8 @@
                             </div>
                             <div class="row g-3 mb-3">
                                 <div class="col-12">
-                                    <label for="daterdv" class="form-label">Date de RDV ? <span class="star">*</span></label>
-                                    <input type="text" class="form-control date-format" id="daterdv" name="daterdv" placeholder="dd/mm/yyyy" required>
+                                    <label for="daterdv" class="form-label">Date de RDV <span class="star">*</span></label>
+                                    <input type="date" class="form-control" id="daterdv" name="daterdv" required>
                                 </div>
                                 <p id="msgerror" class="text-danger"></p>
                                 <p id="msgesucces" class="text-success"></p>
@@ -154,6 +154,9 @@
                                     <div class="spinner-border" style="color: #076633;" role="status">
                                         <span class="visually-hidden">Chargement...</span>
                                     </div>
+                                </div>
+                                <div class="col-12" id="info-fermetureBlock">
+
                                 </div>
                             </div>
                             <div class="col-12 text-center">
@@ -167,10 +170,10 @@
                             </div>
                             <div class="row">
                                 <div class="col-6 d-flex justify-content-start gap-3">
-                                    <button class="btn2 border-btn2 prev-btn" type="button" data-prev="etaperdv2"><i class='bx bx-left-arrow-alt fs-4'></i> Retour</button>
+                                    <button class="btn2 border-btn2 prev-btn p-2" type="button" data-prev="etaperdv2"><i class='bx bx-left-arrow-alt fs-4'></i> Retour</button>
                                 </div>
                                 <div class="col-6 d-flex justify-content-end gap-3">
-                                    <button type="submit" class="btn-prime btn-prime-two submitdrv-btn">Soumettre</button>
+                                    <button type="submit" class="btn-prime btn-prime-two p-2 submitdrv-btn">Soumettre</button>
                                 </div>
                             </div> 
                         </div>
@@ -179,4 +182,10 @@
             </form>
         </div>
     </div>
+
+
+        {{-- const disabledRanges = @json($plagesDesactivees);         --}}
+    {{-- <script>
+        const plagesDesactivees = @json($plagesDesactivees);
+    </script> --}}
 @endsection

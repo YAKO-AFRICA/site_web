@@ -507,36 +507,6 @@ class CustomerLoginController extends Controller
                             'to' => $customerData->email,
                             'time' => Carbon::now()->toDateTimeString()
                         ]);
-                    // $recipientEmail = $request->input('email');
-                    // $emailSubject = "Finalisation de la création de votre compte à Ynov";
-
-                    // // Message HTML correctement formatté
-                    // $message = '
-                    //     <td data-color="text" data-size="size text" data-min="10" data-max="26" data-link-color="link text color" 
-                    //         data-link-style="font-weight:bold; text-decoration:underline; color:#40aceb;" align="justify" 
-                    //         style="font:bold 16px/25px Arial, Helvetica, sans-serif; color:#888; padding:0 0 23px;">
-                    //         Votre compte a bien été créé :
-                    //         <ul>
-                    //             <li><strong><u>Nom d\'utilisateur (login)</u> : </strong> ' . $customerData->login . '</li>
-                    //             <li><strong><u>Mot de passe</u> : </strong> Utilisez le mot de passe défini au moment de votre inscription</li>
-                    //         </ul>
-                    //         Cependant, vous devez finaliser votre inscription en cliquant sur le lien suivant pour associer au moins un contrat d\'assurance :
-                    //     </td>';
-
-                    // $destinatorName = 'Cher(e) client(e) ' . $customerData->nom . ' ' . $customerData->prenom;
-
-                    // $mailData = [
-                    //     'title' => $emailSubject,
-                    //     'body' => $message,
-                    //     'destinatorName' => $destinatorName,
-                    //     'destinatorEmail' => $customerData->email,
-                    //     'btnText' => 'Cliquez ici',
-                    //     'btnLink' => route('customer.registerForm.addContrat', ['id' => $customerData->id]),
-                    // ];
-
-                    // // Envoi de l'email
-                    // $mail = new UserRegisteredMail($mailData, $emailSubject, 'account-register');
-                    // Mail::to($recipientEmail)->send($mail);
 
                     // Mise à jour des informations de l'utilisateur
                     TblCreationCompte::where('id', $customerData->id)->update([
@@ -544,13 +514,6 @@ class CustomerLoginController extends Controller
                         'estnotifieLe' => now(),
                     ]);
                 }
-                // $emailSubject = "Inscription à Yakoafrica";
-                // $emailData = [
-                //     'name' => $request->nom,
-                //     'email' => $request->email,
-                //     'password' => $request->password,
-                // ];
-                // Mail::to($request->email)->send(new UserRegisteredMail($emailSubject, $emailData));
 
 
                 DB::commit();
@@ -611,7 +574,6 @@ class CustomerLoginController extends Controller
                         $existingMembre = Membre::where('login', $customer->login)->first();
                         $existingCustomer = TblCustomer::where('login', $customer->login)->first();
                         $existingMembreContrat = ($existingMembre != null) ? MembreContrat::where(['codemembre' => $existingMembre->idmembre, 'idcontrat' => $idcontrat])->first() : null;
-                        // dd($existingMembre, $existingCustomer, $existingMembreContrat);
 
                         if ($data['details'][0]['DateNaissance'] != $datenaissance) {
                             return response()->json([
@@ -1111,6 +1073,8 @@ class CustomerLoginController extends Controller
                 ->orWhere('old_login', $request->update_login)
                 ->first();
 
+            $iSNewcustomer = TblCreationCompte::where('login', '=', $request->update_login)->first();
+
             if (!$customer) {
                 return response()->json([
                     'type' => 'error',
@@ -1122,7 +1086,7 @@ class CustomerLoginController extends Controller
             $customer->login = $request->login;
             $customer->password = Hash::make($request->password); // Toujours hasher le mot de passe
             $customer->estajour = 1;
-            $customer->isFirstLog = 0;
+            $customer->isFirstLog = (!empty($iSNewcustomer)) ? 1 : 0;
             $customer->save();
 
             // Mettre à jour le membre

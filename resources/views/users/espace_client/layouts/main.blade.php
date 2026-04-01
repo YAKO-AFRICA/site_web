@@ -97,6 +97,8 @@
     <script src="{{ asset('cust_assets/plugins/fancy-file-uploader/jquery.fancy-fileupload.js') }}"></script>
     <script src="{{ asset('cust_assets/plugins/Drag-And-Drop/dist/imageuploadify.min.js') }}"></script>
     <script src="{{ asset('https://cdn.jsdelivr.net/npm/flatpickr') }}"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> --}}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
     <script src="{{ asset('cust_assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -260,14 +262,6 @@
         $(".date-time").flatpickr({
             enableTime: true,
             dateFormat: "Y-m-d H:i",
-        });
-
-        $(".date-format").flatpickr({
-            // altInput: true, // Affiche un champ alternatif lisible par l'utilisateur
-            altFormat: "j F, Y", // Format alternatif en français (ex: 10 décembre, 2024)
-            dateFormat: "d-m-Y", // Format réel de la date envoyée (10-12-2024)
-            minDate: "today", // La date minimale est aujourd'hui
-            maxDate: new Date().fp_incr(31) // +31 jours
         });
 
         $(".date-range").flatpickr({

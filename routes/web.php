@@ -372,6 +372,8 @@ Route::prefix('espace-client', 'PreventBackHistory')->name('customer.')->group(f
         Route::get('/rdv/optionDate/{id}', [RdvController::class, 'getOptionRdv'])->name('rdv.optionDate');
         // Route::get('rdv/getRdvDate/{id}/{dateRdv}',[RdvController::class, 'getOptionRdv'])->name('rdv.optionDate');
         Route::get('/rdv/getRdv', [RdvController::class, 'getRdvByDate'])->name('rdv.getRdv');
+        Route::get('/rdv/jours-feries', [RdvController::class, 'getJoursFeries'])->name('rdv.joursFeries');
+        Route::get('/rdv/plages-desactivees', [RdvController::class, 'getPlagesDesactivees'])->name('rdv.plagesDesactivees');
 
 
         Route::post('rdv/add',[RdvController::class, 'store'])->name('rdv.store');
