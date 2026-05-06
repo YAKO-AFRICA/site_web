@@ -82,7 +82,8 @@ class SMSService
 
         // configuration avec API Infobip si API Orange ne fonctionne pas
         $url = "https://wp2e3q.api.infobip.com/sms/2/text/advanced";
-        $cleApi = "ca9b1e97d87d27dc425b2d598aa83c46-cbbd83f5-f0af-49ae-9bc0-02ba090ecac3";
+        // $cleApi = "ca9b1e97d87d27dc425b2d598aa83c46-cbbd83f5-f0af-49ae-9bc0-02ba090ecac3";
+        $cleApi = "42a73a40893a546f20d2adc036051e1a-4c518f48-d669-42c3-ae7e-5dcf56cd878b";
         // $url = "https://z32vrw.api.infobip.com/sms/2/text/advanced";
         // $cleApi = "7e23a940f0227d7a9555890da2569aa2-80288480-49fb-47d5-bf44-fe05699acfbc";
         $headers = [
@@ -155,7 +156,8 @@ class SMSService
     public function sendOtpByInfobipAPI($phoneNumber, $otp, $from="YAKO AFRICA")
     {
         $url = "https://wp2e3q.api.infobip.com/sms/2/text/advanced";
-        $cleApi = "ca9b1e97d87d27dc425b2d598aa83c46-cbbd83f5-f0af-49ae-9bc0-02ba090ecac3";
+        // $cleApi = "ca9b1e97d87d27dc425b2d598aa83c46-cbbd83f5-f0af-49ae-9bc0-02ba090ecac3";
+        $cleApi = "42a73a40893a546f20d2adc036051e1a-4c518f48-d669-42c3-ae7e-5dcf56cd878b";
         // $url = "https://z32vrw.api.infobip.com/sms/2/text/advanced";
         // $cleApi = "7e23a940f0227d7a9555890da2569aa2-80288480-49fb-47d5-bf44-fe05699acfbc";
         $headers = [

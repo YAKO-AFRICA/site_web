@@ -307,79 +307,190 @@ class RdvController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    // public function store(Request $request)
+    // {
+    //     DB::beginTransaction();
+    //     $request->validate([
+    //         'daterdv' => 'required',
+    //         'lieuresidence' => 'required',
+    //     ]);
+    //     try {
+    //         $coderdv = RefgenerateCode(Tblrdv::class, 'RDV-', 'codedmd');
+            
+    //         $rdvEncours = Tblrdv::where([
+    //             'motifrdv'=>$request->motifrdv,
+    //             'police'=>$request->police,
+    //             'etat'=>1,
+    //         ])->first();
+    //         if ($rdvEncours) {
+    //             return response()->json([
+    //                 'type'=>'error',
+    //                 'urlback'=>'',
+    //                 'message'=>"Vous avez déja un rendez-vous de type $rdvEncours->motifrdv en cours pour le contrat $rdvEncours->police. N° de RDV $rdvEncours->codedmd",
+    //                 'code'=>500,
+    //             ]);
+    //         }else{
+    //             // Création de la prestation
+    //             $rdv = Tblrdv::create([
+    //                 'nomclient'=>$request->nomclient,
+    //                 'tel'=>$request->tel,
+    //                 'email'=>$request->email,
+    //                 'daterdv'=>$request->daterdv,
+    //                 'codedmd' => $coderdv,
+    //                 'dateajou' => Carbon::now()->format('d/m/Y à H:i:s'),
+    //                 'etat' =>1,
+    //                 'motifrdv'=>$request->motifrdv,
+    //                 'police'=>$request->police,
+    //                 'titre'=>$request->titre,
+    //                 'datenaissance'=> Carbon::parse($request->datenaissance)->format('d/m/Y'),
+    //                 'lieuresidence'=>$request->lieuresidence,
+    //                 'idTblBureau'=>$request->idTblBureau,
+    //                 'createdAt' => Carbon::now()->format('d/m/Y H:i:s'),
+    //                 'creeLe' => Carbon::now(),
+    //                 'orderInsert' =>1,
+    //             ])->save();
+                
+    //             if ($rdv) {
+    //                 $dataResponse =[
+    //                     'type'=>'success',
+    //                     'urlback'=> route('customer.rdv.mesRdv'),
+    //                     'message'=>"RDV N° $coderdv enregistré avec succes ! Vous allez recevoir un message de confirmation de la date effective de reception",
+    //                     'code'=>200,
+    //                 ];
+    //                 DB::commit();
+    //             } else {
+    //                     DB::rollback();
+    //                     $dataResponse =[
+    //                         'type'=>'error',
+    //                         'urlback'=>'',
+    //                         'message'=>"Erreur lors de l'enregistrement!",
+    //                         'code'=>500,
+    //                     ];
+    //             }
+    //         }
+            
+    
+    //     } catch (\Throwable $th) {
+    //         DB::rollBack();
+    //         $dataResponse =[
+    //             'type'=>'error',
+    //             'urlback'=>'',
+    //             'message'=>"Erreur systeme! $th",
+    //             'code'=>500,
+    //         ];
+    //     }
+    //         return response()->json($dataResponse);
+    // }
+
     public function store(Request $request)
     {
         DB::beginTransaction();
+
         $request->validate([
             'daterdv' => 'required',
             'lieuresidence' => 'required',
         ]);
+
         try {
+
             $coderdv = RefgenerateCode(Tblrdv::class, 'RDV-', 'codedmd');
-            
+
+            // 🔹 1. Vérifier s'il y a déjà un RDV en cours
             $rdvEncours = Tblrdv::where([
-                'motifrdv'=>$request->motifrdv,
-                'police'=>$request->police,
-                'etat'=>1,
+                'motifrdv' => $request->motifrdv,
+                'police' => $request->police,
+                'etat' => 1,
             ])->first();
+
             if ($rdvEncours) {
                 return response()->json([
                     'type'=>'error',
                     'urlback'=>'',
-                    'message'=>"Vous avez déja un rendez-vous de type $rdvEncours->motifrdv en cours pour le contrat $rdvEncours->police. N° de RDV $rdvEncours->codedmd",
+                    'message'=>"Vous avez déjà un rendez-vous de type $rdvEncours->motifrdv en cours pour le contrat $rdvEncours->police. N° de RDV $rdvEncours->codedmd",
                     'code'=>500,
                 ]);
-            }else{
-                // Création de la prestation
-                $rdv = Tblrdv::create([
-                    'nomclient'=>$request->nomclient,
-                    'tel'=>$request->tel,
-                    'email'=>$request->email,
-                    'daterdv'=>$request->daterdv,
-                    'codedmd' => $coderdv,
-                    'dateajou' => Carbon::now()->format('d/m/Y à H:i:s'),
-                    'etat' =>1,
-                    'motifrdv'=>$request->motifrdv,
-                    'police'=>$request->police,
-                    'titre'=>$request->titre,
-                    'datenaissance'=> Carbon::parse($request->datenaissance)->format('d/m/Y'),
-                    'lieuresidence'=>$request->lieuresidence,
-                    'idTblBureau'=>$request->idTblBureau,
-                    'createdAt' => Carbon::now()->format('d/m/Y H:i:s'),
-                    'creeLe' => Carbon::now(),
-                    'orderInsert' =>1,
-                ])->save();
-                
-                if ($rdv) {
-                    $dataResponse =[
-                        'type'=>'success',
-                        'urlback'=> route('customer.rdv.mesRdv'),
-                        'message'=>"RDV N° $coderdv enregistré avec succes ! Vous allez recevoir un message de confirmation de la date effective de reception",
-                        'code'=>200,
-                    ];
-                    DB::commit();
-                } else {
-                        DB::rollback();
-                        $dataResponse =[
-                            'type'=>'error',
-                            'urlback'=>'',
-                            'message'=>"Erreur lors de l'enregistrement!",
-                            'code'=>500,
-                        ];
+            }
+
+            // 🔥 2. NOUVELLE LOGIQUE (blocage délai)
+            $delai = ($request->idTblBureau == "2") ? 10 : 30;
+
+            $dernierRdv = Tblrdv::where('police', $request->police)
+                ->whereNotIn('etat', [0,3])
+                ->orderBy('creeLe', 'desc')
+                ->first();
+
+            if ($dernierRdv) {
+
+                $dateDernierRdv = Carbon::parse($dernierRdv->creeLe);
+                $dateRdvPossible = $dateDernierRdv->copy()->addDays($delai);
+                $maintenant = Carbon::now();
+
+                if ($maintenant->lt($dateRdvPossible)) {
+
+                    $joursRestants = $maintenant->diffInDays($dateRdvPossible);
+
+                    return response()->json([
+                        'type'=>'error',
+                        'urlback'=>'',
+                        'message'=>"Vous ne pouvez pas prendre de rendez-vous avant le ".$dateRdvPossible->format('d/m/Y')." (dans $joursRestants jours)",
+                        'code'=>500,
+                    ]);
                 }
             }
-            
-    
-        } catch (\Throwable $th) {
+
+            $maxOrder = Tblrdv::where('idTblBureau', $request->idTblBureau)
+            ->where('daterdv', $request->daterdv)
+            ->max('orderInsert');
+
+            // ✅ 3. Création du RDV
+            $rdv = Tblrdv::create([
+                'nomclient'=>$request->nomclient,
+                'tel'=>$request->tel,
+                'email'=>$request->email,
+                'daterdv'=>$request->daterdv,
+                'codedmd' => $coderdv,
+                'dateajou' => Carbon::now()->format('d/m/Y à H:i:s'),
+                'etat' =>1,
+                'motifrdv'=>$request->motifrdv,
+                'police'=>$request->police,
+                'titre'=>$request->titre,
+                'datenaissance'=> Carbon::parse($request->datenaissance)->format('d/m/Y'),
+                'lieuresidence'=>$request->lieuresidence,
+                'idTblBureau'=>$request->idTblBureau,
+                'createdAt' => Carbon::now()->format('d/m/Y H:i:s'),
+                'creeLe' => Carbon::now(),
+                'orderInsert' => (int) $maxOrder + 1,
+            ]);
+
+            if ($rdv) {
+                DB::commit();
+                return response()->json([
+                    'type'=>'success',
+                    'urlback'=> route('customer.rdv.mesRdv'),
+                    'message'=>"RDV N° $coderdv enregistré avec succès ! Vous allez recevoir un message de confirmation",
+                    'code'=>200,
+                ]);
+            }
+
             DB::rollBack();
-            $dataResponse =[
+            return response()->json([
                 'type'=>'error',
                 'urlback'=>'',
-                'message'=>"Erreur systeme! $th",
+                'message'=>"Erreur lors de l'enregistrement!",
                 'code'=>500,
-            ];
+            ]);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'type'=>'error',
+                'urlback'=>'',
+                'message'=>"Erreur système! $th",
+                'code'=>500,
+            ]);
         }
-            return response()->json($dataResponse);
     }
 
     public function mesRdv()
