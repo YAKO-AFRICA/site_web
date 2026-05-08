@@ -81,11 +81,8 @@ class SMSService
 
 
         // configuration avec API Infobip si API Orange ne fonctionne pas
-        $url = "https://wp2e3q.api.infobip.com/sms/2/text/advanced";
-        // $cleApi = "ca9b1e97d87d27dc425b2d598aa83c46-cbbd83f5-f0af-49ae-9bc0-02ba090ecac3";
-        $cleApi = "42a73a40893a546f20d2adc036051e1a-4c518f48-d669-42c3-ae7e-5dcf56cd878b";
-        // $url = "https://z32vrw.api.infobip.com/sms/2/text/advanced";
-        // $cleApi = "7e23a940f0227d7a9555890da2569aa2-80288480-49fb-47d5-bf44-fe05699acfbc";
+        $url = env("INFOBIP_BASE_URL");
+        $cleApi = env("INFOBIP_API_KEY");
         $headers = [
                     'Authorization' => "App $cleApi",
                     'Content-Type' => 'application/json',
@@ -115,51 +112,11 @@ class SMSService
             return ['error' => $e->getMessage()];
         }
     }
-    // public function sendOtp($phoneNumber, $otp)
-    // {
-    //     // $url = "https://z32vrw.api.infobip.com/sms/2/text/advanced";
-    //     $url = "https://api.orange.com/oauth/v3/token";
-    //     $clientId = 'xjxWRml44RnoZ5dvMFIfQl3e18rGA7tv';
-    //     $clientSecret = 'wQkC6YbNdM5AMXig';
-    //     // $url = "{$this->baseUrl}/sms/3/messages";
-    //     $headers = [
-    //                 'Authorization' => "Basic ".base64_encode("$clientId:$clientSecret"),
-    //                 'Content-Type' => 'application/json',
-    //                 'Accept' => 'application/json',
-    //     ];
-
-    //     $body = [
-    //         "messages" => [
-    //             [
-    //                 // "from" => 2250789078557,
-    //                 "from" => "SMS 701280",
-    //                 "destinations" => [
-    //                     ["to" => $phoneNumber]
-    //                 ],
-    //                 "text" => "Votre code de confirmation de votre numéro est : $otp"
-    //             ]
-    //         ]
-    //     ];
-
-    //     try {
-            
-    //         $response = Http::withHeaders($headers)
-    //             ->post($url, $body);
-
-    //         return json_decode($response->getBody(), true);
-    //     } catch (\Exception $e) {
-    //         return ['error' => $e->getMessage()];
-    //     }
-    // }
-    // public function sendOtpByInfobipAPI($phoneNumber, $otp, $from="YAKO AFRICA")
 
     public function sendOtpByInfobipAPI($phoneNumber, $otp, $from="YAKO AFRICA")
     {
-        $url = "https://wp2e3q.api.infobip.com/sms/2/text/advanced";
-        // $cleApi = "ca9b1e97d87d27dc425b2d598aa83c46-cbbd83f5-f0af-49ae-9bc0-02ba090ecac3";
-        $cleApi = "42a73a40893a546f20d2adc036051e1a-4c518f48-d669-42c3-ae7e-5dcf56cd878b";
-        // $url = "https://z32vrw.api.infobip.com/sms/2/text/advanced";
-        // $cleApi = "7e23a940f0227d7a9555890da2569aa2-80288480-49fb-47d5-bf44-fe05699acfbc";
+        $url = env("INFOBIP_BASE_URL");
+        $cleApi = env("INFOBIP_API_KEY");
         $headers = [
                     'Authorization' => "App $cleApi",
                     'Content-Type' => 'application/json',
