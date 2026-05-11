@@ -38,6 +38,9 @@
                         <input type="email" name="email" placeholder="Votre e-mail ici. . ." autocomplete="off">
                         <button type="submit" class="btn">Soumettre</button>
                     </form>
+                    <div class="ms-4">
+                        <img src="{{ asset('assets/img/qrOQSF-CI.jpeg')}}" alt="" class="rounded" width="100px" height="100px">
+                    </div>
                     <div class="footer__social-two">
                         <ul class="list-wrap">
                             <li><a href="javascript:void(0)"><i class="fab fa-facebook-f"></i></a></li>
