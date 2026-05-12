@@ -35,6 +35,9 @@ class Membre extends Model
         'lieunaissance',
         'lieuresidence',
         'sexe',
+        'enligne',
+        'lastvisite',
+        'nbrevisite'
 
     ];
 

@@ -123,6 +123,9 @@ class CustomerLoginController extends Controller
                         if ($membre) {
 
                             $membre->pass = Hash::make($input['password']);
+                            $membre->lastvisite = now();
+                            $membre->enligne = 1;
+                            $membre->nbrevisite = (int) ($membre->nbrevisite ?? 0) + 1;
                             $membre->save();
                         }
 
@@ -142,6 +145,11 @@ class CustomerLoginController extends Controller
                 } else {
                     // Si le mot de passe est déjà haché, utiliser Hash::check
                     if (Hash::check($input['password'], $customer->password)) {
+                        $membre->lastvisite = now();
+                        $membre->enligne = 1;
+                        $membre->nbrevisite = (int) ($membre->nbrevisite ?? 0) + 1;
+                        $membre->save();
+                        
                         // Connexion réussie si le mot de passe est haché
                         Auth::guard('customer')->login($customer);
                         if ($input['type'] == 'RendezVous') {
@@ -219,6 +227,11 @@ class CustomerLoginController extends Controller
 
     public function logout()
     {
+        $membre = Membre::where('idmembre', Auth::guard('customer')->user()->membre->idmembre)->first();
+        if ($membre) {
+            $membre->enligne = 0;
+            $membre->save();
+        }
         Auth::guard('customer')->logout();
         return redirect()->route('customer.loginForm')->with('success', 'Vous êtes déconnecté');
     }
