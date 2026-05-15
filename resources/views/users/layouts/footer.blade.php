@@ -43,10 +43,10 @@
                     </div>
                     <div class="footer__social-two">
                         <ul class="list-wrap">
-                            <li><a href="https://www.facebook.com/YakoAfrica.SA/?locale=fr_FR"><i class="fab fa-facebook-f"></i></a></li>
-                            <li><a href="https://www.instagram.com/yakoafricaassur/"><i class="fab fa-instagram"></i></a></li>
+                            <li><a href="https://www.facebook.com/YakoAfrica.SA/?locale=fr_FR" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a href="https://www.instagram.com/yakoafricaassur/" target="_blank"><i class="fab fa-instagram"></i></a></li>
                             {{-- <li><a href="javascript:void(0)"><i class="fab fa-youtube"></i></a></li> --}}
-                            <li><a href="https://www.linkedin.com/company/laloyalevie/posts/?feedView=all"><i class="fab fa-linkedin"></i></a></li>
+                            <li><a href="https://www.linkedin.com/company/laloyalevie/posts/?feedView=all" target="_blank"><i class="fab fa-linkedin"></i></a></li>
                         </ul>
                     </div>
                 </div>
