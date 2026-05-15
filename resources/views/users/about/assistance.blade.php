@@ -63,8 +63,8 @@
                                 </p>
                             </div>
                         </div>
-                        <a href="{{ route('sinistre.index') }}" class="btn">Prédéclarer un sinistre</a>
-                        {{-- <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#enMaintenanceModal" --}}
+                        {{-- <a href="{{ route('sinistre.index') }}" class="btn">Prédéclarer un sinistre</a> --}}
+                        <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#enMaintenanceModal"
                             class="btn">Prédéclarer un sinistre</a>
                     </div>
                 </div>
