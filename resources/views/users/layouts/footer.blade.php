@@ -39,13 +39,14 @@
                         <button type="submit" class="btn">Soumettre</button>
                     </form>
                     <div class="ms-4">
-                        <img src="{{ asset('assets/img/qrOQSF-CI.jpeg')}}" alt="" class="rounded" width="100px" height="100px">
+                        <img src="{{ asset('assets/img/qrOQSF-CI.jpeg')}}" alt="" class="rounded" width="110px" height="110px">
                     </div>
                     <div class="footer__social-two">
                         <ul class="list-wrap">
-                            <li><a href="javascript:void(0)"><i class="fab fa-facebook-f"></i></a></li>
-                            <li><a href="javascript:void(0)"><i class="fab fa-instagram"></i></a></li>
-                            <li><a href="javascript:void(0)"><i class="fab fa-youtube"></i></a></li>
+                            <li><a href="https://www.facebook.com/YakoAfrica.SA/?locale=fr_FR"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a href="https://www.instagram.com/yakoafricaassur/"><i class="fab fa-instagram"></i></a></li>
+                            {{-- <li><a href="javascript:void(0)"><i class="fab fa-youtube"></i></a></li> --}}
+                            <li><a href="https://www.linkedin.com/company/laloyalevie/posts/?feedView=all"><i class="fab fa-linkedin"></i></a></li>
                         </ul>
                     </div>
                 </div>
