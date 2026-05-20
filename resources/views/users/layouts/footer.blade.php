@@ -39,7 +39,9 @@
                         <button type="submit" class="btn">Soumettre</button>
                     </form>
                     <div class="ms-4">
-                        <img src="{{ asset('assets/img/qrOQSF-CI.jpeg')}}" alt="" class="rounded" width="110px" height="110px">
+                        <a href="https://qualite.oqsfci.org/scei/a-0031" target="_blank">
+                            <img src="{{ asset('assets/img/qrcode_oqsfci.jpg')}}" alt="" class="rounded" width="110px" height="110px">
+                        </a>
                     </div>
                     <div class="footer__social-two">
                         <ul class="list-wrap">
