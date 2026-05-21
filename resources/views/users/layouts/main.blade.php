@@ -204,6 +204,7 @@
         .then(response => {
             if (!response.ok) {
                 throw new Error('Une erreur s\'est produite lors de l\'envoi du formulaire.');
+                window.location.reload();
             }
             return response.json();
         })
@@ -216,252 +217,54 @@
         .catch(error => {
             console.error('Erreur lors de la soumission du formulaire:', error);
             alert('Une erreur est survenue. Veuillez réessayer.');
+            window.location.reload();
         });
     }
     </script>
 
     <script>
         function pageVisitedForm(uuid, redirectUrl) {
-        // Récupérer le formulaire
-        const form = document.getElementById('visitedForm');
+            // Récupérer le formulaire
+            const form = document.getElementById('visitedForm');
 
-        // Remplir le champ `uuid_activity` avec la valeur passée
-        form.querySelector('input[name="page_visited"]').value = uuid;
-        form.querySelector('input[name="reseau_uuid"]').value = "";
-        // Créer un objet FormData à partir du formulaire
-        const formData = new FormData(form);
+            // Remplir le champ `uuid_activity` avec la valeur passée
+            form.querySelector('input[name="page_visited"]').value = uuid;
+            form.querySelector('input[name="reseau_uuid"]').value = "";
+            // Créer un objet FormData à partir du formulaire
+            const formData = new FormData(form);
 
-        // Soumettre le formulaire via AJAX
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest', // Indique que c'est une requête AJAX
-            },
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Une erreur s\'est produite lors de l\'envoi du formulaire.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Formulaire soumis avec succès:', data);
+            // Soumettre le formulaire via AJAX
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest', // Indique que c'est une requête AJAX
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Une erreur s\'est produite lors de l\'envoi du formulaire.');
+                    window.location.reload();
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Formulaire soumis avec succès:', data);
 
-            // Rediriger l'utilisateur vers l'URL de détails
-            window.location.href = redirectUrl;
-        })
+                // Rediriger l'utilisateur vers l'URL de détails
+                window.location.href = redirectUrl;
+            })
         .catch(error => {
             console.error('Erreur lors de la soumission du formulaire:', error);
             alert('Une erreur est survenue. Veuillez réessayer.');
+            window.location.reload();
         });
     }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
 
-    {{-- <script>
-       document.addEventListener('DOMContentLoaded', () => {
-            const banner = document.querySelector('.banner-scroll-football');
-            const container = document.querySelector('.banner-football');
 
-            let isPaused = false;
-            let lastPauseTime = 0;
-
-            function loop() {
-                const now = Date.now();
-                const bannerRect = banner.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
-
-                const bannerCenter = bannerRect.left + bannerRect.width / 2;
-                const containerCenter = containerRect.left + containerRect.width / 2;
-
-                // Évite pause multiple au même passage
-                if (
-                    !isPaused &&
-                    Math.abs(bannerCenter - containerCenter) < 8 &&
-                    now - lastPauseTime > 8000
-                ) {
-                    isPaused = true;
-                    lastPauseTime = now;
-                    banner.style.animationPlayState = 'paused';
-
-                    setTimeout(() => {
-                        banner.style.animationPlayState = 'running';
-                        isPaused = false;
-                    }, 3000);
-                }
-
-                requestAnimationFrame(loop);
-            }
-
-            requestAnimationFrame(loop);
-        });
-    </script>
-     --}}
-    {{-- <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const football = document.querySelector('.banner-scroll-football');
-    const text = document.querySelector('.banner-scroll-text');
-    const container = document.querySelector('.banner-football');
-
-    const PAUSE_TIME = 3000;
-    let step = 0;
-
-    function center(el) {
-        const r = el.getBoundingClientRect();
-        return r.left + r.width / 2;
-    }
-
-    function containerCenter() {
-        const r = container.getBoundingClientRect();
-        return r.left + r.width / 2;
-    }
-
-    function resetAnimation(el) {
-        el.style.animation = 'none';
-        el.offsetHeight;
-        el.style.animation = '';
-        el.style.animationPlayState = 'paused';
-    }
-
-    function loop() {
-        const c = containerCenter();
-
-        /* 1️⃣ football démarre */
-        if (step === 0) {
-            football.style.animationPlayState = 'running';
-            step = 1;
-        }
-
-        /* 2️⃣ football arrive au centre → STOP */
-        else if (step === 1 && Math.abs(center(football) - c) < 10) {
-            football.style.animationPlayState = 'paused';
-            text.style.animationPlayState = 'running';
-            step = 2;
-        }
-
-        /* 3️⃣ text arrive au centre → STOP */
-        else if (step === 2 && Math.abs(center(text) - c) < 10) {
-            text.style.animationPlayState = 'paused';
-            step = 3;
-
-            /* 4️⃣ attendre 3s puis repartir ensemble */
-            setTimeout(() => {
-                football.style.animationPlayState = 'running';
-                text.style.animationPlayState = 'running';
-                step = 4;
-            }, PAUSE_TIME);
-        }
-
-        /* 5️⃣ quand les deux sont sortis → reset */
-        else if (
-            step === 4 &&
-            center(football) < 0 &&
-            center(text) < 0
-        ) {
-            resetAnimation(football);
-            resetAnimation(text);
-            step = 0;
-        }
-
-        requestAnimationFrame(loop);
-    }
-
-    requestAnimationFrame(loop);
-});
-</script> --}}
-
-
-    
-
-    {{-- <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
-
-    <script>
-
-        document.getElementById("contactsubmitForm").addEventListener("submit", function(e){
-
-            const recaptcha_token = document.getElementById("recaptcha_token");
-            
-
-            e.preventDefault();
-
-            const form = this;
-
-            Swal.fire({
-                title: 'Traitement en cours...',
-                text: 'Veuillez patienter...',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                },
-            });
-
-            grecaptcha.ready(function () {
-
-                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {action: 'submit'})
-                .then(function (token) {
-
-                    recaptcha_token.value = token;
-                    console.log("reCAPTCHA token:", token);
-                    console.log("reCAPTCHA token element:", recaptcha_token);
-
-                    const formData = new FormData(form);
-
-                    axios.post('{{ route('admin.subscription.store') }}', formData)
-
-                    .then(function(response){
-
-                        Swal.close();
-
-                        if(response.data.code === 200){
-
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Succès',
-                                text: response.data.message,
-                                timer: 4000,
-                                showConfirmButton: false
-                            });
-
-                            form.reset();
-
-                        }else{
-
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Erreur',
-                                text: response.data.message
-                            });
-
-                        }
-
-                    })
-
-                    .catch(function(error){
-
-                        Swal.close();
-
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Erreur serveur',
-                            text: 'Une erreur est survenue.'
-                        });
-
-                        console.error(error);
-
-                    });
-
-                });
-
-            });
-
-        });
-
-    </script> --}}
-
-    {{-- <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script> --}}
     <script src="https://www.google.com/recaptcha/api.js?render=6LdaUYgsAAAAAJMZy7ObPux1-4CWgi6zFf4WrbnG"></script>
 
 <script>

@@ -325,6 +325,7 @@
         .then(response => {
             if (!response.ok) {
                 throw new Error('Une erreur s\'est produite lors de l\'envoi du formulaire.');
+                window.location.reload();
             }
             return response.json();
         })
@@ -337,6 +338,7 @@
         .catch(error => {
             console.error('Erreur lors de la soumission du formulaire:', error);
             alert('Une erreur est survenue. Veuillez réessayer.');
+            window.location.reload();
         });
     }
 </script>

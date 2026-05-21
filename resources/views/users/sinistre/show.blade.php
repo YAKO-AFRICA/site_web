@@ -1,6 +1,9 @@
 @extends('users.sinistre.layouts.main')
 
 @section('content')
+    @php
+        \Carbon\Carbon::setLocale('fr');
+    @endphp
     <div class="row">
         <div class="col-12 col-lg-3">
             <div class="card">
@@ -10,6 +13,7 @@
                             <a href="javascript:;" class="list-group-item py-1" data-target="info-contrat">
                                 <i class='bx bx-folder me-2'></i><span>Detail de la Déclaration</span>
                             </a>
+                            <h5 style="text-align : center;" class="pt-3">Code : {{ $sinistre->code ?? '.' }}</h5>
                         </div>
                     </div>
                 </div>
@@ -58,7 +62,8 @@
                                         {{ $doc->libelle }}
                                     </h6>
                                     <p class="mb-0 text-secondary" style="font-size: 0.6em">
-                                        {{ $doc->created_at ?? '' }}
+                                        {{ !empty($doc->created_at ) ? \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $doc->created_at )->translatedFormat('d F Y à H:i:s') : '.' }}
+                                        {{-- {{ $doc->created_at ?? '' }} --}}
                                     </p>
                                 </div>
                                 <h6 class="text-primary mb-0 text-center">
@@ -161,7 +166,8 @@
                                                     <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Date de naissance:
                                                     </dt>
                                                     <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5">
-                                                        {{ $sinistre->datenaissanceDecalarant ?? 'Non renseigné' }} </dd>
+                                                        {{ !empty($sinistre->datenaissanceDecalarant) ? \Carbon\Carbon::createFromFormat('Y-m-d', $sinistre->datenaissanceDecalarant)->translatedFormat('d F Y') : 'Non renseigné' }}
+                                                        {{-- {{ $sinistre->datenaissanceDecalarant ?? 'Non renseigné' }} </dd> --}}
                                                     <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Lieu de naissance:
                                                     </dt>
                                                     <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5">
@@ -235,10 +241,11 @@
                                                     <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Nature du sinistre:
                                                     </dt>
                                                     <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5">
-                                                        {{ $sinistre->natureSinistre ?? '' }}</dd>
+                                                        {{ $sinistre->natureSinistre = 'Deces'? 'Décès': ($sinistre->natureSinistre = 'Invalidite'? 'Invalidité' : '') ?? '' }}</dd>
                                                     <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Date du sinistre:</dt>
                                                     <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5">
-                                                        {{ $sinistre->dateSinistre ?? '' }}</dd>
+                                                        {{ !empty($sinistre->dateSinistre) ? \Carbon\Carbon::createFromFormat('Y-m-d', $sinistre->dateSinistre)->translatedFormat('d F Y') : '.' }}
+                                                        {{-- {{ $sinistre->dateSinistre ?? '' }}</dd> --}}
                                                     <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Cause du sinistre:
                                                     </dt>
                                                     <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5 text-wrap">
@@ -268,14 +275,16 @@
                                                         {{ $sinistre->lieuConservation ?? '' }}</dd>
                                                     <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Date de levée:</dt>
                                                     <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5">
-                                                        {{ $sinistre->dateLevee ?? '' }}</dd>
+                                                        {{ !empty($sinistre->dateLevee) ? \Carbon\Carbon::createFromFormat('Y-m-d', $sinistre->dateLevee)->translatedFormat('d F Y') : '.' }}
+                                                        {{-- {{ $sinistre->dateLevee ?? '' }}</dd> --}}
                                                     <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Lieu de levée:</dt>
                                                     <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5 text-wrap">
                                                         {{ $sinistre->lieuLevee ?? '' }}</dd>
                                                     <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Date d'inhumation:
                                                     </dt>
                                                     <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5">
-                                                        {{ $sinistre->dateInhumation ?? '' }}</dd>
+                                                        {{-- {{ $sinistre->dateInhumation ?? '' }}</dd> --}}
+                                                        {{ !empty($sinistre->dateInhumation) ? \Carbon\Carbon::createFromFormat('Y-m-d', $sinistre->dateInhumation)->translatedFormat('d F Y') : '.' }}
                                                     <dt class="col-xs-12 col-sm-6 col-md-5 col-lg-7">Lieu d'inhumation:
                                                     </dt>
                                                     <dd class="col-xs-12 col-sm-6 col-md-7 col-lg-5 text-wrap">

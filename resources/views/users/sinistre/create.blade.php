@@ -104,7 +104,8 @@
                                                 <option value="" selected disabled>choisir une filiation</option>
                                                 @foreach ($filiations as $item)
                                                     <option
-                                                        value="{{ $item['CodeFiliation'] == 'LUIMM' ? 'Souscripteur' : $item['MonLibelle'] }}">
+                                                        value="{{ $item['CodeFiliation'] == 'LUIMM' ? 'Souscripteur' : $item['MonLibelle'] }}" 
+                                                        {{ Auth::guard('customer')->check() && $item['CodeFiliation'] == 'LUIMM' ? 'selected' : '' }}>
                                                         {{ $item['CodeFiliation'] == 'LUIMM' ? 'Souscripteur' : $item['MonLibelle'] }}
                                                     </option>
                                                 @endforeach
@@ -115,9 +116,14 @@
                                         <div class="col-12 col-lg-6">
                                             <label for="lieuresidenceDecalarant" class="form-label">Où habitez-vous ? <span
                                                     class="star">*</span> </label>
-                                            <input type="text" class="form-control" id="lieuresidenceDecalarant"
+                                            <input type="text" class="form-control" list="villeResidenceDecalarantOptions" id="lieuresidenceDecalarant"
                                                 name="lieuresidenceDecalarant" value="{{ Auth::guard('customer')->check() ? Auth::guard('customer')->user()->membre->lieuresidence : '' }}"
-                                                placeholder="Votre lieu de résidence" required>
+                                                placeholder="Veuillez saisir la ville de résidence" required>
+                                                <datalist id="villeResidenceDecalarantOptions">
+                                                    @foreach ($villes as $ville)
+                                                        <option value="{{ $ville->libelleVillle}}">
+                                                    @endforeach
+                                                </datalist>
                                         </div>
                                     </div>
                                     <div class="row g-3 mb-3">
@@ -228,9 +234,14 @@
                                         <div class="col-12 col-lg-6">
                                             <label for="lieuresidenceAssuree" class="form-label">Lieu de résidence de
                                                 l'assuré(e) <span class="star">*</span> </label>
-                                            <input type="text" class="form-control" id="lieuresidenceAssuree"
+                                            <input type="text" class="form-control" list="villeResidenceAssureeOptions" id="lieuresidenceAssuree"
                                                 name="lieuresidenceAssuree" value=""
                                                 placeholder="Lieu de résidence de l'assuré(e)" required>
+                                                <datalist id="villeResidenceAssureeOptions">
+                                                    @foreach ($villes as $ville)
+                                                        <option value="{{ $ville->libelleVillle}}">
+                                                    @endforeach
+                                                </datalist>
                                         </div>
                                     </div>
 

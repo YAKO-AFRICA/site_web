@@ -134,7 +134,8 @@
                         <div class="green-bar" style="background-color: #006838; width: 35%; height: 100%;"></div>
                         <div class="center-section"
                             style="float: left; width: 75%; height: 100%; padding: 10px 0; text-align: left;">
-                            <h4>FORMULAIRE DE DÉCLARATION DE SINISTRE</h4>
+                            <h4 style="text-align : center;">FORMULAIRE DE DÉCLARATION DE SINISTRE</h4>
+                            <h5 style="text-align : center;">Code : {{ $sinistre->code ?? '.' }}</h5>
                         </div>
                     </div>
                 </div>
@@ -191,7 +192,7 @@
                             </p>
                         </div>
                     </div>
-                    <h5><u>IDENTIFICATION DECLARANT / BÉNÉFICIAIRE</u></h5>
+                    <h5><u>IDENTIFICATION DECLARANT</u></h5>
                     <div class="form-group">
                         <label for="nom" style="margin-right: 40px">Nom</label>
                         <input type="text"
@@ -257,7 +258,7 @@
                             font-size: 14px;
                             border-radius: 3px;
                             background-color: #ffffff;"
-                            name="prenom" value="{{ $sinistre->datenaissanceDecalarant ?? '.' }}" />&nbsp; &nbsp; &nbsp;
+                            name="prenom" value="{{ !empty($sinistre->datenaissanceDecalarant) ? \Carbon\Carbon::createFromFormat('Y-m-d', $sinistre->datenaissanceDecalarant)->translatedFormat('d F Y') : '.' }}" />&nbsp; &nbsp; &nbsp;
                         <label for="prenom">Lieu de naissance&nbsp;</label>
                         <input type="text" id="prenom"
                             style="
