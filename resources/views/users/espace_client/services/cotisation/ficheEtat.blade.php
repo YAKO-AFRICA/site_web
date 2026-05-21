@@ -145,11 +145,11 @@
                         @if($details[0]['OnStdbyOff'] == 1)
                             <h3 for="" style="text-align: center; font-size: 15px;"> Statut : &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #F9B233; font-size: 20px;">En cours</span></h3>
                         @elseif($details[0]['OnStdbyOff'] == 2)
-                            <h3 for="" style="text-align: center; font-size: 15px;"> Statut : &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #F9B233; font-size: 20px; ">En veille</span>"></h3>
+                            <h3 for="" style="text-align: center; font-size: 15px;"> Statut : &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #F9B233; font-size: 20px; ">En veille</span></h3>
                         @elseif($details[0]['OnStdbyOff'] == 3)
-                            <h3 for="" style="text-align: center; font-size: 15px;"> Statut : &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #F9B233; font-size: 20px; ">Arrêté</span>"></h3>
+                            <h3 for="" style="text-align: center; font-size: 15px;"> Statut : &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #F9B233; font-size: 20px; ">Arrêté</span></h3>
                         @else 
-                            <h3 for="" style="text-align: center; font-size: 15px;"> Statut : &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #F9B233; font-size: 20px; ">Inconnu</span>"></h3>
+                            <h3 for="" style="text-align: center; font-size: 15px;"> Statut : &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #F9B233; font-size: 20px; ">Inconnu</span></h3>
                         @endif
                         
                     </div>
