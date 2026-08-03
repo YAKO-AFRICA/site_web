@@ -7,11 +7,8 @@
         select[readonly] {
             background-color: #f0f0f0;
             border: 1px solid #ccc;
-            /* Bordure gris clair */
-            /* cursor: not-allowed;        Curseur indiquant que l'action est interdite */
             cursor: no-drop;
             pointer-events: none;
-            /* Empêche toute interaction avec ces éléments */
         }
 
         /* Remplacer le curseur par l'emoji 🚫 lors du survol des champs readonly */
@@ -19,7 +16,6 @@
         textarea[readonly]:hover,
         select[readonly]:hover {
             cursor: no-drop;
-            /* cursor: wait; */
         }
 
         @media (min-width: 992px) {
@@ -93,9 +89,7 @@
             <div class="card-body">
 
                 <div class="bs-stepper-content">
-                    {{-- <form action="{{ route('customer.prestation.store') }}" id="monFormulaire" method="POST"
-                        enctype="multipart/form-data" class="submitForm"> --}}
-                        <form id="monFormulaire" method="POST" enctype="multipart/form-data"
+                    <form id="monFormulaire" method="POST" enctype="multipart/form-data"
                         class="submitForm">
                         @csrf
                         @include('users.espace_client.components.prestations.infosPerso')

@@ -42,7 +42,7 @@ class Membre extends Model
     ];
 
     // Désactiver les timestamps
-    public $timestamps = false;
+    // public $timestamps = false;
     protected $primaryKey = 'idmembre';
     // Relation entre Membre et TblCustomer
     public function customers()

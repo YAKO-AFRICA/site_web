@@ -26,6 +26,7 @@ return [
         'pompes_funebres_list' => env('API_POMPES_FUNEBRES_LIST'),
         'professions' => env('API_PROFESSIONS'),
         'centres_medicaux_list' => env('API_CENTRES_MEDICAUX_LIST'),
+        'enov_base' => env('API_BASE')
     ],
 
     'recaptcha' => [

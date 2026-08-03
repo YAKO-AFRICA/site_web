@@ -324,56 +324,6 @@
     </script>
 
     <script>
-        // document.addEventListener("DOMContentLoaded", function () {
-        //     let errorCounter = 0;
-        //     const messageDatenaissance = document.getElementById("messageDatenaissance").value;
-
-        //     function showError(message) {
-        //         const errorMessage = document.getElementById("errorCounter");
-        //         errorCounter++;
-        //         errorMessage.innerHTML = `⚠️ ${message} <br> (Nombre d'essais : ${errorCounter})`;
-        //         if (errorCounter == 3) {
-        //                 // errorMessage.innerHTML = `⚠️ Nombre de tentatives atteintes : ${errorCounter} <br> Veuillez patienter un instant...`;
-        //                 // setTimeout(() => {
-        //                 // fermer Modal staticBackdrop1;
-        //                 const myModal = new bootstrap.Modal(document.getElementById('staticBackdrop1'), {});
-        //                 myModal.hide();
-
-        //                 // ouvrir Modal staticBackdrop2;
-        //                 const myModal = new bootstrap.Modal(document.getElementById('staticBackdrop2'), {});
-        //                 myModal.show();
-        //             // }, 4000);
-
-        //             }
-        //     }
-        //     if (messageDatenaissance == "La date de naissance saisie ne correspond pas à celle enregistrée dans le contrat.") {
-        //         document.querySelector(".submitForm").addEventListener("submit", function (e) {
-        //             e.preventDefault(); // Empêche le rechargement de la page
-        //             showError(messageDatenaissance)
-
-
-        //             // const form = this;
-        //             // const formData = new FormData(form);
-
-        //             // fetch(form.action, {
-        //             //     method: "POST",
-        //             //     body: formData,
-        //             //     headers: {
-        //             //         "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
-        //             //     }
-        //             // })
-        //             // .then(response => response.json())
-        //         //     .then(data => {
-        //         //         if (data.code === 400 && data.count_error) {
-        //         //             showError(data.message);
-        //         //         }else if (data.code === 200) {
-        //         //             window.location.href = data.urlback; // Redirection en cas de succès
-        //         //         }
-        //         //     })
-        //         //     .catch(error => console.error("Erreur :", error));
-        //         });
-        //     }
-        // });
 
         document.addEventListener("DOMContentLoaded", function() {
             let errorCounter = 0;
@@ -418,22 +368,6 @@
                 }
             }
         });
-
-
-        // document.addEventListener("DOMContentLoaded", function () {
-        //     let errorCounter = 0;
-
-        //     function showErrorCount() {
-        //         const errorMessage = document.getElementById("errorCounter");
-        //         errorCounter++;
-        //         errorMessage.innerHTML = `⚠️ Nombre de tentatives : ${errorCounter}`;
-        //     }
-
-        //     document.querySelector(".addContrat").addEventListener("click", function (e) {
-        //         e.preventDefault(); // Empêche la soumission du formulaire
-        //         showErrorCount(); // Incrémente et affiche le compteur
-        //     });
-        // });
 
 
         document.addEventListener("DOMContentLoaded", function () {

@@ -59,9 +59,7 @@
             </div>
         </div>
     </div>
-    {{-- @include('users.espace_client.auth.register') --}}
     @include('users.espace_client.auth.reset-passFirstLog')
-    {{-- @include('users.espace_client.auth.reset-password') --}}
     @include('users.espace_client.auth.reset-passSendMail')
     @include('users.espace_client.auth.updateCompte')
     <!--wrapper-->
@@ -333,27 +331,6 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
     <script>
-        // let isJobRunning = false;
-
-        // function executeCronJob() {
-        // 	if (!isJobRunning) {
-        // 		isJobRunning = true;
-        // 		axios.post("{{ route('customer.destroyToken') }}")
-        // 			.then(response => {
-        // 				console.log("token destroy :", response.data);
-        // 				// window.location.reload();
-        // 			})
-        // 			.catch(error => {
-        // 				console.error("Erreur lors de l'exécution du cron :", error);
-        // 			})
-        // 			.finally(() => {
-        // 				isJobRunning = false;
-        // 			});
-        // 	} else {
-        // 		console.log("La tâche cron est déjà en cours.");
-        // 	}
-        // }
-        // setInterval(executeCronJob, 60000);  // 600000 ms = 10 minutes 
 
         document.addEventListener('DOMContentLoaded', function() {
             let isJobRunning = false;

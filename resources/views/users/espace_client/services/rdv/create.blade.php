@@ -22,6 +22,7 @@
 
         </div>
         <div class="card-body">
+            {{-- formulaire pour prendre un nouveau rendez-vous --}}
             <form action="{{ route('customer.rdv.store') }}" method="POST" enctype="multipart/form-data"
                 class="submitForm">
                 @csrf
@@ -55,10 +56,6 @@
                                             <option value="{{ $contrat->idcontrat }}" selected>
                                                 {{ $contrat->idcontrat }}
                                             </option>
-                                        {{-- @else
-                                            <option value="{{ $contrat->idcontrat }}">
-                                                {{ $contrat->idcontrat }}
-                                            </option> --}}
                                         @endif
                                             
                                         @endforeach

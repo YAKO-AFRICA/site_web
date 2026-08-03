@@ -2,31 +2,32 @@
 
 namespace App\Http\Controllers\EspaceClient;
 
-use Carbon\Carbon;
-use App\Models\Membre;
-use App\Models\Customer;
-use App\Models\TblVille;
-use App\Models\TblCustomer;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Models\MembreContrat;
-use App\Models\passwordResset;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\Controller;
 use App\Imports\CustomersImport;
 use App\Jobs\ResetRememberToken;
 use App\Mail\UserRegisteredMail;
+use App\Models\Customer;
+use App\Models\Membre;
+use App\Models\MembreContrat;
+use App\Models\passwordResset;
+use App\Models\TblContrat;
+use App\Models\TblCreationCompte;
+use App\Models\TblCustomer;
 use App\Models\TblDemandeCompte;
 use App\Models\TblDocPrestation;
-
-use App\Models\TblCreationCompte;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
+use App\Models\TblVille;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+
 use function Laravel\Prompts\password;
 
 class CustomerLoginController extends Controller
@@ -149,7 +150,7 @@ class CustomerLoginController extends Controller
                         $membre->enligne = 1;
                         $membre->nbrevisite = (int) ($membre->nbrevisite ?? 0) + 1;
                         $membre->save();
-                        
+
                         // Connexion réussie si le mot de passe est haché
                         Auth::guard('customer')->login($customer);
                         if ($input['type'] == 'RendezVous') {
@@ -492,34 +493,34 @@ class CustomerLoginController extends Controller
 
                     $fullName = $customerData->nom . ' ' . $customerData->prenom;
 
-                        $emailSubject = "Finalisation de la création de votre compte à Ynov - YAKO AFRICA Assurances Vie";
-                        $emailType = 'account-request';
-        
-                        // Générer le contenu HTML
-                        $mailContent = view('users.espace_client.auth.mails.accountRegisterMail', [
-                            'customer' => $customerData,
-                            'emailType' => $emailType,
-                           'btnText' => 'Finaliser mon inscription',
-                            'btnLink' => route('customer.registerForm.addContrat', ['id' => $customerData->id]),
-                        ])->render();
+                    $emailSubject = "Finalisation de la création de votre compte à Ynov - YAKO AFRICA Assurances Vie";
+                    $emailType = 'account-request';
 
-                        $mailData = [
-                            'title' => "Finalisation de la création de votre compte à Ynov - YAKO AFRICA Assurances Vie",
-                            'body' => $mailContent,
-                            'destinatorName' => 'Cher(e) client(e) ' . $fullName,
-                            'destinatorEmail' => $customerData->email,
-                            'btnText' => 'Finaliser mon inscription',
-                            'btnLink' => route('customer.registerForm.addContrat', ['id' => $customerData->id]),
-                        ];
+                    // Générer le contenu HTML
+                    $mailContent = view('users.espace_client.auth.mails.accountRegisterMail', [
+                        'customer' => $customerData,
+                        'emailType' => $emailType,
+                        'btnText' => 'Finaliser mon inscription',
+                        'btnLink' => route('customer.registerForm.addContrat', ['id' => $customerData->id]),
+                    ])->render();
 
-                        $mail = new UserRegisteredMail($mailData, $emailSubject, 'account-request');
-                        Mail::to($customerData->email)->send($mail);
+                    $mailData = [
+                        'title' => "Finalisation de la création de votre compte à Ynov - YAKO AFRICA Assurances Vie",
+                        'body' => $mailContent,
+                        'destinatorName' => 'Cher(e) client(e) ' . $fullName,
+                        'destinatorEmail' => $customerData->email,
+                        'btnText' => 'Finaliser mon inscription',
+                        'btnLink' => route('customer.registerForm.addContrat', ['id' => $customerData->id]),
+                    ];
 
-                        // Logger l'envoi d'email
-                        Log::info('Email de confirmation de demande de compte envoyé', [
-                            'to' => $customerData->email,
-                            'time' => Carbon::now()->toDateTimeString()
-                        ]);
+                    $mail = new UserRegisteredMail($mailData, $emailSubject, 'account-request');
+                    Mail::to($customerData->email)->send($mail);
+
+                    // Logger l'envoi d'email
+                    Log::info('Email de confirmation de demande de compte envoyé', [
+                        'to' => $customerData->email,
+                        'time' => Carbon::now()->toDateTimeString()
+                    ]);
 
                     // Mise à jour des informations de l'utilisateur
                     TblCreationCompte::where('id', $customerData->id)->update([
@@ -612,11 +613,11 @@ class CustomerLoginController extends Controller
                             $recipientEmail = $customer->email;
                             $emailSubject = "ID contrat " . $idcontrat . " ajouté ";
                             $mailContent = view('users.espace_client.auth.mails.contractAdded', [
-                            'customer' => $customer,
-                            'idcontrat' => $idcontrat,
-                            'btnText' => 'Consulter mon contrat',
-                            'btnLink' => route('customer.loginForm'),
-                        ])->render();
+                                'customer' => $customer,
+                                'idcontrat' => $idcontrat,
+                                'btnText' => 'Consulter mon contrat',
+                                'btnLink' => route('customer.loginForm'),
+                            ])->render();
                             // $mailContent = view('users.espace_client.auth.mails.contractAdded', compact('customer', 'idcontrat'));
 
                             $destinatorName = 'Cher(e) client(e) ' . $customer->nom . ' ' . $customer->prenom;
@@ -645,7 +646,7 @@ class CustomerLoginController extends Controller
                                 return response()->json([
                                     'type' => 'error',
                                     'urlback' => '',
-                                    'message' => 'Ce contrat est arreté ou en veille.',
+                                    'message' => 'Ce contrat est arreté.',
                                     'code' => 400,
                                 ]);
                             } else {
@@ -689,23 +690,14 @@ class CustomerLoginController extends Controller
                                     $recipientEmail = $customer->email;
                                     $emailType = 'account-register-end';
                                     $emailSubject = "Félicitation M/Mme/Mlle " . $customer->nom . ' ' . $customer->prenom;
-                                    // $mailContent = view('users.espace_client.auth.mails.accountRegisterMail', compact('customer', 'emailSubject', 'emailType'));
-                                     // Générer le contenu HTML
+
                                     $mailContent = view('users.espace_client.auth.mails.accountRegisterMail', [
                                         'customer' => $customer,
                                         'emailType' => $emailType,
-                                        'emailSubject'=> $emailSubject,
+                                        'emailSubject' => $emailSubject,
                                         'btnText' => 'Connectez-vous',
                                         'btnLink' => route('customer.loginForm'),
                                     ])->render();
-                                    // $mailContent = '<td data-color="text" data-size="size text" data-min="10" data-max="26" data-link-color="link text color" data-link-style="font-weight:bold; text-decoration:underline; color:#40aceb;" align="justify" style="font:bold 16px/25px Arial, Helvetica, sans-serif; color:#888; padding:0 0 23px;">
-                                    //         Votre compte Ynov a bien été crée succès vous pouvez désormais vous connecter à l\'aide de vos accès suivant:
-                                    //         <ul>
-                                    //             <li><strong><u>Nom d\'utilisateur (login)</u> : </strong>' . $customer->login . '</li>
-                                    //             <li><strong><u>Mot de passe</u> : </strong> Utilisez le mot de passe défini au moment de votre inscription</li>
-                                    //         </ul>
-                                    //             Veuillez cliquer sur le lien ci-dessous, munis de votre login et mot de passe pour acceder à votre compte :
-                                    //     </td>';
 
                                     $destinatorName = 'Félicitation M/Mme/Mlle ' . $customer->nom . ' ' . $customer->prenom;
 
@@ -718,7 +710,7 @@ class CustomerLoginController extends Controller
                                         'btnLink' => route('customer.loginForm'),
                                     ];
 
-                                    $mail = new UserRegisteredMail($mailData, $emailSubject,'account-register-end');
+                                    $mail = new UserRegisteredMail($mailData, $emailSubject, 'account-register-end');
 
                                     $mailSending = Mail::to($recipientEmail)->send($mail);
                                 }
@@ -859,7 +851,7 @@ class CustomerLoginController extends Controller
                         $fullName = $customer->nom . ' ' . $customer->prenom;
 
                         $emailSubject = "Confirmation de votre demande de création de compte - " . $fullName;
-        
+
                         // Générer le contenu HTML
                         $mailContent = view('users.espace_client.auth.mails.accountRequestMail', [
                             'customer' => $customer,
@@ -1007,76 +999,6 @@ class CustomerLoginController extends Controller
         }
     }
 
-    // public function updateCompte(Request $request)
-    // {
-    //     $customer = TblCustomer::where('login', $request->update_login)->orWhere('old_login', $request->update_login)->first();
-    //     $prospere = TblCreationCompte::where('login', $customer->login)->first();
-    //     $membre = Membre::where('login', $request->update_login)->first();
-
-    //     if ($customer) {
-    //         $customer->login = $request->login;
-    //         $customer->password = $request->password;
-    //         $customer->estajour = 1;
-    //         $customer->isFirstLog = 0;
-    //         $customer->save();
-    //         if ($membre) {
-    //             $membre->login = $request->login;
-    //             $membre->pass = $request->password;
-    //             $membre->email = $request->email;
-    //             $membre->nom = $request->nom;
-    //             $membre->prenom = $request->prenom;
-    //             $membre->sexe = $request->sexe;
-    //             $membre->tel = $request->tel;
-    //             $membre->cel = $request->cel;
-    //             $membre->datenaissance = $request->datenaissance;
-    //             $membre->lieunaissance = $request->lieunaissance;
-    //             $membre->lieuresidence = $request->lieuresidence;
-    //             $membre->estajour = 1;
-    //             $membre->save();
-    //         }
-    //         if ($prospere) {
-    //             $prospere->login = $request->login;
-    //             $prospere->password = Hash::make($request->password);
-    //             $prospere->save();
-    //         }
-    //         $recipientEmail = $request->email;
-    //         $emailSubject = "Mise à jour de votre compte à Ynov";
-
-    //         // Message HTML correctement formatté
-    //         $mailContent = '
-    //             <td data-color="text" data-size="size text" data-min="10" data-max="26" data-link-color="link text color" 
-    //                 data-link-style="font-weight:bold; text-decoration:underline; color:#40aceb;" align="justify" 
-    //                 style="font:bold 16px/25px Arial, Helvetica, sans-serif; color:#888; padding:0 0 23px;">
-    //                 Votre compte a bien été mise à jour, veuillez utiliser les informations suivantes pour vous connecter à votre compte Ynov :
-    //                 <ul>
-    //                     <li><strong><u>Nom d\'utilisateur (login)</u> : </strong> ' . $customer->login . '</li>
-    //                     <li><strong><u>Mot de passe (Par défaut) </u> : </strong> 123456</li>
-    //                 </ul>
-    //                 Cependant, pour plus de sécurité, vous devez impérativement modifier votre mot de passe en cliquant sur le lien suivant :
-    //             </td>';
-
-    //         $destinatorName = 'Cher(e) client(e) ' . $membre->nom . ' ' . $membre->prenom;
-
-    //         $mailData = [
-    //             'title' => $emailSubject,
-    //             'body' => $message,
-    //             'destinatorName' => $destinatorName,
-    //             'destinatorEmail' => $membre->email,
-    //             'btnText' => 'Cliquez ici',
-    //             'btnLink' => route('customer.loginForm'),
-    //         ];
-
-    //         // Envoi de l'email
-    //         $mail = new UserRegisteredMail($mailData, $emailSubject);
-    //         Mail::to($recipientEmail)->send($mail);
-    //         return response()->json([
-    //             'type' => 'success',
-    //             'urlback' => '',
-    //             'message' => "Votre compte a été mis à jour avec success ! Veuillez verifier votre messagerie email ($recipientEmail) pour plus de details.",
-    //         ]);
-    //     }
-    // }
-
     public function updateCompte(Request $request)
     {
 
@@ -1099,6 +1021,8 @@ class CustomerLoginController extends Controller
             $customer->login = $request->login;
             $customer->password = Hash::make($request->password); // Toujours hasher le mot de passe
             $customer->estajour = 1;
+            $customer->memberok = 1;
+            $customer->activer = 1;
             $customer->isFirstLog = (!empty($iSNewcustomer)) ? 1 : 0;
             $customer->save();
 
@@ -1117,6 +1041,8 @@ class CustomerLoginController extends Controller
                 $membre->lieunaissance = $request->lieunaissance;
                 $membre->lieuresidence = $request->lieuresidence;
                 $membre->estajour = 1;
+                $membre->activer = 1;
+                $membre->memberok = 1;
                 $membre->save();
             }
 
@@ -1131,7 +1057,7 @@ class CustomerLoginController extends Controller
             // Préparer l'email de confirmation
             $emailSubject = "Mise à jour de votre compte client YAKO AFRICA Assurances Vie";
             $fullName = $membre->nom . ' ' . $membre->prenom;
-            
+
             // Générer le contenu HTML avec une vue dédiée
             $mailContent = view('users.espace_client.auth.mails.accountUpdateMail', [
                 'customer' => $customer,
@@ -1169,7 +1095,6 @@ class CustomerLoginController extends Controller
                 'urlback' => '',
                 'message' => "Votre compte a été mis à jour avec succès ! Un email de confirmation a été envoyé à {$request->email}.",
             ]);
-
         } catch (\Exception $e) {
             Log::error('Erreur lors de la mise à jour du compte', [
                 'error' => $e->getMessage(),
@@ -1194,9 +1119,9 @@ class CustomerLoginController extends Controller
         $request->validate([
             'email' => 'required|email',
         ]);
-        
+
         $email = $request->email;
-        
+
         // Rechercher le membre
         $membre = Membre::where([
             'email' => $email,
@@ -1204,30 +1129,30 @@ class CustomerLoginController extends Controller
             'activer' => '1',
             'typ_membre' => '3'
         ])->first();
-        
+
         if (!$membre) {
             return back()->with("fail", "Aucun utilisateur actif trouvé avec cet email ($email).");
         }
-        
+
         // Rechercher le client
         $customer = TblCustomer::where('login', $membre->login)
             ->orWhere('old_login', $membre->login)
             ->with('membre')
             ->first();
-        
+
         if (!$customer) {
             return back()->with("fail", "Aucun client trouvé avec ce compte.");
         }
-        
+
         // Générer et sauvegarder le token
         $token = Str::random(80);
-        
+
         $customer->remember_token = $token;
         // $customer->remember_token = hash('sha256', $token);
         $customer->updated_at = Carbon::now();
         $customer->token_expires_at = Carbon::now()->addMinutes(60);
         $customer->save();
-        
+
         // Préparer les données de l'email
         $fullName = $customer->membre->nom . ' ' . $customer->membre->prenom;
         $resetLink = route('customer.resetPassForm', ['token' => $token]);
@@ -1237,7 +1162,7 @@ class CustomerLoginController extends Controller
             'resetLink' => $resetLink,
             'token' => $token,
         ])->render();
-        
+
         $mailData = [
             'title' => "Réinitialisation de votre mot de passe",
             'body' => $mailContent,
@@ -1247,154 +1172,45 @@ class CustomerLoginController extends Controller
             'btnLink' => $resetLink,
             'token' => $token,
         ];
-        
+
         $emailSubject = "Réinitialisation de votre mot de passe - YAKO AFRICA Assurances Vie";
-        
+
         try {
             // Envoyer l'email
             Mail::to($email)->send(new UserRegisteredMail($mailData, $emailSubject, 'reset-password'));
-            
+
             // Logger l'envoi
             Log::info('Email de réinitialisation envoyé', [
                 'email' => $email,
                 'customer_id' => $customer->id,
                 'time' => Carbon::now()->toDateTimeString()
             ]);
-            
-            return back()->with("success", 
+
+            return back()->with(
+                "success",
                 "Un lien de réinitialisation a été envoyé à $email. " .
-                "Veuillez consulter votre boîte de réception (vérifiez aussi vos spams). " .
-                "Le lien expire dans 60 minutes."
+                    "Veuillez consulter votre boîte de réception (vérifiez aussi vos spams). " .
+                    "Le lien expire dans 60 minutes."
             );
-            
         } catch (\Exception $e) {
             Log::error('Erreur lors de l\'envoi de l\'email de réinitialisation', [
                 'email' => $email,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
-            return back()->with("fail", 
+
+            return back()->with(
+                "fail",
                 "Une erreur est survenue lors de l'envoi de l'email. " .
-                "Veuillez réessayer ou contacter notre support."
+                    "Veuillez réessayer ou contacter notre support."
             );
         }
     }
-    
+
     /**
      * Générer le contenu de l'email
      */
-    
-    
-    /**
-     * Traiter la réinitialisation du mot de passe
-     */
-    // public function resetPassword(Request $request)
-    // {
-    //     $request->validate([
-    //         'token' => 'required',
-    //         'password' => 'required|confirmed|min:8',
-    //     ]);
-        
-    //     $token = $request->token;
-    //     $hashedToken = hash('sha256', $token);
-        
-    //     $customer = TblCustomer::where('remember_token', $hashedToken)
-    //         ->where('token_expires_at', '>', Carbon::now())
-    //         ->first();
-        
-    //     if (!$customer) {
-    //         return back()->with("fail", "Le lien de réinitialisation est invalide ou a expiré.");
-    //     }
-        
-    //     // Mettre à jour le mot de passe
-    //     $customer->membre->password = bcrypt($request->password);
-    //     $customer->membre->save();
-        
-    //     // Invalider le token
-    //     $customer->remember_token = null;
-    //     $customer->token_expires_at = null;
-    //     $customer->save();
-        
-    //     // Envoyer un email de confirmation
-    //     // $this->sendPasswordChangedConfirmation($customer->membre->email, $customer->membre);
-        
-    //     return redirect()->route('login')
-    //         ->with("success", "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.");
-    // }
-    
-    /**
-     * Envoyer une confirmation de changement de mot de passe
-     */
-    // private function sendPasswordChangedConfirmation($email, $membre)
-    // {
-    //     $mailData = [
-    //         'title' => "Confirmation de changement de mot de passe",
-    //         'destinatorName' => 'Cher(e) client(e) ' . $membre->nom . ' ' . $membre->prenom,
-    //         'changeTime' => Carbon::now()->format('d/m/Y à H:i'),
-    //         'ipAddress' => request()->ip(),
-    //         'userAgent' => request()->userAgent(),
-    //         'companyName' => 'Yako Africassur',
-    //     ];
-        
-    //     $emailSubject = "Confirmation de changement de mot de passe - Yako Africassur";
-        
-    //     try {
-    //         Mail::to($email)->send(new PasswordChangedConfirmationMail($mailData, $emailSubject));
-    //     } catch (\Exception $e) {
-    //         \Log::error('Erreur envoi confirmation changement mot de passe', [
-    //             'email' => $email,
-    //             'error' => $e->getMessage()
-    //         ]);
-    //     }
-    // }
-    // public function resetPassSendMail(Request $request)
-    // {
-    //     $token = Str::random(80);
-    //     $email = $request->email;
-    //     $membre = Membre::where(['email' => $email, 'estajour' => '1', 'activer' => '1'])->where('typ_membre', '3')->first();
-    //     $login = ($membre) ? $membre->login : '';
-    //     $customer = ($membre) ? TblCustomer::where('login', $login)->orWhere('old_login', $login)->with('membre')->first() : null;
-    //     // dd($customer);
-    //     if ($customer || $customer != null) {
-    //         $customer->remember_token = $token;
-    //         $customer->updated_at = Carbon::now();
-    //         $customer->token_expires_at = Carbon::now()->addMinutes(60); // Expire dans 60 min
-    //         $customer->save();
-            
-    //         $recipientEmail = $email;
-    //         $emailSubject = "Réinitialisation de votre mot de passe";
-    //         $message = '<td data-color="text" data-size="size text" data-min="10" data-max="26" data-link-color="link text color" data-link-style="font-weight:bold; text-decoration:underline; color:#40aceb;" align="justify" style="font:bold 16px/25px Arial, Helvetica, sans-serif; color:#888; padding:0 0 23px;">
-    //                         Pour réinitialiser votre mot de passe, cliquez sur le lien ci-dessous :
-    //                     </td>
-    //                    <strong style="color:rgb(255, 0, 0);"> NB : </strong> Nous tenons à vous informer que le lien expirera dans 60 minutes.
-    //                     ';
 
-    //         $destinatorName = 'Cher(e) client(e) ' . $customer->membre->nom . ' ' . $customer->membre->prenom;
-
-    //         $mailData = [
-    //             'title' => $emailSubject,
-    //             'body' => $message,
-    //             'destinatorName' => $destinatorName,
-    //             'destinatorEmail' => $email,
-    //             'btnText' => 'Réinitialiser',
-    //             'btnLink' => route('customer.resetPassForm', ['token' => $token]),
-    //         ];
-
-    //         $mail = new UserRegisteredMail($mailData, $emailSubject);
-    //         if ($recipientEmail != null) {
-    //             $mailSending = Mail::to($recipientEmail)->send($mail);
-    //         }
-    //         // Planifier la réinitialisation dans 60 minutes
-    //         // ResetRememberToken::dispatch($customer->id)->delay(now()->addMinutes(1));
-
-    //         if ($mailSending) {
-    //             return back()->with("success", "Un lien de reinitialisation de mot de passe a ete envoye a votre adresse email   $email . Veuillez consulter votre boite de reception. Le lien expirera dans 60 minutes.");
-    //         }
-    //     } else {
-    //         return back()->with("fail", "Aucun utilisateur trouvé avec ce email ($email) .");
-    //     }
-    // }
 
 
     public function destroyToken()
@@ -1457,16 +1273,154 @@ class CustomerLoginController extends Controller
             return back()->with('fail', 'Erreur lors de la reinitialisation de votre mot de passe');
         }
     }
-    public function update(Request $request, string $id)
+
+
+    public function registerAPICustomer(Request $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $idcontratWeb = $request->idcontratWeb;
+            $contrat = TblContrat::where('id', $idcontratWeb)->first();
+            $idPropositionFinal = $contrat->idproposition;
+            $adherent = $contrat->adherent;
+            Log::info('debut de transaction pour la préparation du client');
+            $telphoneExistant = $adherent->mobile ?? $adherent->telephone ?? null;
+ 
+            $customeExisting = TblCustomer::where('login', $telphoneExistant)->first();
+ 
+            if ($customeExisting) {
+ 
+                Log::info('Client existant trouvé avec le login : ');
+                Log::info($customeExisting);
+                $createmembreContrat = MembreContrat::create([
+                    'codemembre' => $customeExisting->idmembre ?? null,
+                    'idcontrat' => $idPropositionFinal,
+                ]);
+ 
+                $response = Http::post('https://apimain.yakoafricassur.com/api/send-sms', [
+                    'message' => "Cher " . $adherent->nom . ", votre contrat n° " . $idPropositionFinal . " a été associé a votre espace client. Connecter pour plus de détails. urlr.me/9ZXGSr",
+                    'phone' => $telphoneExistant
+                ]);
+                $data = [
+                    'customeExisting' => $customeExisting,
+                    'createmembreContrat' => $createmembreContrat
+                ];
+                // Log::info('data : ' . json_encode($data));
+                DB::commit();
+                return response()->json([
+                    'type' => 'success',
+                    'code' => 'CUSTOMER_EXISTING',
+                    'data' => $data,
+                    'message' => 'Client existant trouvé avec le login : ' . $telphoneExistant . ' Contrat n° ' . $idPropositionFinal . ' a ete associé.',
+                ]);
+ 
+               
+            } else {
+
+                Log::info('debut de transaction pour la TblCreationCompte');
+                $saving = TblCreationCompte::create([
+                    'nom' => $adherent->nom ?? null,
+                    'prenom' => $adherent->prenom ?? null,
+                    'email' => $adherent->email ?? null,
+                    'cel' => $adherent->mobile ?? $adherent->telephone ?? null,
+                    'login' => $adherent->mobile ?? $adherent->telephone ?? null,
+                    'password' => '1234567',
+                    'estClient' => 0,
+                    'estnotifie' => 0,
+                    'estnotifieLe' => null,
+                    'idCustomer' => null,
+                ]);
+ 
+                Log::info('Fin de transaction pour la TblCreationCompte');
+ 
+                Log::info('debut de transaction pour la Membre');
+                $savingMembre = Membre::create([
+                    'login' => $adherent->mobile ?? $adherent->telephone ?? null,
+                    'pass' => '1234567',
+                    'nom' => $adherent->nom ?? null,
+                    'prenom' => $adherent->prenom ?? null,
+                    'email' => $adherent->email ?? null,
+                    'cel' =>  $adherent->mobile ?? $adherent->telephone  ?? null,
+                    'typ_membre' => 3,
+                    'activer' => 1,
+                    'estajour' => 1,
+                    'memberok' => 1,
+                    'datenaissance' => $adherent->datenaissance ?? null,
+                    'lieunaissance' => $adherent->lieunaissance ?? null,
+                    'sexe' => $adherent->sexe ?? null,
+                    'lieuresidence' => $adherent->lieuresidence ?? null,
+                    'profession' => $adherent->profession ?? null,
+                ]);
+ 
+                Log::info('Fin de transaction pour la Membre');
+                // Log::info($savingMembre);
+                Log::info('debut de transaction pour la MembreContrat');
+                $createmembreContrat = MembreContrat::create([
+                    'codemembre' => $savingMembre->idmembre ?? null,
+                    'idcontrat' => $idPropositionFinal,
+                ]);
+ 
+                Log::info('Fin de transaction pour la MembreContrat');
+ 
+                Log::info('debut de transaction pour la TblCustomer');
+ 
+                $password = Hash::make('1234567');
+               
+                $savingCustomer = TblCustomer::create([
+                    'login' => $adherent->mobile ?? $adherent->telephone ?? null,
+                    'password' => $password,
+                    'activer' => 1,
+                    'estajour' => 0,
+                    'memberok' => 1,
+                    'idmembre' => $savingMembre->idmembre ?? null,
+                    'isFirstLog' => 0,
+                ]);
+ 
+                Log::info('Fin de transaction pour la TblCustomer');
+ 
+                if ($savingCustomer) {
+                    // mettre à jour TblCreationCompte
+                    TblCreationCompte::where('id', $saving->id)->update([
+                        'idCustomer' => $savingCustomer->id,
+                        'password' => $password,
+                        'estClient' => 1,
+                        'estnotifie' => 1,
+                        'estnotifieLe' => Carbon::now()->format('Y-m-d H:i:s'),
+                    ]);
+                }
+ 
+                $response = Http::post('https://apimain.yakoafricassur.com/api/send-sms', [
+                    'message' => "Cher " . $adherent->nom . ", merci de recevoir les paramettre de connexion a votre espace client. " . "Login: " . ($telphoneExistant) . " Mot de passe: " . ("1234567") . " Connecter pour plus de détails. urlr.me/9ZXGSr",
+                    'phone' => $telphoneExistant
+                ]);
+
+                $data = [
+                    'savingMembre' => $savingMembre,
+                    'savingCustomer' => $savingCustomer,
+                    'createmembreContrat' => $createmembreContrat
+
+                ];
+
+                // Log::info('data : ' . json_encode($data));
+                DB::commit();
+                return response()->json([
+                    'type' => 'success',
+                    'code' => 'CUSTOMER_CREATED',
+                    'data' => $data,
+                    'message' => 'Client créé avec le login : ' . $telphoneExistant . ' Contrat n° ' . $idPropositionFinal . ' a ete associé.',
+                ]);
+            }
+ 
+        }catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Erreur lors de la préparation du client : " . $th->getMessage());
+            return response()->json([
+                'type' => 'error',
+                'code' => 'CUSTOMER_ERROR',
+                'message' => 'Une erreur est survenue lors de la création du client : ' . $th->getMessage(),
+            ]);
+            
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

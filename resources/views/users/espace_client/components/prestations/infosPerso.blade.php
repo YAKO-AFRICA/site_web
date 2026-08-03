@@ -121,30 +121,9 @@
 
             </div>
 
-            <!-- Étape 2 -->
-            {{-- <div class="etape d-none" id="etape2">
-               
-                <button class="btn2 border-btn2 prev-btn" type="button" data-prev="etape1"><i class='bx bx-left-arrow-alt fs-4'></i></button>
-                <button class="btn-prime next-btn" type="button" data-next="etape3"><i
-                    class='bx bx-right-arrow-alt fs-4'></i></button>
-            </div> --}}
-
-            <!-- Étape 4 -->
-            {{-- <div class="etape d-none" id="etape2">
-                
-                <div class="row">
-                    <div class="col-6 d-flex justify-content-start gap-3">
-                        <button class="btn2 border-btn2 prev-btn" type="button" data-prev="etape1"><i
-                            class='bx bx-left-arrow-alt fs-4'></i> Retour</button>
-                    </div>
-                    <div class="col-6 d-flex justify-content-end gap-3">
-                        
-                    </div>
-                </div>
-            </div> --}}
+            
 
         </div>
     </div>
-    {{-- <button class="btn-prime btn-prime-two next-step-btn" type="button" onclick="stepper1.next()" data-bs-toggle="modal" data-bs-target="#exampleModal">Étape 2 <i --}}
 
 </div>

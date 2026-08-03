@@ -367,9 +367,6 @@
                 <div class="row">
                     <div class="col-12 d-flex justify-content-end gap-3">
                         <div id="btn-otp">
-                            {{-- <button class="btn2 border-btn2 prev-btn" type="button" data-prev="etapePrest4">
-                                      <i class='bx bx-left-arrow-alt fs-4'></i>
-                                  </button> --}}
                             <button class="btn-prime p-2 next-step-btn2" type="button">étape 3<i
                                     class='bx bx-right-arrow-alt fs-4'></i></button>
                         </div>

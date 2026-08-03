@@ -119,7 +119,8 @@
                     <div class="green-bar-title"style="width: 100%; height: 50%; border: 1px solid #fff;">
                         <div class="green-bar" style="background-color: #006838; width: 35%; height: 100%;"></div>
                         <div class="center-section" style="float: left; width: 75%; height: 100%; padding: 10px 0; text-align: left;">
-                            <h4>FORMULAIRE DE DEMANDE DE PRESTATION</h4>
+                            <h4 style="text-align : center;">FORMULAIRE DE DEMANDE DE PRESTATION</h4>
+                            <h5 style="text-align : center;">Code : {{ $prestation->code ?? '.' }}</h5>
                         </div>
                     </div>
                 </div>

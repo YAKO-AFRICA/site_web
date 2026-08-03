@@ -53,6 +53,9 @@ Route::middleware('web')->group(function () {
 });
 
 
+Route::post('/register-customer', [CustomerLoginController::class, 'registerAPICustomer']);
+
+
 Route::get('/send-mail', [CustomerController::class, 'sendMail']);
 
 
