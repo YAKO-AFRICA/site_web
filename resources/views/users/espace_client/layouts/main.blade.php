@@ -63,6 +63,49 @@
     <div class="wrapper">
         @include('users.espace_client.layouts.sidebar')
 
+        @if (Auth::guard('customer')->check())
+    <div class="modal fade" id="paiementPrimeModal" tabindex="-1" aria-labelledby="paiementPrimeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paiementPrimeModalLabel">Payer ma prime</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <form action="{{ route('customer.paiement.prime') }}" method="post" id="paiementPrimeForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="card radius-10">
+                        <div class="card-body bg-light-succes rounded">
+                            <div class="">
+                                <label for="single-select" class="form-label">Pour quel Contrat
+                                    souhaitez-vous payer la prime ? <span class="star">*</span></label>
+                                <!-- <select class="form-select" name="idcontratForPaiement" id="contractIdRecovery"> -->
+                                <select class="form-select" name="idcontratForPaiement" id="single-select"
+                                    data-placeholder="" required>
+                                    <option selected value="">Veuillez sélectionner l'ID du contrat</option>
+                                    @foreach (Auth::guard('customer')->user()->membre->membreContrat as $contrat)
+                                        <option value="{{ $contrat->idcontrat }}">
+                                            {{ $contrat->idcontrat }}
+                                        </option> 
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-prime" data-bs-dismiss="modal">Fermer</button>
+                    <!-- <button id="btnRecoveryPrime" class="btn-prime btn-prime-two">Continuer</button> -->
+                    <button type="submit" id="submitBtn" class="btn-prime btn-prime-two">Continuer</button>
+                </div>
+            <!-- </form> -->
+            </div>
+        </div>
+    </div>
+        
+    @endif
+
         <div class="page-wrapper">
             <div class="page-content">
                 <!--content-->
@@ -116,6 +159,8 @@
 
 
     <script src="https://cdn.tiny.cloud/1/pfjd5f3rf5sx7e99t8p7wi1x9yz3phproft7hk92nakivoru/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script src="https://apimaintest.yakoafricassur.com/api/paiements/jeko/jeko-payment-widget.js"></script>
 
     <script>
         tinymce.init({
@@ -241,7 +286,6 @@
     <script>
         new PerfectScrollbar(".app-container")
     </script>
-
 
 
     <script>
@@ -375,9 +419,6 @@
         });
     </script>
 
-
-
-
     <script>
         const noCopy = document.querySelector('.no-copy');
         const noCut = document.querySelector('.no-cut');
@@ -417,6 +458,91 @@
             })
         });
     </script>
+
+
+
+<script>
+    (function () {
+      const widget = new JekoWidget({
+        backendEndpoint: 'https://apimaintest.yakoafricassur.com/api/paiements/jeko/init',
+        contractCheckEndpoint: 'https://apimaintest.yakoafricassur.com/api/paiements/jeko/contrat/verifier',
+        currency: 'XOF',
+        timeout: 30000,
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+        },
+        callbacks: {
+          onSuccess: (redirectUrl, data) => console.log('✅ Paiement initialisé', { redirectUrl, data }),
+          onError: (message, data) => console.error('❌ Erreur de paiement', { message, data }),
+          onOpen: (data) => console.log('🔄 Widget ouvert', data),
+          onClose: () => console.log('❌ Widget fermé'),
+        },
+      });
+
+      function newReference() {
+        const code = Math.floor(Math.random() * 9999) + 1;
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+
+        return `PAI-${year}${month}${day}${hours}${minutes}${seconds}-${code}`;
+      }
+
+      // 1) Premier paiement — le contrat vient d'être validé, on connaît déjà
+      //    la prime principale et les frais d'adhésion (ex: renvoyés par l'écran
+      //    de souscription juste avant), donc pas besoin de contractId ici.
+    //   document.getElementById('btnFirstPayment').addEventListener('click', () => {
+    //     widget.open({
+    //       //   reference: '{{ $contrat->id }}',
+    //       reference: newReference(),
+    //       paymentType: 'firstPayment',
+    //       contractId: document.getElementById('contractIdFirstPayment').value || undefined,
+    //       description: "Souscription au contrat {{ $contrat->libelleproduit ?? '' }} — Payer la première prime",
+    //       customerEmail: '{{ $contrat->adherent->email ?? '' }}',
+    //       customerName: "{{$contrat->adherent->nom ?? ''}} {{ $contrat->adherent->prenom ?? '' }}",
+    //       successUrl: window.location.origin + '/production/show/{{ $contrat->id }}',
+    //       errorUrl: window.location.origin + '/production/show/{{ $contrat->id }}',
+    //       metadata: { source: 'web_demo', scenario: 'firstPayment' },
+    //     });
+    //   });
+
+    //   // 2) Paiement anticipé — le widget demandera/vérifiera le contractId
+    //   //    lui-même si on ne le fournit pas ici.
+    //   document.getElementById('btnEarlyPayment').addEventListener('click', () => {
+    //     widget.open({
+    //       reference: newReference(),
+    //       paymentType: 'earlyPayment',
+    //       contractId: document.getElementById('contractIdEarly').value || undefined,
+    //       description: 'Paiement anticipé de primes',
+    //       customerEmail: 'client@example.com',
+    //       customerName: 'Jean Dupont',
+    //       successUrl: window.location.origin + '/paiements/jeko/success',
+    //       errorUrl: window.location.origin + '/paiements/jeko/error',
+    //       metadata: { source: 'web_demo', scenario: 'earlyPayment' },
+    //     });
+    //   });
+
+      // 3) Régularisation d'impayés — le widget liste les factures en attente
+      //    une fois le contrat vérifié, et laisse le client les sélectionner.
+      document.getElementById('btnRecoveryPrime').addEventListener('click', () => {
+        widget.open({
+          reference: newReference(),
+          paymentType: 'recoveryPrime',
+          contractId: document.getElementById('contractIdRecovery').value || undefined,
+          description: 'Régularisation de primes impayées',
+          customerEmail: '',
+          customerName: '',
+          successUrl: window.location.origin + '/paiements/jeko/success',
+          errorUrl: window.location.origin + '/paiements/jeko/error',
+          metadata: { source: 'web_demo', scenario: 'recoveryPrime' },
+        });
+      });
+    })();
+  </script>
 </body>
 
 </html>

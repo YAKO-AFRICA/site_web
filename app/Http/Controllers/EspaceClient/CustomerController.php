@@ -32,7 +32,6 @@ class CustomerController extends Controller
     public function fetchContractDetails(Request $request)
     {
         $idcontrat = $request->input('idcontrat');
-        // dd($idcontrat);
         if (!$idcontrat) {
             return response()->json([
                 'status' => 'error',
@@ -47,11 +46,6 @@ class CustomerController extends Controller
             ])->post(config('services.api.encaissement_bis'), [
                 'idContrat' => $idcontrat,
             ]);
-            // $response = Http::withOptions([
-            //     'timeout' => 60,  // Augmenter le délai d'attente
-            // ])->post(env('API_ENCAISSEMENT_BIS'), [
-            //     'idContrat' => $idcontrat,
-            // ]);
 
             if ($response->successful()) {
                 return response()->json([
