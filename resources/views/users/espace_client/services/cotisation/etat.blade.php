@@ -73,6 +73,11 @@
             const selectContrat = document.getElementById("contrat");
             const spinner = document.getElementById("spinner");
 
+            if (!form) {
+                console.error("Le formulaire 'contract-form' n'a pas été trouvé.");
+                return;
+            }
+
             selectContrat.addEventListener("change", function() {
                 const idContrat = this.value;
                 if (!idContrat) return; // Ne rien faire si aucun contrat n'est sélectionné
