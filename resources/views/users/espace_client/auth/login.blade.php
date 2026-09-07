@@ -382,7 +382,6 @@
                         .then(response => {
                             console.log(' ');
                             console.log(response.data.message);
-                            {{-- window.location.reload(); --}}
                             
                         })
                         .catch(error => {
@@ -468,7 +467,34 @@
                                     document.getElementById('cel').value = customer.membre.cel;
                                     document.getElementById('tel').value = customer.membre.tel;
                                     document.getElementById('datenaissance').value = customer.membre
-                                        .datenaissance;
+                                        .datenaissance.slice(0, 10);
+                                    // =========================
+                                    // Adresse
+                                    // =========================
+                                    document.getElementById('lieuresidence').value =
+                                        customer.membre?.lieuresidence ?? '';
+
+                                    // =========================
+                                    // Lieu de naissance
+                                    // =========================
+                                    document.getElementById('lieunaissance').value =
+                                        customer.membre?.lieunaissance ?? '';
+
+                                    // =========================
+                                    // Genre / Sexe
+                                    // =========================
+                                    const sexe = customer.membre?.sexe ?? '';
+
+                                    if (sexe === 'M' || sexe === 'F') {
+                                        const radioSexe = document.querySelector(
+                                            `input[name="sexe"][value="${sexe}"]`
+                                        );
+
+                                        if (radioSexe) {
+                                            radioSexe.checked = true;
+                                        }
+                                    }
+                                    
                                     document.getElementById('message').textContent =
                                         "En application à notre politique de sécurité, nous vous demandons de bien vouloir procéder à la mise à jour votre compte Ynov."; // Message ajouté
                                     // document.getElementById('message').textContent =

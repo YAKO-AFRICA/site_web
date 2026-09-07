@@ -26,20 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log("Mettre à jour le client avec le login :", login);
         });
     }
-    // if (btnMettreAJour) {
-    //     btnMettreAJour.addEventListener('click', function() {
-    //         const login = loginInput.value.trim();
-    //         sessionStorage.setItem('login', login);
-
-    //         const storedLogin = sessionStorage.getItem('login');
-    //         const inputUpdate = document.getElementById('update-login');
-
-    //         if (inputUpdate) {
-    //             inputUpdate.value = storedLogin; // Assigner le login
-    //         }
-    //         console.log("Mettre à jour le client avec le login :", storedLogin);
-    //     });
-    // }
 });
 
 

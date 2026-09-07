@@ -79,10 +79,6 @@ class RdvController extends Controller
     }
     public function getOptionRdv(string $id)
     {
-        // $villeReseaux = TblVilleReseau::where('idVilleBureau', $id)
-        // ->whereHas('optionRdv') // Vérifie que la relation 'optionRdv' existe
-        // ->with('optionRdv') // Charge les options de rendez-vous pour chaque ville réseau
-        // ->orderby('codejour')->get();
         $villeReseaux = TblVilleReseau::where('idVilleBureau', $id)
         ->whereHas('optionRdv')
         ->with(['optionRdv' => function ($query) {
@@ -94,41 +90,6 @@ class RdvController extends Controller
             'data' => $villeReseaux
         ]);
     }
-    // public function getRdvByDate(Request $request)
-    // {
-    //     try {
-    //         // Valider les paramètres d'entrée
-    //         $validated = $request->validate([
-    //             'idTblBureau' => 'required|integer',
-    //             'daterdv' => 'required',
-    //         ]);
-
-    //         // Reformater la date pour correspondre au format de la base (d-m-Y)
-    //         // $daterdv = DateTime::createFromFormat('Y-m-d', $validated['daterdv']);
-
-    //         // Requête pour récupérer le rendez-vous
-    //         $rdv = Tblrdv::where('idTblBureau', $validated['idTblBureau'])
-    //             ->whereDate('daterdveff', $validated['daterdv'])
-    //             ->first();
-
-    //         if ($rdv) {
-    //             return response()->json([
-    //                 'status' => 'success',
-    //                 'data' => $rdv
-    //             ]);
-    //         }
-
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Aucun rendez-vous trouvé pour cette date et ce lieu.'
-    //         ]);
-    //     } catch (\Throwable $e) {
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Erreur : ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
 
     public function getRdvByDate(Request $request)
     {
@@ -183,20 +144,6 @@ class RdvController extends Controller
                 ]);
             }
             
-            // // Vérifier s'il existe des RDV pour ce bureau
-            // $rdvsExistants = Tblrdv::where('idTblBureau', $idTblBureau)
-            //     ->select('daterdveff', 'daterdv')
-            //     ->get();
-            
-            // return response()->json([
-            //     'status' => 'error',
-            //     'message' => 'Aucun rendez-vous trouvé pour cette date et ce lieu.',
-            //     'debug' => [
-            //         'date_recherchee' => $dateRecherche,
-            //         'id_bureau' => $idTblBureau,
-            //         'rdvs_existants' => $rdvsExistants
-            //     ]
-            // ]);
         } catch (\Throwable $e) {
             return response()->json([
                 'status' => 'error',
@@ -303,84 +250,6 @@ class RdvController extends Controller
         
         return date('Y-m-d', strtotime($annee . '-' . $mois . '-' . $jour));
     }
-    
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function store(Request $request)
-    // {
-    //     DB::beginTransaction();
-    //     $request->validate([
-    //         'daterdv' => 'required',
-    //         'lieuresidence' => 'required',
-    //     ]);
-    //     try {
-    //         $coderdv = RefgenerateCode(Tblrdv::class, 'RDV-', 'codedmd');
-            
-    //         $rdvEncours = Tblrdv::where([
-    //             'motifrdv'=>$request->motifrdv,
-    //             'police'=>$request->police,
-    //             'etat'=>1,
-    //         ])->first();
-    //         if ($rdvEncours) {
-    //             return response()->json([
-    //                 'type'=>'error',
-    //                 'urlback'=>'',
-    //                 'message'=>"Vous avez déja un rendez-vous de type $rdvEncours->motifrdv en cours pour le contrat $rdvEncours->police. N° de RDV $rdvEncours->codedmd",
-    //                 'code'=>500,
-    //             ]);
-    //         }else{
-    //             // Création de la prestation
-    //             $rdv = Tblrdv::create([
-    //                 'nomclient'=>$request->nomclient,
-    //                 'tel'=>$request->tel,
-    //                 'email'=>$request->email,
-    //                 'daterdv'=>$request->daterdv,
-    //                 'codedmd' => $coderdv,
-    //                 'dateajou' => Carbon::now()->format('d/m/Y à H:i:s'),
-    //                 'etat' =>1,
-    //                 'motifrdv'=>$request->motifrdv,
-    //                 'police'=>$request->police,
-    //                 'titre'=>$request->titre,
-    //                 'datenaissance'=> Carbon::parse($request->datenaissance)->format('d/m/Y'),
-    //                 'lieuresidence'=>$request->lieuresidence,
-    //                 'idTblBureau'=>$request->idTblBureau,
-    //                 'createdAt' => Carbon::now()->format('d/m/Y H:i:s'),
-    //                 'creeLe' => Carbon::now(),
-    //                 'orderInsert' =>1,
-    //             ])->save();
-                
-    //             if ($rdv) {
-    //                 $dataResponse =[
-    //                     'type'=>'success',
-    //                     'urlback'=> route('customer.rdv.mesRdv'),
-    //                     'message'=>"RDV N° $coderdv enregistré avec succes ! Vous allez recevoir un message de confirmation de la date effective de reception",
-    //                     'code'=>200,
-    //                 ];
-    //                 DB::commit();
-    //             } else {
-    //                     DB::rollback();
-    //                     $dataResponse =[
-    //                         'type'=>'error',
-    //                         'urlback'=>'',
-    //                         'message'=>"Erreur lors de l'enregistrement!",
-    //                         'code'=>500,
-    //                     ];
-    //             }
-    //         }
-            
-    
-    //     } catch (\Throwable $th) {
-    //         DB::rollBack();
-    //         $dataResponse =[
-    //             'type'=>'error',
-    //             'urlback'=>'',
-    //             'message'=>"Erreur systeme! $th",
-    //             'code'=>500,
-    //         ];
-    //     }
-    //         return response()->json($dataResponse);
-    // }
 
     public function store(Request $request)
     {
@@ -517,36 +386,5 @@ class RdvController extends Controller
                 'message' => 'Une erreur est survenue : ' . $th->getMessage(),
             ], 500);
         }
-    }
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

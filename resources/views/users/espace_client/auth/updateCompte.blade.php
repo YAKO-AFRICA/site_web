@@ -65,7 +65,7 @@
                                                                 <div class="col-12">
                                                                     <label for="lieuresidence" class="form-label">Lieu de residence<span class="text-danger">*</span></label>
                                                                     <select class="form-select" name="lieuresidence" id="lieuresidence" data-placeholder="" required>
-                                                                        <option value="" selected> Veuillez sélectionner votre lieu de residence</option>
+                                                                        <option value=""> Veuillez sélectionner votre lieu de residence</option>
                                                                         @foreach ($villes as $ville)
                                                                             <option value="{{ $ville->libelleVillle }}">{{ $ville->libelleVillle }}</option>
                                                                         @endforeach

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Imports\CustomersImport;
 use App\Jobs\ResetRememberToken;
 use App\Mail\UserRegisteredMail;
+use App\Models\Campagne\Client;
 use App\Models\Customer;
 use App\Models\Membre;
 use App\Models\MembreContrat;
@@ -1285,18 +1286,18 @@ class CustomerLoginController extends Controller
             $adherent = $contrat->adherent;
             Log::info('debut de transaction pour la préparation du client');
             $telphoneExistant = $adherent->mobile ?? $adherent->telephone ?? null;
- 
+
             $customeExisting = TblCustomer::where('login', $telphoneExistant)->first();
- 
+
             if ($customeExisting) {
- 
+
                 Log::info('Client existant trouvé avec le login : ');
                 Log::info($customeExisting);
                 $createmembreContrat = MembreContrat::create([
                     'codemembre' => $customeExisting->idmembre ?? null,
                     'idcontrat' => $idPropositionFinal,
                 ]);
- 
+
                 $response = Http::post('https://apimain.yakoafricassur.com/api/send-sms', [
                     'message' => "Cher " . $adherent->nom . ", votre contrat n° " . $idPropositionFinal . " a été associé a votre espace client. Connecter pour plus de détails. urlr.me/9ZXGSr",
                     'phone' => $telphoneExistant
@@ -1313,8 +1314,6 @@ class CustomerLoginController extends Controller
                     'data' => $data,
                     'message' => 'Client existant trouvé avec le login : ' . $telphoneExistant . ' Contrat n° ' . $idPropositionFinal . ' a ete associé.',
                 ]);
- 
-               
             } else {
 
                 Log::info('debut de transaction pour la TblCreationCompte');
@@ -1330,9 +1329,9 @@ class CustomerLoginController extends Controller
                     'estnotifieLe' => null,
                     'idCustomer' => null,
                 ]);
- 
+
                 Log::info('Fin de transaction pour la TblCreationCompte');
- 
+
                 Log::info('debut de transaction pour la Membre');
                 $savingMembre = Membre::create([
                     'login' => $adherent->mobile ?? $adherent->telephone ?? null,
@@ -1351,7 +1350,7 @@ class CustomerLoginController extends Controller
                     'lieuresidence' => $adherent->lieuresidence ?? null,
                     'profession' => $adherent->profession ?? null,
                 ]);
- 
+
                 Log::info('Fin de transaction pour la Membre');
                 // Log::info($savingMembre);
                 Log::info('debut de transaction pour la MembreContrat');
@@ -1359,13 +1358,13 @@ class CustomerLoginController extends Controller
                     'codemembre' => $savingMembre->idmembre ?? null,
                     'idcontrat' => $idPropositionFinal,
                 ]);
- 
+
                 Log::info('Fin de transaction pour la MembreContrat');
- 
+
                 Log::info('debut de transaction pour la TblCustomer');
- 
+
                 $password = Hash::make('1234567');
-               
+
                 $savingCustomer = TblCustomer::create([
                     'login' => $adherent->mobile ?? $adherent->telephone ?? null,
                     'password' => $password,
@@ -1375,9 +1374,9 @@ class CustomerLoginController extends Controller
                     'idmembre' => $savingMembre->idmembre ?? null,
                     'isFirstLog' => 0,
                 ]);
- 
+
                 Log::info('Fin de transaction pour la TblCustomer');
- 
+
                 if ($savingCustomer) {
                     // mettre à jour TblCreationCompte
                     TblCreationCompte::where('id', $saving->id)->update([
@@ -1388,7 +1387,7 @@ class CustomerLoginController extends Controller
                         'estnotifieLe' => Carbon::now()->format('Y-m-d H:i:s'),
                     ]);
                 }
- 
+
                 $response = Http::post('https://apimain.yakoafricassur.com/api/send-sms', [
                     'message' => "Cher " . $adherent->nom . ", merci de recevoir les paramettre de connexion a votre espace client. " . "Login: " . ($telphoneExistant) . " Mot de passe: " . ("1234567") . " Connecter pour plus de détails. urlr.me/9ZXGSr",
                     'phone' => $telphoneExistant
@@ -1410,8 +1409,7 @@ class CustomerLoginController extends Controller
                     'message' => 'Client créé avec le login : ' . $telphoneExistant . ' Contrat n° ' . $idPropositionFinal . ' a ete associé.',
                 ]);
             }
- 
-        }catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             DB::rollBack();
             Log::error("Erreur lors de la préparation du client : " . $th->getMessage());
             return response()->json([
@@ -1419,8 +1417,600 @@ class CustomerLoginController extends Controller
                 'code' => 'CUSTOMER_ERROR',
                 'message' => 'Une erreur est survenue lors de la création du client : ' . $th->getMessage(),
             ]);
-            
         }
     }
 
+
+
+    public function registerAPI(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            /*
+            |--------------------------------------------------------------------------
+            | 1. Recherche du client
+            |--------------------------------------------------------------------------
+            */
+
+            $uuidClient = $request->uuidClient;
+
+            $client = Client::where('uuid', $uuidClient)->first();
+
+            if (!$client) {
+                DB::rollBack();
+
+                return response()->json([
+                    'type' => 'error',
+                    'code' => 'CUSTOMER_NOT_FOUND',
+                    'message' => 'Client non trouvé',
+                ], 404);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | 2. Récupération des contrats
+            |--------------------------------------------------------------------------
+            |
+            | On fusionne :
+            | - les contrats de clients.liste_contrats
+            | - les contrats de doublons.numero_contrat
+            |
+            | Puis :
+            | - trim()
+            | - suppression des doublons
+            | - réindexation
+            |
+            */
+
+            $idPropositions = collect($client->liste_contrats)
+                ->merge(
+                    $client->doublons()
+                        ->pluck('numero_contrat')
+                )
+                ->map(fn($contrat) => trim((string) $contrat))
+                ->filter()
+                ->unique()
+                ->values();
+
+            Log::info(
+                'Début de transaction pour la préparation du client',
+                [
+                    'uuidClient' => $uuidClient,
+                    'idPropositions' => $idPropositions->toArray(),
+                    'client_id' => $client->id,
+                ]
+            );
+
+            // recuperer la premiere lettre du $client->genre
+
+            $sexe = strtoupper(substr($client->genre, 0, 1));
+            Log::info('Première lettre du genre', ['genre' => $sexe]);
+            // dd($sexe);
+
+            // $membreContratExistings = MembreContrat::whereIn('idcontrat', $idPropositions)->get();
+
+            /*
+            |--------------------------------------------------------------------------
+            | 3. Téléphone / login
+            |--------------------------------------------------------------------------
+            */
+
+            $telphoneExistant = $client->tel1 ?: $client->tel2;
+
+            if (empty($telphoneExistant)) {
+                throw new \Exception(
+                    'Aucun numéro de téléphone disponible pour créer le compte client.'
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | 4. Recherche d'un compte existant
+            |--------------------------------------------------------------------------
+            */
+
+            $customeExisting = TblCustomer::where(
+                'login',
+                $telphoneExistant
+            )->first();
+
+            /*
+            |--------------------------------------------------------------------------
+            | 5. Contrats réellement ajoutés
+            |--------------------------------------------------------------------------
+            */
+
+            $contratsAdd = [];
+
+            /*
+            |--------------------------------------------------------------------------
+            | CAS 1 : LE CLIENT EXISTE DÉJÀ
+            |--------------------------------------------------------------------------
+            */
+
+            if ($customeExisting) {
+
+                Log::info(
+                    'Client existant trouvé avec le login : ' . $telphoneExistant
+                );
+
+                /*
+                |--------------------------------------------------------------------------
+                | Récupération du membre
+                |--------------------------------------------------------------------------
+                */
+
+                $membre = $customeExisting->membre;
+
+                if (!$membre) {
+                    throw new \Exception(
+                        'Le client existant ne possède pas de détails dans la table membre associée.'
+                    );
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Mise à jour du membre
+                |--------------------------------------------------------------------------
+                */
+
+                $membre->update([
+                    'nom' => $client->nom ?: $membre->nom,
+                    'prenom' => $client->prenom ?: $membre->prenom,
+                    'email' => $client->email ?: $membre->email,
+
+                    'cel' => $telphoneExistant ?: $membre->cel,
+
+                    'tel' => $client->tel2 ?: $membre->tel,
+
+                    'cel2' => !empty($client->whattsapp[0])
+                        ? trim((string) $client->whattsapp[0])
+                        : $membre->cel2,
+
+                    'datenaissance' => $client->date_naissance
+                        ? Carbon::parse($client->date_naissance)
+                        ->format('Y-m-d H:i:s')
+                        : $membre->datenaissance,
+
+                    'lieunaissance' => $client->lieunaissance ?: $membre->lieunaissance,
+                    'lieuresidence' => $client->lieuresidence ?: $membre->lieuresidence ?? null,
+                    'profession' => $client->profession ?: $membre->profession ?? null,
+
+                    'sexe' => $sexe ?: $membre->sexe,
+                ]);
+
+                $client->update([
+                    'idCustomer' => $customeExisting->id,
+                ]);
+
+                /*
+                |--------------------------------------------------------------------------
+                | ID membre
+                |--------------------------------------------------------------------------
+                */
+
+                $idMembre = $customeExisting->idmembre;
+
+                if (!$idMembre) {
+                    throw new \Exception(
+                        'Le client existant ne possède pas de idmembre.'
+                    );
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Association des contrats
+                |--------------------------------------------------------------------------
+                */
+
+                foreach ($idPropositions as $idPropositionFinal) {
+
+                    $idPropositionFinal = trim(
+                        (string) $idPropositionFinal
+                    );
+
+                    if (empty($idPropositionFinal)) {
+                        continue;
+                    }
+
+                    $existingMembreContrat = MembreContrat::where([
+                        'codemembre' => $idMembre,
+                        'idcontrat' => $idPropositionFinal,
+                    ])->first();
+
+                    if ($existingMembreContrat) {
+
+                        Log::info(
+                            'Contrat n° ' . $idPropositionFinal .
+                                ' est déjà associé au client.'
+                        );
+
+                        continue;
+                    }
+
+                    $membreContrat = MembreContrat::create([
+                        'codemembre' => $idMembre,
+                        'idcontrat' => $idPropositionFinal,
+                    ]);
+
+                    $contratsAdd[] = $membreContrat->idcontrat;
+
+                    Log::info(
+                        'Contrat n° ' . $idPropositionFinal .
+                            ' a été associé au client.',
+                        [
+                            'idmembre' => $idMembre,
+                            'idcontrat' => $membreContrat->idcontrat,
+                        ]
+                    );
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Commit
+                |--------------------------------------------------------------------------
+                */
+
+                DB::commit();
+
+                /*
+                |--------------------------------------------------------------------------
+                | SMS après commit
+                |--------------------------------------------------------------------------
+                |
+                | On envoie le SMS uniquement après que les données
+                | ont réellement été enregistrées.
+                |
+                */
+
+                if (!empty($contratsAdd)) {
+
+                    $nombreContrats = count($contratsAdd);
+
+                    $contratsAddText = implode(
+                        ', ',
+                        $contratsAdd
+                    );
+
+                    $message = $nombreContrats === 1
+
+                        ? "Cher {$client->nom}, votre contrat n° {$contratsAddText} a été associé à votre espace client. Connectez-vous via: urlr.me/9ZXGSr"
+
+                        : "Cher {$client->nom}, vos {$nombreContrats} contrats n° {$contratsAddText} ont été associés à votre espace client. Connectez-vous via: urlr.me/9ZXGSr";
+
+                    $response = Http::post(
+                        'https://apimain.yakoafricassur.com/api/send-sms',
+                        [
+                            'message' => $message,
+                            'phone' => $telphoneExistant,
+                        ]
+                    );
+
+                    Log::info(
+                        'SMS envoyé pour les contrats associés.',
+                        [
+                            'phone' => $telphoneExistant,
+                            'contrats' => $contratsAdd,
+                            'sms_response' => $response->json(),
+                        ]
+                    );
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Réponse client existant
+                |--------------------------------------------------------------------------
+                */
+
+                return response()->json([
+                    'type' => 'success',
+                    'code' => 'CUSTOMER_EXISTING',
+
+                    'data' => [
+                        'customeExisting' => $customeExisting,
+                        'membre' => $membre,
+                        'contratsAjoutes' => $contratsAdd,
+                    ],
+
+                    'message' => !empty($contratsAdd)
+
+                        ? 'Client existant trouvé avec le login : '
+                        . $telphoneExistant
+                        . '. Les contrats n° '
+                        . implode(', ', $contratsAdd)
+                        . ' ont été associés.'
+
+                        : 'Client existant trouvé avec le login : '
+                        . $telphoneExistant
+                        . '. Aucun nouveau contrat à associer.',
+                ]);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | CAS 2 : NOUVEAU CLIENT
+            |--------------------------------------------------------------------------
+            */
+
+            Log::info(
+                'Aucun compte existant. Début création du client.'
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Création TblCreationCompte
+            |--------------------------------------------------------------------------
+            */
+
+            $saving = TblCreationCompte::create([
+                'nom' => $client->nom ?? null,
+                'prenom' => $client->prenom ?? null,
+                'email' => $client->email ?? null,
+                'cel' => $telphoneExistant,
+                'login' => $telphoneExistant,
+                'password' => '1234567',
+                'estClient' => 0,
+                'estnotifie' => 0,
+                'estnotifieLe' => null,
+                'idCustomer' => null,
+            ]);
+
+            Log::info(
+                'TblCreationCompte créé.',
+                [
+                    'id' => $saving->id,
+                ]
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Création Membre
+            |--------------------------------------------------------------------------
+            */
+
+            $savingMembre = Membre::create([
+                'login' => $telphoneExistant,
+                'pass' => '1234567',
+
+                'nom' => $client->nom ?? null,
+                'prenom' => $client->prenom ?? null,
+                'email' => $client->email ?? null,
+
+                'cel' => $telphoneExistant,
+                'tel' => $client->tel2 ?? null,
+
+                'cel2' => !empty($client->whattsapp[0])
+                    ? trim((string) $client->whattsapp[0])
+                    : null,
+
+                'typ_membre' => 3,
+                'activer' => 1,
+                'estajour' => 1,
+                'memberok' => 1,
+
+                'datenaissance' => $client->date_naissance
+                    ? Carbon::parse($client->date_naissance)
+                    ->format('Y-m-d H:i:s')
+                    : null,
+                'lieunaissance' => $client->lieunaissance ?? null,
+                'lieuresidence' => $client->lieuresidence ?? null,
+                'profession' => $client->profession ?? null,
+
+                'sexe' => $sexe ?? null,
+            ]);
+
+            Log::info(
+                'Membre créé.',
+                [
+                    'idmembre' => $savingMembre->idmembre,
+                ]
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Association des contrats
+            |--------------------------------------------------------------------------
+            */
+
+            foreach ($idPropositions as $idPropositionFinal) {
+
+                $idPropositionFinal = trim(
+                    (string) $idPropositionFinal
+                );
+
+                if (empty($idPropositionFinal)) {
+                    continue;
+                }
+
+                $existingMembreContrat = MembreContrat::where([
+                    'codemembre' => $savingMembre->idmembre,
+                    'idcontrat' => $idPropositionFinal,
+                ])->first();
+
+                if ($existingMembreContrat) {
+
+                    Log::info(
+                        'Contrat n° ' . $idPropositionFinal .
+                            ' est déjà associé au client.'
+                    );
+
+                    continue;
+                }
+
+                $membreContrat = MembreContrat::create([
+                    'codemembre' => $savingMembre->idmembre,
+                    'idcontrat' => $idPropositionFinal,
+                ]);
+
+                $contratsAdd[] = $membreContrat->idcontrat;
+
+                Log::info(
+                    'Contrat n° ' . $idPropositionFinal .
+                        ' a été associé au nouveau client.',
+                    [
+                        'idmembre' => $savingMembre->idmembre,
+                        'idcontrat' => $membreContrat->idcontrat,
+                    ]
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Création TblCustomer
+            |--------------------------------------------------------------------------
+            |
+            | IMPORTANT :
+            | Une seule création de TblCustomer.
+            |
+            */
+
+            $password = Hash::make('1234567');
+
+            $savingCustomer = TblCustomer::create([
+                'login' => $telphoneExistant,
+                'password' => $password,
+                'activer' => 1,
+                'estajour' => 1,
+                'memberok' => 1,
+                'idmembre' => $savingMembre->idmembre,
+                'isFirstLog' => 0,
+            ]);
+
+            Log::info(
+                'TblCustomer créé.',
+                [
+                    'idCustomer' => $savingCustomer->id,
+                    'idmembre' => $savingMembre->idmembre,
+                ]
+            );
+
+            $client->update([
+                'idCustomer' => $savingCustomer->id,
+            ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Mise à jour TblCreationCompte
+            |--------------------------------------------------------------------------
+            */
+
+            TblCreationCompte::where(
+                'id',
+                $saving->id
+            )->update([
+                'idCustomer' => $savingCustomer->id,
+                'password' => $password,
+                'estClient' => 1,
+                'estnotifie' => 1,
+                'estnotifieLe' => Carbon::now()
+                    ->format('Y-m-d H:i:s'),
+            ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Commit de la transaction
+            |--------------------------------------------------------------------------
+            */
+
+            DB::commit();
+
+            /*
+        |--------------------------------------------------------------------------
+        | SMS après création du compte
+        |--------------------------------------------------------------------------
+        */
+
+            if (!empty($contratsAdd)) {
+
+                $nombreContrats = count($contratsAdd);
+
+                $contratsAddText = implode(
+                    ', ',
+                    $contratsAdd
+                );
+
+                $message = $nombreContrats === 1
+
+                    ? "Cher {$client->nom}, votre contrat n° {$contratsAddText} a été associé à votre espace client. Vos paramètres de connexion sont : Login: {$telphoneExistant} Mot de passe: 1234567. Connectez-vous via: urlr.me/9ZXGSr"
+
+                    : "Cher {$client->nom}, vos {$nombreContrats} contrats n° {$contratsAddText} ont été associés à votre espace client. Vos paramètres de connexion sont : Login: {$telphoneExistant} Mot de passe: 1234567. Connectez-vous via: urlr.me/9ZXGSr";
+            } else {
+
+                $message = "Cher {$client->nom}, votre espace client a été créé. Vos paramètres de connexion sont : Login: {$telphoneExistant} Mot de passe: 1234567. Connectez-vous via: urlr.me/9ZXGSr";
+            }
+
+            $response = Http::post(
+                'https://apimain.yakoafricassur.com/api/send-sms',
+                [
+                    'message' => $message,
+                    'phone' => $telphoneExistant,
+                ]
+            );
+
+            Log::info(
+                'SMS envoyé au nouveau client.',
+                [
+                    'phone' => $telphoneExistant,
+                    'contrats' => $contratsAdd,
+                    'sms_response' => $response->json(),
+                ]
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Réponse
+            |--------------------------------------------------------------------------
+            */
+
+            return response()->json([
+                'type' => 'success',
+                'code' => 'CUSTOMER_CREATED',
+
+                'data' => [
+                    'savingMembre' => $savingMembre,
+                    'savingCustomer' => $savingCustomer,
+                    'contratsAjoutes' => $contratsAdd,
+                ],
+
+                'message' => !empty($contratsAdd)
+
+                    ? 'Client créé avec le login : '
+                    . $telphoneExistant
+                    . '. Contrat(s) associé(s) : '
+                    . implode(', ', $contratsAdd)
+                    . '.'
+
+                    : 'Client créé avec le login : '
+                    . $telphoneExistant
+                    . '. Aucun contrat n\'a été associé.',
+            ]);
+        } catch (\Throwable $th) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Rollback
+            |--------------------------------------------------------------------------
+            */
+
+            DB::rollBack();
+
+            Log::error(
+                'Erreur lors de la préparation du client.',
+                [
+                    'message' => $th->getMessage(),
+                    'file' => $th->getFile(),
+                    'line' => $th->getLine(),
+                ]
+            );
+
+            return response()->json([
+                'type' => 'error',
+                'code' => 'CUSTOMER_ERROR',
+                'message' => 'Une erreur est survenue lors de la création du client : '
+                    . $th->getMessage(),
+            ], 500);
+        }
+    }
 }

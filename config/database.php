@@ -92,6 +92,20 @@ return [
             'strict' => true,
             'engine' => null,
         ],
+        'mysql4' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST_FOURTH', '127.0.0.1'),
+            'port' => env('DB_PORT_FOURTH', '3306'),
+            'database' => env('DB_DATABASE_FOURTH', 'forge'),
+            'username' => env('DB_USERNAME_FOURTH', 'forge'),
+            'password' => env('DB_PASSWORD_FOURTH', ''),
+            'unix_socket' => env('DB_SOCKET_FOURTH', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
 
         'pgsql' => [
             'driver' => 'pgsql',
