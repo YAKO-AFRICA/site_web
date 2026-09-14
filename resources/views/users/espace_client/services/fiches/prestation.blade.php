@@ -559,7 +559,7 @@
                         $membre = App\Models\Membre::where('idmembre', $user)->with('zone')->first();
                     @endphp
                     <div class="Signature">
-                        <h6>Signature du déclarant</h6><small><p style="font-size: 0.56em; margin-top: -50px; margin-left:130px">Contrôle éffectué par OTP du {{ ($prestation->moyenPaiement !== 'Virement_Bancaire') ? $prestation->otp->created_at->format('d/m/Y à H:i:s') : $prestation->created_at->format('d/m/Y à H:i:s') ?? '.' }}</p></small>
+                        <h6>Signature du déclarant</h6><small><p style="font-size: 0.56em; margin-top: -50px; margin-left:130px">Contrôle éffectué par OTP du {{ $prestation->created_at->format('d/m/Y à H:i:s') ?? '.' }}</p></small>
                         <div class="form-group">
                             <label for="nom" style="margin-right: 24px">Fait à</label>
                             <input type="text" style="
@@ -570,7 +570,7 @@
                                 padding: 5px;
                                 font-size: 14px;
                                 border-radius: 3px;
-                                background-color: #ffffff;" id="nom" name="nom" value="{{ $prestation->membre->typ_membre !== 3 ? $membre->zone->libellezone : $prestation->lieuresidence ?? '.' }}" />
+                                background-color: #ffffff;" id="nom" name="nom" value="{{ (optional($prestation->membre)->typ_membre !== 3) ? $membre->zone->libellezone : $prestation->lieuresidence ?? '.' }}" />
                         </div>
                         <div class="form-group">
                             <label for="prenom">Le &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</label>&nbsp;
