@@ -277,6 +277,8 @@ Route::get('storage/demande_comptes/{file}', function ($file) {
 
 Route::post('/etat-cotisation/clear-folder', [CustomerController::class, 'clearEtatCotisationFolder'])->name('etatCotisation.clearFolder');
 
+Route::get('prestation/print-fiche-prestation/', [DemandePrestationController::class, 'printFichePrestation'])->name('printFichePrestation');
+
 Route::prefix('espace-client', 'PreventBackHistory')->name('customer.')->group(function(){
     Route::middleware(['guest:customer', 'PreventBackHistory'])->group(function(){
         // customer Login routes
@@ -345,7 +347,7 @@ Route::prefix('espace-client', 'PreventBackHistory')->name('customer.')->group(f
         Route::get('prestation/reprise-demande',[DemandePrestationController::class, 'repriseDemande'])->name('repriseDemande');
         Route::post('prestation/verif-code-demande',[DemandePrestationController::class, 'verifCodeDemande'])->name('verifCodeDemande');
         Route::get('prestation/mesPrestations', [DemandePrestationController::class, 'mesPrestations'])->name('mesPrestations');
-        Route::get('prestation/print-fiche-prestation/', [DemandePrestationController::class, 'printFichePrestation'])->name('printFichePrestation');
+        
         Route::post('prestation/DemandePrestationByDashboard/', [DemandePrestationController::class, 'DemandePrestation'])->name('DemandePrestation');
         
         // Route::post('prestation/getPrestations', [DemandePrestationController::class, 'getPrestations'])->name('getPrestations');

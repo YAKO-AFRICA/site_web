@@ -692,7 +692,8 @@ class DemandePrestationController extends Controller
 
     public function printFichePrestation()
     {
-        // $prestation = TblPrestation::where('id', $id)->first();
+        $prestation = TblPrestation::where('id', '1')->first();
+        // dd($prestation);
         // Génération de QR Code en base64
         $qrcode = base64_encode(QrCode::format('svg')->size(80)->generate("http://yakoafrica_live.test/espace-client/prestation/getInfoPrestation/1"));
         // Générer le QR code au format SVG avec le lien
@@ -703,10 +704,20 @@ class DemandePrestationController extends Controller
         //     ->margin(2)
         //     ->generate('https://testsite.yakoafricassur.com/espace-client/loginForm');
 
+        $imageUrl = env('SIGN_API') . "api/get-signature/" . $prestation->code . "/E-PRESTATION";
+        if ($imageUrl != null || $imageUrl != '') {
+            $imageData = file_get_contents($imageUrl);
+            $base64Image = base64_encode($imageData);
+            $imageSrc = 'data:image/png;base64,' . $base64Image;
+        } else {
+            $imageSrc = '';
+        }
+
         // $logoUrl = 'https://testsite.yakoafricassur.com/assets/img/logo/Logo_yako.png';
         // $pdf = Pdf::loadView('users.espace_client.services.fiches.qrcode', compact('qrCodeSvg', 'logoUrl'))
         // $pdf = Pdf::loadView('users.espace_client.services.fiches.prestationouttest', compact('qrcode'))
-        $pdf = Pdf::loadView('users.espace_client.services.fiches.courriertest')
+        // $pdf = Pdf::loadView('users.espace_client.services.fiches.courriertest')
+        $pdf = Pdf::loadView('users.espace_client.services.fiches.prestation', compact('qrcode', 'prestation', 'imageSrc'))
             // $pdf = Pdf::loadView('users.espace_client.services.fiches.sinistretest', compact('qrcode'))
             ->setPaper('a4', 'portrait')
             ->setOptions([
@@ -728,7 +739,7 @@ class DemandePrestationController extends Controller
         //     mkdir($PrestationDir, 0777, true);
         // }
         // $pdf->save($PrestationDir . $fileName);
-        // return view('users.espace_client.services.fiches.prestation');
+        // return view('users.espace_client.services.fiches.prestation', compact('pdf', 'prestation'));
 
         // Générer le QR Code en PNG et l'encoder en Base64
         // $qrCode = QrCode::format('svg')
