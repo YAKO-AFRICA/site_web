@@ -161,9 +161,6 @@
                 <div class="row">
                     <div class="col-lg-3">
                         <div class="copyright-text-two text-white">
-                            {{-- <ul class="list-wrap">
-                                        <li><a href="javascript:void(0)">Politique de Confidentialité</a></li>
-                                    </ul> --}}
                             <p class="text-white"><a href="javascript:void(0)" class="security" data-bs-toggle="modal"
                                     data-bs-target="#pcModal" style="color: #B6B8D8">Politique de confidentialité</a>
                             </p>
@@ -173,7 +170,6 @@
                                 <div class="modal-dialog modal-dialog-scrollable modal-lg">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            {{-- <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> --}}
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -191,9 +187,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-3">
                         <div class="copyright-text-two text-white">
-                            <p class="text-white">Copyright © DSI 2024 | Tous droits réservés</p>
+                            <p class="text-white"><a href="javascript:void(0)" class="security" style="color: #B6B8D8">Copyright © DSI 2024 | Tous droits réservés</a></p>
                         </div>
                     </div>
                     <div class="col-lg-3">
@@ -215,6 +211,36 @@
                                         </div>
                                         <div class="modal-body">
                                             <iframe src="https://yakoafricassur.com/politique/cgu-site-web.html"
+                                                style="width: 100%; height: 570px;"></iframe>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn-prime"
+                                                data-bs-dismiss="modal">Fermer</button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <div class="copyright-text-two text-white">
+
+                            <p class=""><a href="javascript:void(0)" class="security" data-bs-toggle="modal"
+                                    data-bs-target="#CookiesModal" style="color: #B6B8D8">Gestion des Cookies</a></p>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="CookiesModal" tabindex="-1" aria-labelledby="CookiesModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <iframe src="https://yakoafricassur.com/politique/gestion-cookies-site-web.html"
                                                 style="width: 100%; height: 570px;"></iframe>
                                         </div>
                                         <div class="modal-footer">
